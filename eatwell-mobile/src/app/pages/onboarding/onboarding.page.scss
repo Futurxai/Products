@@ -1,0 +1,53 @@
+.ob-bg { --background: #F7F8FA; }
+
+.skip-row {
+  display: flex; justify-content: flex-end; padding: 8px 20px 0;
+}
+.skip-btn {
+  background: none; border: none; font-size: 14px; font-weight: 500;
+  color: #9CA3AF; cursor: pointer; padding: 6px 2px;
+}
+
+.ob-center {
+  flex: 1; display: flex; flex-direction: column;
+  justify-content: center; padding: 0 24px 32px;
+  min-height: calc(100vh - 60px);
+}
+
+.ob-card {
+  background: white; border-radius: 28px; padding: 36px 28px 32px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07); text-align: center;
+}
+
+.icon-circle {
+  width: 88px; height: 88px; border-radius: 50%;
+  margin: 0 auto 28px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.ob-title {
+  font-size: 22px; font-weight: 700; color: #111827;
+  line-height: 1.3; margin-bottom: 14px;
+}
+
+.ob-desc {
+  font-size: 14px; color: #6B7280; line-height: 1.7; margin-bottom: 32px;
+}
+
+.ob-dots {
+  display: flex; justify-content: center; gap: 8px; margin-bottom: 28px;
+}
+
+.dot {
+  width: 8px; height: 8px; border-radius: 4px;
+  background: #E5E7EB; transition: all 0.3s ease;
+
+  &.active { width: 28px; background: #22C55E; }
+}
+
+.ob-btn { border-radius: 14px; }
+
+.ob-counter {
+  text-align: center; margin-top: 20px;
+  font-size: 13px; color: #9CA3AF; font-weight: 500;
+}

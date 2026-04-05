@@ -1,0 +1,80 @@
+.profile-bg { --background: #f5f5f5; }
+
+.profile-header {
+  padding: 12px 16px;
+  padding-top: calc(env(safe-area-inset-top, 20px) + 12px);
+  background: #f5f5f5;
+  display: flex; justify-content: space-between; align-items: center;
+}
+
+.save-all-btn {
+  background: var(--green); color: white; border: none; padding: 9px 16px;
+  border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+
+.ps-section {
+  margin: 0 16px 12px; background: white; border-radius: 14px; padding: 16px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+}
+
+.section-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px;
+}
+
+.edit-btn {
+  font-size: 13px; color: var(--text); font-weight: 500; cursor: pointer;
+  border: none; background: none;
+}
+
+.profile-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 14px; margin-bottom: 6px;
+}
+.profile-row:last-child { margin-bottom: 0; }
+.row-label { color: var(--muted); }
+.row-val { font-weight: 500; }
+
+.goal-tag {
+  display: inline-block; padding: 5px 14px; background: var(--text); color: white;
+  border-radius: 20px; font-size: 13px; font-weight: 500;
+}
+
+.account-strip {
+  display: flex; align-items: center; gap: 12px; background: white;
+  border-radius: 14px; padding: 14px 16px; margin-bottom: 12px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+}
+
+.avatar {
+  width: 40px; height: 40px; border-radius: 50%; background: var(--green-light);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.active-badge {
+  background: var(--green-light); color: var(--green); font-size: 11px;
+  font-weight: 600; padding: 3px 10px; border-radius: 20px;
+}
+
+.logout-btn {
+  width: 100%; padding: 14px; background: white; border: 1.5px solid #fca5a5;
+  border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer;
+  color: #dc2626; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+
+.setting-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+
+.setting-left {
+  display: flex; align-items: center; gap: 12px;
+}
+
+.time-chip {
+  background: var(--green-light); color: var(--green); font-size: 12px;
+  font-weight: 600; padding: 4px 10px; border-radius: 20px;
+}

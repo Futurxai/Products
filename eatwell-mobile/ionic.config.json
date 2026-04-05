@@ -1,0 +1,7 @@
+{
+  "name": "eatwell-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

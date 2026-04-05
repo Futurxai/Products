@@ -1,0 +1,27 @@
+<ion-content class="ob-bg" [scrollY]="false">
+  <!-- Skip -->
+  <div class="skip-row">
+    <button class="skip-btn" (click)="skip()">Skip</button>
+  </div>
+
+  <!-- Card -->
+  <div class="ob-center">
+    <div class="ob-card">
+      <div class="icon-circle" [style.background]="slide.iconBg">
+        <ion-icon [name]="slide.iconName" style="font-size:40px;color:#22C55E"></ion-icon>
+      </div>
+      <h2 class="ob-title">{{ slide.title }}</h2>
+      <p class="ob-desc">{{ slide.desc }}</p>
+
+      <!-- Dots -->
+      <div class="ob-dots">
+        <div *ngFor="let s of slides; let i = index"
+             class="dot" [class.active]="i === currentSlide"></div>
+      </div>
+
+      <button class="btn-primary ob-btn" (click)="next()">{{ slide.btn }}</button>
+    </div>
+
+    <div class="ob-counter">{{ currentSlide + 1 }} of 3</div>
+  </div>
+</ion-content>

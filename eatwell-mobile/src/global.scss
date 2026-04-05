@@ -1,0 +1,413 @@
+@import "@ionic/angular/css/core.css";
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+:root {
+  --green: #1DB954;
+  --green-dark: #159a42;
+  --green-light: #e8f8ef;
+  --green-bg: #f0faf5;
+  --text: #1a1a1a;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --white: #ffffff;
+  --red: #ef4444;
+  --red-light: #fef2f2;
+  --warn-bg: #fffbeb;
+  --warn-border: #fcd34d;
+
+  --ion-color-primary: #1DB954;
+  --ion-color-primary-rgb: 29, 185, 84;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-shade: #159a42;
+  --ion-color-primary-tint: #34c065;
+
+  --ion-color-secondary: #4f46e5;
+  --ion-color-danger: #ef4444;
+  --ion-background-color: #f5f5f5;
+}
+
+ion-tab-button {
+  --color: var(--muted);
+  --color-selected: var(--green);
+}
+
+ion-tab-bar {
+  --border: 1px solid var(--border);
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 15px;
+  background: var(--green);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.15s;
+
+  &:active {
+    background: var(--green-dark);
+  }
+}
+
+.btn-outline {
+  background: white;
+  border: 1.5px solid var(--border);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 13px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 15px;
+  background: #f9fafb;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+
+  &:focus {
+    border-color: var(--green);
+    background: white;
+  }
+
+  &.error {
+    border-color: var(--red);
+    background: var(--red-light);
+  }
+}
+
+.error-msg {
+  font-size: 12px;
+  color: var(--red);
+  margin-top: 4px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 12px;
+}
+
+.step-bar {
+  background: var(--border);
+  height: 6px;
+  border-radius: 3px;
+  width: 100%;
+  overflow: hidden;
+
+  .fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--green);
+    transition: width 0.3s;
+  }
+}
+
+.step-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &.selected {
+    border-color: var(--green);
+    background: var(--green-light);
+  }
+}
+
+.radio-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.radio-option.selected .radio-circle {
+  border-color: var(--green);
+  background: var(--green);
+
+  &::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+    display: block;
+  }
+}
+
+.check-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &.selected {
+    border-color: var(--green);
+    background: var(--green-light);
+  }
+}
+
+.check-box {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  color: white;
+  font-size: 12px;
+}
+
+.check-option.selected .check-box {
+  border-color: var(--green);
+  background: var(--green);
+}
+
+.pref-tag {
+  display: inline-block;
+  padding: 5px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  margin: 3px 4px 3px 0;
+}
+
+.food-tag-green {
+  background: var(--green);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-block;
+  margin: 3px 4px 3px 0;
+}
+
+.food-tag-red {
+  background: #fef2f2;
+  border: 1.5px solid #fca5a5;
+  color: #dc2626;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  display: inline-block;
+  margin: 3px 4px 3px 0;
+}
+
+.meal-card {
+  background: white;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.swap-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  background: white;
+  color: var(--muted);
+
+  &:hover {
+    border-color: var(--green);
+    color: var(--green);
+  }
+}
+
+.calorie-card {
+  margin: 0 16px 16px;
+  background: var(--green);
+  border-radius: 16px;
+  padding: 18px 20px;
+  color: white;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.warn-note {
+  margin: 0 16px 16px;
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #92400e;
+  line-height: 1.5;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+// ============ DARK MODE ============
+body.dark {
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --border: #374151;
+  --white: #1f2937;
+  --green-bg: #111827;
+  --green-light: #064e3b;
+  --warn-bg: #1c1917;
+  --warn-border: #78716c;
+  --ion-background-color: #111827;
+  --ion-text-color: #e5e7eb;
+  --ion-card-background: #1f2937;
+
+  .login-card, .ob-card, .ps-card, .card,
+  .meal-card, .weekly-meal-card, .items-card,
+  .ps-section, .account-strip, .daily-total {
+    background: #1f2937;
+    color: #e5e7eb;
+  }
+
+  .dash-header, .weekly-header, .grocery-header, .profile-header {
+    background: #111827;
+  }
+
+  .dash-bg, .weekly-bg, .grocery-bg, .profile-bg {
+    --background: #111827;
+  }
+
+  .input-field {
+    background: #374151;
+    color: #e5e7eb;
+    border-color: #4b5563;
+  }
+
+  .radio-option, .check-option, .food-cat {
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  .pref-tag {
+    border-color: #4b5563;
+    color: #d1d5db;
+  }
+
+  .swap-btn, .recipe-btn {
+    background: #374151;
+    border-color: #4b5563;
+    color: #d1d5db;
+  }
+
+  .goal-tag {
+    background: #374151;
+  }
+
+  .logout-btn {
+    background: #1f2937;
+  }
+
+  .filter-chip {
+    background: #374151;
+    border-color: #4b5563;
+    color: #d1d5db;
+
+    &.active {
+      background: var(--green);
+      border-color: var(--green);
+      color: white;
+    }
+  }
+
+  .grocery-item, .browser-item {
+    color: #e5e7eb;
+  }
+
+  ion-tab-bar {
+    --background: #1f2937;
+    --border: 1px solid #374151;
+  }
+
+  ion-modal {
+    --ion-background-color: #1f2937;
+    ion-toolbar {
+      --background: #1f2937;
+      --color: #e5e7eb;
+    }
+    ion-content {
+      --background: #111827;
+    }
+  }
+}

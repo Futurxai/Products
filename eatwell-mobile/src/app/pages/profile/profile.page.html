@@ -1,0 +1,163 @@
+<ion-content class="profile-bg">
+  <div class="profile-header">
+    <div>
+      <div style="font-size:20px;font-weight:700">Profile Settings</div>
+      <div style="font-size:13px;color:var(--muted)">Edit preferences to regenerate your plan</div>
+    </div>
+    <button class="save-all-btn" (click)="saveAll()">Save All</button>
+  </div>
+
+  <!-- Username -->
+  <div class="ps-section">
+    <div class="section-header">
+      <div class="section-title"><ion-icon name="person-outline" style="color:var(--green)"></ion-icon> Username</div>
+      <button class="edit-btn" (click)="toggleEdit('username')">✏️ Edit</button>
+    </div>
+    <div *ngIf="!editing['username']" style="font-size:15px;font-weight:500">{{ st.username || 'User' }}</div>
+    <div *ngIf="editing['username']" style="margin-top:8px">
+      <input type="text" class="input-field" [(ngModel)]="editUsername">
+      <button class="btn-primary" style="margin-top:8px;padding:10px" (click)="saveUsername()">Save</button>
+    </div>
+  </div>
+
+  <!-- Physical -->
+  <div class="ps-section">
+    <div class="section-header">
+      <div class="section-title"><ion-icon name="body-outline" style="color:var(--green)"></ion-icon> Physical Profile</div>
+      <button class="edit-btn" (click)="toggleEdit('physical')">✏️ Edit</button>
+    </div>
+    <div *ngIf="!editing['physical']">
+      <div class="profile-row"><span class="row-label">Height:</span><span class="row-val">{{ st.height || '—' }} cm</span></div>
+      <div class="profile-row"><span class="row-label">Weight:</span><span class="row-val">{{ st.weight || '—' }} kg</span></div>
+      <div class="profile-row"><span class="row-label">Gender:</span><span class="row-val">{{ st.gender || '—' }}</span></div>
+    </div>
+    <div *ngIf="editing['physical']" style="margin-top:8px">
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <div style="flex:1"><label style="font-size:12px">Height (cm)</label><input type="number" class="input-field" [(ngModel)]="editHeight"></div>
+        <div style="flex:1"><label style="font-size:12px">Weight (kg)</label><input type="number" class="input-field" [(ngModel)]="editWeight"></div>
+      </div>
+      <button class="btn-primary" style="padding:10px" (click)="savePhysical()">Save & Regenerate</button>
+    </div>
+  </div>
+
+  <!-- Goal -->
+  <div class="ps-section">
+    <div class="section-header">
+      <div class="section-title"><ion-icon name="flag-outline" style="color:var(--green)"></ion-icon> Your Goal</div>
+      <button class="edit-btn" (click)="toggleEdit('goal')">✏️ Edit</button>
+    </div>
+    <div *ngIf="!editing['goal']">
+      <span class="goal-tag">{{ st.profileGoal }}</span>
+      <div *ngIf="st.targetWeight" style="margin-top:8px;font-size:12px;color:var(--muted)">Target: <strong style="color:var(--green)">{{ st.targetWeight }} kg</strong></div>
+    </div>
+    <div *ngIf="editing['goal']" style="margin-top:10px">
+      <div *ngFor="let g of goals" class="radio-option" [class.selected]="editGoal===g" (click)="editGoal=g">
+        <div class="radio-circle"></div><span>{{ g }}</span>
+      </div>
+      <div style="margin-top:10px"><label style="font-size:12px">Target Weight (kg)</label>
+        <input type="number" class="input-field" [(ngModel)]="editTargetWeight" placeholder="e.g. 65">
+      </div>
+      <button class="btn-primary" style="margin-top:10px;padding:10px" (click)="saveGoal()">Save & Regenerate</button>
+    </div>
+  </div>
+
+  <!-- Diet -->
+  <div class="ps-section">
+    <div class="section-header">
+      <div class="section-title"><ion-icon name="list-outline" style="color:var(--green)"></ion-icon> Diet Preference</div>
+      <button class="edit-btn" (click)="toggleEdit('diet')">✏️ Change</button>
+    </div>
+    <div *ngIf="!editing['diet']"><span class="pref-tag">{{ st.profileDiet }}</span></div>
+    <div *ngIf="editing['diet']" style="margin-top:10px">
+      <div *ngFor="let d of diets" class="radio-option" [class.selected]="editDiet===d" (click)="editDiet=d">
+        <div class="radio-circle"></div><span>{{ d }}</span>
+      </div>
+      <button class="btn-primary" style="margin-top:10px;padding:10px" (click)="saveDiet()">Save & Regenerate</button>
+    </div>
+  </div>
+
+  <!-- Cuisine -->
+  <div class="ps-section">
+    <div class="section-header">
+      <div class="section-title"><ion-icon name="globe-outline" style="color:var(--green)"></ion-icon> Cuisine Preferences</div>
+      <button class="edit-btn" (click)="toggleEdit('cuisine')">✏️ Change</button>
+    </div>
+    <div *ngIf="!editing['cuisine']" style="display:flex;flex-wrap:wrap;gap:6px">
+      <span *ngFor="let c of cuisineList" class="pref-tag">{{ c }}</span>
+      <span *ngIf="cuisineList.length === 0" style="font-size:13px;color:var(--muted)">None selected</span>
+    </div>
+    <div *ngIf="editing['cuisine']" style="margin-top:10px">
+      <div *ngFor="let c of allCuisines" class="check-option" [class.selected]="editCuisines.has(c)" (click)="toggleEditCuisine(c)">
+        <div class="check-box">{{ editCuisines.has(c) ? '✓' : '' }}</div>
+        <span>{{ c }}</span>
+      </div>
+      <button class="btn-primary" style="margin-top:8px;padding:10px" (click)="saveCuisine()">Save & Regenerate</button>
+    </div>
+  </div>
+
+  <!-- App Settings -->
+  <div class="ps-section">
+    <div class="section-header">
+      <div class="section-title"><ion-icon name="settings-outline" style="color:var(--green)"></ion-icon> App Settings</div>
+    </div>
+
+    <!-- Dark Mode -->
+    <div class="setting-row">
+      <div class="setting-left">
+        <ion-icon name="moon-outline" style="font-size:20px;color:#6366f1"></ion-icon>
+        <div>
+          <div style="font-size:14px;font-weight:600">Dark Mode</div>
+          <div style="font-size:12px;color:var(--muted)">Easier on the eyes at night</div>
+        </div>
+      </div>
+      <ion-toggle [checked]="darkMode" (ionChange)="toggleDarkMode()" color="primary"></ion-toggle>
+    </div>
+
+    <!-- Meal Reminders -->
+    <div class="setting-row" style="border-bottom:none">
+      <div class="setting-left">
+        <ion-icon name="notifications-outline" style="font-size:20px;color:#f59e0b"></ion-icon>
+        <div>
+          <div style="font-size:14px;font-weight:600">Meal Reminders</div>
+          <div style="font-size:12px;color:var(--muted)">Daily notifications at meal times</div>
+        </div>
+      </div>
+      <ion-toggle [checked]="remindersEnabled" (ionChange)="toggleReminders()" color="primary"></ion-toggle>
+    </div>
+
+    <!-- Reminder times info -->
+    <div *ngIf="remindersEnabled" style="padding:0 16px 12px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Reminder schedule:</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <span class="time-chip">🍳 8:00 AM</span>
+        <span class="time-chip">🥗 1:00 PM</span>
+        <span class="time-chip">🍎 4:00 PM</span>
+        <span class="time-chip">🍽️ 7:30 PM</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Warning -->
+  <div class="warn-note">⚠ <strong>Note:</strong> Changes to your preferences will automatically regenerate your meal plan.</div>
+
+  <!-- Save & Regenerate -->
+  <div style="margin:0 16px 12px">
+    <button class="btn-primary" style="font-size:16px" (click)="saveAll()">✨ Save & Regenerate Meal Plan</button>
+  </div>
+
+  <!-- Account & Logout -->
+  <div style="margin:0 16px 32px">
+    <div style="height:1px;background:var(--border);margin-bottom:20px"></div>
+    <div class="account-strip">
+      <div class="avatar"><ion-icon name="person-outline" style="font-size:20px;color:var(--green)"></ion-icon></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ st.username || 'User' }}</div>
+        <div style="font-size:12px;color:var(--muted)">Signed in</div>
+      </div>
+      <span class="active-badge">Active</span>
+    </div>
+    <button class="logout-btn" (click)="confirmLogout()">
+      <ion-icon name="log-out-outline" style="font-size:18px"></ion-icon> Log Out
+    </button>
+  </div>
+</ion-content>

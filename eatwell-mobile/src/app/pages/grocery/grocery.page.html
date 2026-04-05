@@ -1,0 +1,61 @@
+<ion-content class="grocery-bg">
+  <div class="grocery-header">
+    <div>
+      <div style="font-size:20px;font-weight:700">Grocery List</div>
+      <div style="font-size:13px;color:var(--muted)">Ingredients for your weekly meal plan</div>
+    </div>
+    <button class="export-btn" (click)="exportGrocery()">⬇ Export</button>
+  </div>
+
+  <!-- Tabs -->
+  <div style="padding:0 16px 8px">
+    <ion-segment [value]="currentTab" (ionChange)="switchTab($any($event.detail.value))">
+      <ion-segment-button value="today"><ion-label>Today</ion-label></ion-segment-button>
+      <ion-segment-button value="tomorrow"><ion-label>Tomorrow</ion-label></ion-segment-button>
+      <ion-segment-button value="weekly"><ion-label>Weekly</ion-label></ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Category Filters -->
+  <div class="filter-row">
+    <button *ngFor="let cat of presentCats" class="filter-chip" [class.active]="activeFilter === cat" (click)="setFilter(cat)">
+      {{ cat === 'All' ? '' : (catIcons[cat] || '') + ' ' }}{{ cat }}
+    </button>
+  </div>
+
+  <!-- Progress Card -->
+  <div class="progress-card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:12px;opacity:.85">Shopping Progress</div>
+        <div style="font-size:28px;font-weight:700">{{ checkedCount }}/{{ totalCount }}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:22px;font-weight:700">{{ pct }}%</div>
+        <div style="font-size:12px;opacity:.85">Complete</div>
+      </div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" [style.width.%]="pct"></div></div>
+  </div>
+
+  <!-- Items -->
+  <div *ngIf="filteredItems.length === 0" style="text-align:center;padding:40px 20px;color:var(--muted)">
+    <div style="font-size:40px;margin-bottom:12px">🛒</div>
+    <div style="font-size:15px;font-weight:600;color:var(--text)">No items</div>
+    <div style="font-size:13px;margin-top:6px">Generate your meal plan first.</div>
+  </div>
+
+  <div *ngIf="filteredItems.length > 0" class="items-card">
+    <div *ngFor="let item of filteredItems; let last = last" class="grocery-item" (click)="toggleItem(item.key)"
+         [style.border-bottom]="last ? 'none' : '1px solid #f5f5f5'">
+      <div class="g-check" [class.checked]="groceryChecked[item.key]">
+        {{ groceryChecked[item.key] ? '✓' : '' }}
+      </div>
+      <div style="flex:1;min-width:0">
+        <span [class.done]="groceryChecked[item.key]">{{ item.name }}</span>
+        <div *ngIf="activeFilter === 'All'" style="font-size:11px;color:#9ca3af">{{ item.icon }} {{ item.cat }}</div>
+      </div>
+    </div>
+  </div>
+  <div style="height:16px"></div>
+</ion-content>

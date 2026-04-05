@@ -1,0 +1,186 @@
+<ion-content class="dash-bg">
+  <!-- Header -->
+  <div class="dash-header">
+    <div>
+      <div class="dash-date">{{ today }}</div>
+      <div class="dash-welcome">Welcome back, {{ username }}! 👋</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="recipe-btn" (click)="openCamera()">📷 Scan</button>
+      <button class="recipe-btn" (click)="openRecipeBrowser()">📖 Recipes</button>
+    </div>
+  </div>
+
+  <!-- Calorie Card -->
+  <div class="calorie-card">
+    <div class="cal-row">
+      <div>
+        <div class="cal-label">🔥 Total Daily Calories</div>
+        <div class="cal-number">{{ totalCal }}</div>
+        <div class="cal-sub">of {{ totalCal }} recommended</div>
+      </div>
+      <div class="cal-macros">
+        <div style="font-size:12px;opacity:.8;margin-bottom:4px">Macros</div>
+        <div>Protein: {{ totalP }}g</div>
+        <div>Carbs: {{ totalC }}g</div>
+        <div>Fat: {{ totalF }}g</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Meal Cards -->
+  <div class="meal-section">
+    <div *ngFor="let m of dashMeals; let i = index" class="meal-card" (click)="openRecipe(i)">
+      <div class="meal-row">
+        <div class="meal-left">
+          <div class="meal-icon" [style.background]="m.bg">{{ m.icon }}</div>
+          <div><div class="meal-type">{{ m.type }}</div><div class="meal-time">{{ m.mealTime }}</div></div>
+        </div>
+        <button class="swap-btn" (click)="$event.stopPropagation(); openSwap(i)">↻ Swap</button>
+      </div>
+      <div class="meal-name">{{ m.name }}</div>
+      <div class="meal-macros">{{ m.cal }} cal · P:{{ m.p }}g · C:{{ m.c }}g · F:{{ m.f }}g</div>
+    </div>
+  </div>
+
+  <!-- Recipe Modal -->
+  <ion-modal [isOpen]="showRecipe" (didDismiss)="closeRecipe()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>{{ activeMeal?.name }}</ion-title>
+          <ion-buttons slot="end"><ion-button (click)="closeRecipe()">Close</ion-button></ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding" *ngIf="activeMeal">
+        <div style="text-align:center;font-size:72px;background:#f0faf5;border-radius:16px;padding:20px;margin-bottom:16px">{{ activeMeal.emoji }}</div>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <span *ngIf="activeMeal.time" class="meta-tag">⏱ {{ activeMeal.time }} min</span>
+          <span *ngIf="activeMeal.cuisine" class="meta-tag green">{{ activeMeal.cuisine }}</span>
+        </div>
+        <div class="macro-strip">
+          <div class="macro-box" style="background:#fff3e0"><div class="macro-val" style="color:#e65c00">{{ activeMeal.cal }}kcal</div><div class="macro-label">Calories</div></div>
+          <div class="macro-box" style="background:#e3f2fd"><div class="macro-val" style="color:#1565c0">{{ activeMeal.p }}g</div><div class="macro-label">Protein</div></div>
+          <div class="macro-box" style="background:#f3e5f5"><div class="macro-val" style="color:#6a1b9a">{{ activeMeal.c }}g</div><div class="macro-label">Carbs</div></div>
+          <div class="macro-box" style="background:#e8f5e9"><div class="macro-val" style="color:#2e7d32">{{ activeMeal.f }}g</div><div class="macro-label">Fat</div></div>
+        </div>
+        <h3>🧾 Ingredients</h3>
+        <div *ngFor="let ing of activeMeal.ingredients" style="padding:5px 0;border-bottom:1px solid #f3f4f6">
+          <span style="color:var(--green)">•</span> {{ ing }}
+        </div>
+        <h3 style="margin-top:16px">👨‍🍳 Instructions</h3>
+        <div *ngFor="let s of activeMeal.steps; let i = index" style="display:flex;gap:10px;margin-bottom:12px">
+          <div class="step-num">{{ i + 1 }}</div>
+          <div>{{ s }}</div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:20px">
+          <ion-button expand="block" fill="outline" (click)="openSwapFromRecipe()" style="flex:1">↻ Swap Meal</ion-button>
+          <ion-button expand="block" color="primary" (click)="closeRecipe()" style="flex:1">✓ Got It</ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Swap Modal -->
+  <ion-modal [isOpen]="showSwap" (didDismiss)="showSwap = false">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Swap Meal</ion-title>
+          <ion-buttons slot="end"><ion-button (click)="showSwap = false">Close</ion-button></ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-segment [value]="swapFilter" (ionChange)="setSwapFilter($any($event.detail.value))">
+          <ion-segment-button value="all"><ion-label>🍽 All</ion-label></ion-segment-button>
+          <ion-segment-button value="quick"><ion-label>⚡ Quick</ion-label></ion-segment-button>
+        </ion-segment>
+        <div style="margin-top:12px">
+          <div *ngFor="let opt of swapOptions; let i = index" class="swap-option" [class.selected]="selectedSwap === i" (click)="selectSwapOption(i)">
+            <span style="font-size:32px">{{ opt.emoji }}</span>
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:15px">{{ opt.name }}</div>
+              <div style="font-size:12px;color:var(--muted)">{{ opt.cal }} cal · ⏱ {{ opt.time }} min</div>
+              <div style="font-size:12px;color:#9ca3af">P:{{ opt.p }}g · C:{{ opt.c }}g · F:{{ opt.f }}g</div>
+            </div>
+            <div class="swap-check" [class.checked]="selectedSwap === i">{{ selectedSwap === i ? '✓' : '' }}</div>
+          </div>
+        </div>
+        <ion-button expand="block" color="primary" [disabled]="selectedSwap < 0" (click)="confirmSwap()" style="margin-top:16px">
+          Confirm Swap
+        </ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Camera Food Scanner Modal -->
+  <ion-modal [isOpen]="showCamera" (didDismiss)="closeCamera()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="dark">
+          <ion-title>Food Scanner</ion-title>
+          <ion-buttons slot="end"><ion-button (click)="closeCamera()" color="light">Close</ion-button></ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding" style="--background:#111">
+        <!-- Captured Image -->
+        <div *ngIf="capturedImage" style="text-align:center;margin-bottom:16px">
+          <img [src]="capturedImage" style="width:100%;max-height:300px;object-fit:cover;border-radius:16px">
+        </div>
+
+        <!-- Scanning -->
+        <div *ngIf="scanning" style="text-align:center;padding:40px 0">
+          <ion-spinner name="crescent" color="primary" style="width:48px;height:48px"></ion-spinner>
+          <div style="color:white;font-size:16px;font-weight:600;margin-top:16px">Analysing food...</div>
+        </div>
+
+        <!-- Result -->
+        <div *ngIf="detectedFood && !scanning" style="background:white;border-radius:20px;padding:24px;text-align:center">
+          <div style="font-size:48px;margin-bottom:8px">{{ detectedFood.emoji }}</div>
+          <div style="font-size:12px;color:var(--muted)">Detected food</div>
+          <div style="font-size:18px;font-weight:700;margin-bottom:12px">{{ detectedFood.name }}</div>
+          <div style="font-size:13px;color:#374151;background:#f3f4f6;border-radius:10px;padding:10px 14px;margin-bottom:16px">
+            ~{{ detectedFood.cal }} cal · P:{{ detectedFood.p }}g · C:{{ detectedFood.c }}g · F:{{ detectedFood.f }}g
+          </div>
+
+          <div style="font-size:14px;font-weight:600;margin-bottom:10px">Swap this with:</div>
+          <div style="background:#e8f8ef;border:1.5px solid var(--green);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:16px">
+            <span style="font-size:28px">{{ detectedFood.suggest.emoji }}</span>
+            <div style="text-align:left">
+              <div style="font-weight:600;font-size:14px">{{ detectedFood.suggest.name }}</div>
+              <div style="font-size:12px;color:var(--muted)">{{ detectedFood.suggest.cal }} cal · P:{{ detectedFood.suggest.p }}g · C:{{ detectedFood.suggest.c }}g · F:{{ detectedFood.suggest.f }}g</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px">
+            <ion-button expand="block" fill="outline" (click)="rejectCameraSwap()" style="flex:1">Try Again</ion-button>
+            <ion-button expand="block" color="primary" (click)="acceptCameraSwap()" style="flex:1">✓ Accept</ion-button>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Recipe Browser Modal -->
+  <ion-modal [isOpen]="showBrowser" (didDismiss)="showBrowser = false">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>All Recipes</ion-title>
+          <ion-buttons slot="end"><ion-button (click)="showBrowser = false">Close</ion-button></ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div *ngFor="let m of allRecipes" class="browser-item" (click)="openRecipeFromBrowser(m)">
+          <div class="browser-emoji">{{ m.emoji }}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ m.name }}</div>
+            <div style="font-size:12px;color:var(--muted)">{{ m.cal }} cal · ⏱ {{ m.time }} min</div>
+            <div style="font-size:11px;color:var(--green)">{{ m.cuisine }}</div>
+          </div>
+          <ion-icon name="chevron-forward" style="color:#9ca3af"></ion-icon>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

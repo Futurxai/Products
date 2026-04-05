@@ -1,0 +1,79 @@
+<ion-content class="weekly-bg">
+  <div class="weekly-header">
+    <div>
+      <div style="font-size:20px;font-weight:700">Weekly Plan</div>
+      <div style="font-size:13px;color:var(--muted)">Your personalized 7-day schedule</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="header-btn green" (click)="exportPDF()">⬇ PDF</button>
+    </div>
+  </div>
+
+  <!-- Stats Card -->
+  <div class="stat-card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-size:12px;opacity:.8">Weekly Average</div><div style="font-size:26px;font-weight:700">{{ weeklyAvg }} cal/day</div></div>
+      <div style="text-align:right"><div style="font-size:12px;opacity:.8">Total Week</div><div style="font-size:26px;font-weight:700">{{ weeklyTotal }} cal</div></div>
+    </div>
+  </div>
+
+  <!-- Day Nav -->
+  <div class="day-nav">
+    <button class="nav-btn" (click)="changeDay(-1)">‹</button>
+    <div style="font-weight:600;font-size:16px">{{ today?.label }}, {{ today?.date }}</div>
+    <button class="nav-btn" (click)="changeDay(1)">›</button>
+  </div>
+
+  <!-- Day Tabs -->
+  <div class="day-tabs">
+    <div *ngFor="let d of dayNames; let i = index" class="day-tab" [class.active]="currentDay === i" (click)="setDay(i)">{{ d }}</div>
+  </div>
+
+  <!-- Daily Total -->
+  <div class="daily-total">
+    <div style="display:flex;align-items:center;gap:8px">
+      <ion-icon name="calendar-outline" style="color:var(--green)"></ion-icon>
+      <span style="font-weight:600;font-size:14px">Daily Total</span>
+    </div>
+    <span class="cal-badge">{{ dailyTotal }} cal</span>
+  </div>
+
+  <!-- Meals -->
+  <div *ngIf="today">
+    <div *ngFor="let m of today.meals" class="weekly-meal-card" (click)="openRecipe(m)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-size:13px;font-weight:600;color:var(--muted)">{{ m.icon }} {{ m.type }}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;color:#9ca3af;background:#f3f4f6;padding:2px 8px;border-radius:20px">⏱ {{ m.time || '?' }} min</span>
+          <span style="font-size:12px;color:var(--green);font-weight:600">{{ m.cal }} cal</span>
+        </div>
+      </div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:4px">{{ m.name }}</div>
+      <div style="font-size:12px;color:var(--muted)">P:{{ m.p }}g · C:{{ m.c }}g · F:{{ m.f }}g · <span style="color:var(--green)">{{ m.cuisine }}</span></div>
+    </div>
+  </div>
+
+  <!-- Recipe Modal -->
+  <ion-modal [isOpen]="showRecipe" (didDismiss)="closeRecipe()">
+    <ng-template>
+      <ion-header><ion-toolbar><ion-title>{{ activeMeal?.name }}</ion-title><ion-buttons slot="end"><ion-button (click)="closeRecipe()">Close</ion-button></ion-buttons></ion-toolbar></ion-header>
+      <ion-content class="ion-padding" *ngIf="activeMeal">
+        <div style="text-align:center;font-size:72px;background:#f0faf5;border-radius:16px;padding:20px;margin-bottom:16px">{{ activeMeal.emoji }}</div>
+        <div style="display:flex;gap:8px;margin-bottom:16px">
+          <div style="flex:1;background:#fff3e0;border-radius:10px;padding:8px;text-align:center"><div style="font-size:14px;font-weight:700;color:#e65c00">{{ activeMeal.cal }}kcal</div><div style="font-size:11px;color:var(--muted)">Calories</div></div>
+          <div style="flex:1;background:#e3f2fd;border-radius:10px;padding:8px;text-align:center"><div style="font-size:14px;font-weight:700;color:#1565c0">{{ activeMeal.p }}g</div><div style="font-size:11px;color:var(--muted)">Protein</div></div>
+          <div style="flex:1;background:#f3e5f5;border-radius:10px;padding:8px;text-align:center"><div style="font-size:14px;font-weight:700;color:#6a1b9a">{{ activeMeal.c }}g</div><div style="font-size:11px;color:var(--muted)">Carbs</div></div>
+          <div style="flex:1;background:#e8f5e9;border-radius:10px;padding:8px;text-align:center"><div style="font-size:14px;font-weight:700;color:#2e7d32">{{ activeMeal.f }}g</div><div style="font-size:11px;color:var(--muted)">Fat</div></div>
+        </div>
+        <h3>🧾 Ingredients</h3>
+        <div *ngFor="let ing of activeMeal.ingredients" style="padding:5px 0;border-bottom:1px solid #f3f4f6"><span style="color:var(--green)">•</span> {{ ing }}</div>
+        <h3 style="margin-top:16px">👨‍🍳 Instructions</h3>
+        <div *ngFor="let s of activeMeal.steps; let i = index" style="display:flex;gap:10px;margin-bottom:12px">
+          <div style="width:24px;height:24px;border-radius:50%;background:var(--green);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ i+1 }}</div>
+          <div>{{ s }}</div>
+        </div>
+        <ion-button expand="block" color="primary" (click)="closeRecipe()">✓ Got It</ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

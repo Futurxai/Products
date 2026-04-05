@@ -1,0 +1,47 @@
+{
+  "defaultUser": {
+    "uid": "test-uid-001",
+    "displayName": "Test User",
+    "email": "test@example.com",
+    "profile": {
+      "age": 25,
+      "weight": 70,
+      "height": 175,
+      "goal": "maintain",
+      "cuisine": "south-indian",
+      "diet": "vegetarian",
+      "allergies": [],
+      "mealReminders": true
+    }
+  },
+  "weightLossUser": {
+    "uid": "test-uid-002",
+    "displayName": "Weight Loss User",
+    "email": "weightloss@example.com",
+    "profile": {
+      "age": 30,
+      "weight": 90,
+      "height": 170,
+      "goal": "lose",
+      "cuisine": "north-indian",
+      "diet": "non-vegetarian",
+      "allergies": ["nuts"],
+      "mealReminders": false
+    }
+  },
+  "muscleGainUser": {
+    "uid": "test-uid-003",
+    "displayName": "Muscle Gain User",
+    "email": "gains@example.com",
+    "profile": {
+      "age": 22,
+      "weight": 65,
+      "height": 180,
+      "goal": "gain",
+      "cuisine": "continental",
+      "diet": "non-vegetarian",
+      "allergies": ["dairy"],
+      "mealReminders": true
+    }
+  }
+}
