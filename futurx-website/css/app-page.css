@@ -1,0 +1,46 @@
+/* ========== APP HERO ========== */
+.app-hero {
+  padding: 140px 0 80px;
+  text-align: center;
+  background: linear-gradient(180deg, #f8f9ff 0%, #ffffff 100%);
+}
+.app-hero-content { max-width: 600px; margin: 0 auto; }
+.app-badge {
+  display: inline-block; font-size: 12px; font-weight: 600; padding: 4px 14px;
+  border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px;
+}
+.app-badge.live { background: #E1F5EE; color: #1D9E75; }
+.app-badge.building { background: #FFF3E0; color: #E67E22; }
+.app-hero-icon { font-size: 64px; margin-bottom: 16px; }
+.app-hero h1 { font-size: 48px; font-weight: 800; color: var(--accent); margin-bottom: 8px; }
+.app-tagline { font-size: 20px; font-weight: 500; color: #444; margin-bottom: 16px; }
+.app-desc { font-size: 16px; color: #666; line-height: 1.7; margin-bottom: 32px; }
+
+/* ========== FEATURES ========== */
+.features-section { padding: 80px 0; }
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.feature-card {
+  padding: 28px; border-radius: 16px; background: #f8f9ff; border: 1px solid #f0f0f0;
+  transition: transform 0.2s;
+}
+.feature-card:hover { transform: translateY(-2px); }
+.feature-icon { font-size: 28px; display: block; margin-bottom: 12px; }
+.feature-card h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: #1a1a2e; }
+.feature-card p { font-size: 14px; color: #666; line-height: 1.6; }
+
+/* ========== TECH ========== */
+.tech-section { padding: 60px 0; background: #f8f9ff; }
+
+/* ========== DOWNLOAD ========== */
+.download-section { padding: 80px 0; }
+
+/* ========== MOBILE ========== */
+@media (max-width: 768px) {
+  .app-hero { padding: 100px 0 60px; }
+  .app-hero h1 { font-size: 36px; }
+  .features-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .app-hero-icon { font-size: 48px; }
+}
