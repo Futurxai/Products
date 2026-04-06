@@ -1,0 +1,10 @@
+{
+  "name": "@futurx/eatwell",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "ionic serve",
+    "build": "ionic build",
+    "lint": "ng lint"
+  }
+}
