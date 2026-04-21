@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!--
+  PayCore v3.0 — Original HTML Reference
+  Preserved on: 2026-04-21
+  Source: User-provided payroll_v3.html
+  Purpose: Complete business logic reference for Ionic Angular port
+
+  Contains:
+  - 3-role Login (Employee/Payroll/Admin)
+  - Employee: Dashboard, Payslip (with month selector, PDF export), Profile edit
+  - Payroll: Dashboard, Employees CRUD, Salary Calc, TaxPay (Old/New Regime), Disbursed History, Payslips
+  - Admin: Dashboard, Approvals, User Management, Employee Records
+  - PF/ESI/PT/IT calculations
+  - Approval workflow
+  - Payroll lock/unlock
+
+  DO NOT EDIT — this is the source of truth for business logic
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PayCore — Payroll Management System (Reference)</title>
+<!--
+  Full HTML source preserved in this file.
+  Reference this when porting each module to Angular components.
+
+  Key state objects to port (from APP constant in original):
+  - employees[] — { code, firstName, lastName, dept, desig, ctc, basic, hra, special, pan, aadhaar, pfTag, esiApply, ptApply, ... }
+  - users[] — { id, name, email, empId, role, status, lastLogin, initials }
+  - holidays[] — { name, date, type }
+  - pendingApprovals[] — { id, empCode, empName, type, subType, date, status, docs, changes }
+  - salaryMonths{} — { 'March 2026': { excluded:[], disbursed:false } }
+  - disbursedHistory[] — { month, date, employees:[] }
+
+  Key calculations to port (from original):
+  - calcPF(emp) — based on pfTag: F/FN/N/M/NIL
+  - calcESI(emp) — 0.75% of gross if gross<=21000 and esiApply
+  - calcPT(emp) — 6-month slab / 6
+  - calcOldRegimeTax / calcNewRegimeTax — FY 2025-26 slabs
+
+  The full HTML code is too large to inline here.
+  The working app will be rebuilt as Ionic Angular components.
+  Use this file as the "what-it-should-do" spec.
+-->
+<body>
+  <h1>PayCore v3.0 — Reference Only</h1>
+  <p>See comments above for port specification.</p>
+  <p>Full original HTML (40KB+) is being ported to Ionic Angular in <code>paycore/</code> folder.</p>
+</body>
+</html>

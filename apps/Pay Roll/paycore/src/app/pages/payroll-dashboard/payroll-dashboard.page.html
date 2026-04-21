@@ -1,0 +1,55 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="pc-toolbar">
+    <div class="toolbar-inner">
+      <div class="brand"><span class="brand-icon">P</span>Pay<span class="brand-accent">Core</span></div>
+      <div class="user-info">
+        <span class="role-pill payroll">Payroll</span>
+        <span class="user-name">{{ user?.name || 'User' }}</span>
+        <button class="btn-logout" (click)="logout()">Sign Out</button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="pc-bg">
+  <div class="page-title">
+    <h2>Payroll Dashboard</h2>
+    <p>Manage employees, salary, tax, and disbursements</p>
+  </div>
+
+  <div class="stat-grid" style="grid-template-columns: repeat(4, 1fr);">
+    <div class="stat-card">
+      <div class="stat-icon blue">👥</div>
+      <div class="stat-label">Total Employees</div>
+      <div class="stat-value">{{ totalEmp }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">✓</div>
+      <div class="stat-label">Active</div>
+      <div class="stat-value">{{ activeCount }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon orange">⏳</div>
+      <div class="stat-label">Pending Queue</div>
+      <div class="stat-value" style="color: #d97706;">{{ pendingCount }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue">💳</div>
+      <div class="stat-label">Annual Payroll</div>
+      <div class="stat-value money">{{ calc.fmtL(totalCTC) }}</div>
+    </div>
+  </div>
+
+  <div class="coming-soon">
+    <h3>Phase 3 — Coming Soon</h3>
+    <p>Full Payroll module is the biggest — being built in the next phase.</p>
+    <div class="planned-features">
+      <div class="feature-item">👥 Employee Management (CRUD, Import/Export)</div>
+      <div class="feature-item">💰 Salary Calculation with PF/ESI/PT</div>
+      <div class="feature-item">🧾 TaxPay — Old & New Regime</div>
+      <div class="feature-item">✅ Disbursement History</div>
+      <div class="feature-item">📄 Payslip Management</div>
+      <div class="feature-item">🔒 Payroll Lock/Unlock with Admin approval</div>
+    </div>
+  </div>
+</ion-content>

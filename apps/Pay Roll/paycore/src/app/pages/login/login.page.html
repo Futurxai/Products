@@ -1,0 +1,46 @@
+<ion-content class="login-bg">
+  <div class="login-wrap">
+    <div class="logo-row">
+      <div class="logo-icon">P</div>
+      <div class="logo-text">Pay<span>Core</span></div>
+    </div>
+
+    <div class="login-card">
+      <div class="login-title">Welcome back</div>
+      <div class="login-sub">Sign in to your payroll workspace</div>
+
+      <div class="role-tabs">
+        <button class="role-tab" [class.active]="selectedRole === 'employee'" (click)="selectRole('employee')">
+          Employee
+        </button>
+        <button class="role-tab" [class.active]="selectedRole === 'payroll'" (click)="selectRole('payroll')">
+          Payroll
+        </button>
+        <button class="role-tab" [class.active]="selectedRole === 'admin'" (click)="selectRole('admin')">
+          Admin
+        </button>
+      </div>
+
+      <div class="input-group">
+        <label>Employee ID</label>
+        <input type="text" [(ngModel)]="empCode" placeholder="e.g. 310569" />
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" [(ngModel)]="password" placeholder="••••••••" />
+      </div>
+
+      <button class="btn-login" (click)="doLogin()">Sign In →</button>
+
+      <div class="demo-hint">
+        <strong>Demo credentials:</strong><br>
+        Employee: 310569 / password<br>
+        Payroll: any / password<br>
+        Admin: any / password
+      </div>
+    </div>
+
+    <div class="footer-text">PayCore v3.0 · Secured · Enterprise Payroll</div>
+  </div>
+</ion-content>

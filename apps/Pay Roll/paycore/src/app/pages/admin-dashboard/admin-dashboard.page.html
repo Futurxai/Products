@@ -1,0 +1,54 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="pc-toolbar">
+    <div class="toolbar-inner">
+      <div class="brand"><span class="brand-icon">P</span>Pay<span class="brand-accent">Core</span></div>
+      <div class="user-info">
+        <span class="role-pill admin">Admin</span>
+        <span class="user-name">{{ user?.name || 'User' }}</span>
+        <button class="btn-logout" (click)="logout()">Sign Out</button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="pc-bg">
+  <div class="page-title">
+    <h2>Admin Dashboard</h2>
+    <p>Manage approvals, users, and employee records</p>
+  </div>
+
+  <div class="stat-grid" style="grid-template-columns: repeat(4, 1fr);">
+    <div class="stat-card">
+      <div class="stat-icon blue">👥</div>
+      <div class="stat-label">Total Employees</div>
+      <div class="stat-value">{{ totalEmp }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon orange">💼</div>
+      <div class="stat-label">Payroll Users</div>
+      <div class="stat-value">{{ payrollUsers }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue">🛡️</div>
+      <div class="stat-label">Admin Users</div>
+      <div class="stat-value">{{ adminUsers }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon orange">⏳</div>
+      <div class="stat-label">Pending Approvals</div>
+      <div class="stat-value" style="color: #d97706;">{{ pendingCount }}</div>
+    </div>
+  </div>
+
+  <div class="coming-soon">
+    <h3>Phase 4 — Coming Soon</h3>
+    <p>Full Admin module is being built in the next phase.</p>
+    <div class="planned-features">
+      <div class="feature-item">✅ Approval Management (Registration, Profile Edit, Bank Update, Unlock)</div>
+      <div class="feature-item">👥 User Management (Create/Edit/Activate)</div>
+      <div class="feature-item">🧾 Employee Records (read-only view)</div>
+      <div class="feature-item">🏢 Department Assignment</div>
+      <div class="feature-item">💳 Disbursement approval workflow</div>
+    </div>
+  </div>
+</ion-content>

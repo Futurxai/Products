@@ -1,0 +1,55 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="pc-toolbar">
+    <div class="toolbar-inner">
+      <div class="brand"><span class="brand-icon">P</span>Pay<span class="brand-accent">Core</span></div>
+      <div class="user-info">
+        <span class="role-pill employee">Employee</span>
+        <span class="user-name">{{ user?.name || 'User' }}</span>
+        <button class="btn-logout" (click)="logout()">Sign Out</button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="pc-bg">
+  <div class="page-title">
+    <h2>Dashboard</h2>
+    <p>Welcome back, {{ user?.name || 'User' }}</p>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-icon blue">📅</div>
+      <div class="stat-label">Current Month</div>
+      <div class="stat-value">{{ month }}</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon green">💵</div>
+      <div class="stat-label">Net Pay</div>
+      <div class="stat-value money">{{ fmt(net) }}</div>
+      <div class="stat-sub">{{ user?.bank || 'Bank account' }}</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon orange">📋</div>
+      <div class="stat-label">Profile Status</div>
+      <div class="stat-value">
+        <span class="chip" [class.chip-green]="pendingCount === 0" [class.chip-orange]="pendingCount > 0">
+          {{ pendingCount > 0 ? '⏳ Pending' : '✓ Approved' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="coming-soon">
+    <h3>Phase 2 — Coming Soon</h3>
+    <p>Full Employee module with Payslip page, Profile editor, and PDF download is being built in the next phase.</p>
+    <div class="planned-features">
+      <div class="feature-item">📄 Monthly Payslip with PDF download</div>
+      <div class="feature-item">👤 Profile edit (with admin approval)</div>
+      <div class="feature-item">🔔 Pending approval tracking</div>
+      <div class="feature-item">📥 Bulk payslip download (last 3/6 months)</div>
+    </div>
+  </div>
+</ion-content>
