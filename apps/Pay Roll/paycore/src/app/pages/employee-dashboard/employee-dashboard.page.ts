@@ -110,7 +110,7 @@ export class EmployeeDashboardPage {
   }
 
   async submitEdit() {
-    this.state.pendingApprovals.unshift({
+    await this.state.addApproval({
       id: 'EDIT-' + Math.floor(Math.random() * 900 + 100),
       empCode: this.user.code,
       empName: this.user.name,

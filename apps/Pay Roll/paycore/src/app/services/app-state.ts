@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { SupabaseService } from './supabase.service';
 
 export type UserRole = 'employee' | 'payroll' | 'admin';
 
@@ -114,37 +115,99 @@ export class AppStateService {
   salaryMonths: { [key: string]: { excluded: string[]; disbursed?: boolean } } = {};
   disbursedHistory: DisbursementRecord[] = [];
 
-  employees: Employee[] = [
-    { code: '310566', firstName: 'Upmanyu', lastName: 'Khajuria', name: 'Upmanyu Khajuria', gender: 'Male', dob: '2001-11-02', doj: '2026-01-05', pan: 'OAWPK4958R', aadhaar: '679954013310', bank: 'State Bank of India', acc: '39529509928', ifsc: 'SBIN0018531', personalEmail: 'upmanyukhajuria2@gmail.com', fatherName: 'Pardeep Kumar', entity: 'Empyrean', dept: 'F&B Production', desig: 'Commi III - Bakery', location: 'Patnitop-Site', district: 'Udhampur', state: 'JAMMU & KASHMIR', ctc: 210000, basic: 8750, hra: 4375, special: 4375, status: 'Active', pfTag: 'N', esiApply: true, ptApply: true, incomeTax: 0 },
-    { code: '310569', firstName: 'Rampy', lastName: 'Sharma', name: 'Rampy Sharma', gender: 'Male', dob: '1986-10-29', doj: '2026-01-20', pan: 'DWDPS5406L', aadhaar: '697759452978', bank: 'HDFC Bank', acc: '23441050001138', ifsc: 'HDFC0002344', personalEmail: 'rampysharma@gmail.com', fatherName: 'Subhash Chander Sharma', entity: 'Empyrean', dept: 'Accounts', desig: 'Finance Controller', location: 'Patnitop-Site', district: 'Udhampur', state: 'JAMMU & KASHMIR', ctc: 1147200, basic: 47800, hra: 23900, special: 23900, status: 'Active', pfTag: 'FN', esiApply: false, ptApply: true, incomeTax: 5200, phone: '+91 98765 43210' },
-    { code: '310567', firstName: 'Mohd', lastName: 'Shehryar', name: 'Mohd Shehryar', dept: 'Information Technology', desig: 'IT Executive', ctc: 264000, basic: 11000, hra: 5500, special: 5500, status: 'Active', pfTag: 'F', esiApply: false, ptApply: true, location: 'Patnitop-Site', district: 'Udhampur', state: 'JAMMU & KASHMIR', pan: 'PZUPS8457M', aadhaar: '510004975994', bank: 'State Bank of India', acc: '42256245823', ifsc: 'SBIN0014642', personalEmail: 'mohdshehryaar@gmail.com', fatherName: 'Islah ud Din' },
-    { code: '310570', firstName: 'Gopal', lastName: 'Thakur', name: 'Gopal Thakur', dept: 'Adventure', desig: 'Adventure Instructor', ctc: 264000, basic: 11000, hra: 5500, special: 5500, status: 'Active', pfTag: 'M', esiApply: true, ptApply: true, location: 'Patnitop-Site', bank: 'Punjab National Bank', acc: '0274000107184561', ifsc: 'PUNB0027400' },
-    { code: '50230', firstName: 'Vishal', lastName: '', name: 'Vishal', dept: 'Quality Control', desig: 'Chemist', ctc: 210216, basic: 8759, hra: 4380, special: 4379, status: 'Active', pfTag: 'N', esiApply: true, ptApply: true, pf: 'Active', uan: '101730904792', esi: '1901980176', location: 'Jammu Factory', bank: 'State Bank of India', acc: '40148915897', ifsc: 'SBIN0011889' },
-  ];
+  employees: Employee[] = [];
+  users: SystemUser[] = [];
+  holidays: Holiday[] = [];
+  pendingApprovals: Approval[] = [];
 
-  users: SystemUser[] = [
-    { id: 'USR-001', name: 'Ananya Singh', email: 'ananya@empyrean.in', empId: 'ADM-001', role: 'admin', status: 'Active', lastLogin: 'Today 09:32', initials: 'AS' },
-    { id: 'USR-002', name: 'Vikram Patel', email: 'vikram@empyrean.in', empId: 'PR-001', role: 'payroll', status: 'Active', lastLogin: 'Today 08:15', initials: 'VP' },
-    { id: 'USR-004', name: 'Rampy Sharma', email: 'rampysharma@gmail.com', empId: '310569', role: 'employee', status: 'Active', lastLogin: 'Today 07:45', initials: 'RS' },
-  ];
-
-  holidays: Holiday[] = [
-    { name: 'Republic Day', date: '2026-01-26', type: 'National Holiday' },
-    { name: 'Holi', date: '2026-03-03', type: 'National Holiday' },
-    { name: 'Independence Day', date: '2026-08-15', type: 'National Holiday' },
-    { name: 'Gandhi Jayanti', date: '2026-10-02', type: 'National Holiday' },
-    { name: 'Diwali', date: '2026-10-20', type: 'National Holiday' },
-    { name: 'Christmas', date: '2026-12-25', type: 'National Holiday' },
-  ];
-
-  pendingApprovals: Approval[] = [
-    { id: 'REG-047', empCode: '310568', empName: 'Ravi Bharti', type: 'New Registration', subType: 'register', date: 'Today 09:15', status: 'Pending', docs: true, data: { firstName: 'Ravi', lastName: 'Bharti', dept: 'Engineering', desig: 'Trainee Junior Engineer' } },
-    { id: 'EDIT-031', empCode: '310566', empName: 'Upmanyu Khajuria', type: 'Profile Edit', subType: 'profile_edit', date: 'Today 08:40', status: 'Pending', docs: false, changes: { phone: '+91 9876543211', personalEmail: 'new_email@gmail.com' } },
-  ];
+  loaded$ = new BehaviorSubject<boolean>(false);
 
   role$ = this.currentRole$.asObservable();
   user$ = this.currentUser$.asObservable();
   locked$ = this.payrollLocked$.asObservable();
+
+  constructor(private supabase: SupabaseService) {
+    this.loadAll();
+  }
+
+  async loadAll(): Promise<void> {
+    const [employees, users, holidays, approvals, salaryMonths, disbursements] = await Promise.all([
+      this.supabase.loadEmployees(),
+      this.supabase.loadUsers(),
+      this.supabase.loadHolidays(),
+      this.supabase.loadApprovals(),
+      this.supabase.loadSalaryMonths(),
+      this.supabase.loadDisbursements()
+    ]);
+    this.employees = employees;
+    this.users = users;
+    this.holidays = holidays;
+    this.pendingApprovals = approvals;
+    this.salaryMonths = salaryMonths;
+    this.disbursedHistory = disbursements;
+    this.loaded$.next(true);
+  }
+
+  // ========== WRITE HELPERS (write-through to Supabase) ==========
+  async addEmployee(emp: Employee): Promise<void> {
+    this.employees.unshift(emp);
+    await this.supabase.insertEmployee(emp);
+  }
+
+  async updateEmployee(code: string, updates: Partial<Employee>): Promise<void> {
+    const emp = this.employees.find(e => e.code === code);
+    if (emp) Object.assign(emp, updates);
+    await this.supabase.updateEmployee(code, updates);
+  }
+
+  async addUser(user: SystemUser): Promise<void> {
+    this.users.push(user);
+    await this.supabase.insertUser(user);
+  }
+
+  async toggleUserStatus(id: string): Promise<void> {
+    const user = this.users.find(u => u.id === id);
+    if (!user) return;
+    user.status = user.status === 'Active' ? 'Inactive' : 'Active';
+    await this.supabase.updateUser(id, { status: user.status });
+  }
+
+  async addHoliday(h: Holiday): Promise<void> {
+    this.holidays.push(h);
+    await this.supabase.insertHoliday(h);
+  }
+
+  async updateHoliday(oldName: string, h: Holiday, idx: number): Promise<void> {
+    this.holidays[idx] = h;
+    await this.supabase.updateHoliday(oldName, h);
+  }
+
+  async removeHoliday(idx: number): Promise<void> {
+    const h = this.holidays[idx];
+    this.holidays.splice(idx, 1);
+    await this.supabase.deleteHoliday(h.name);
+  }
+
+  async addApproval(a: Approval): Promise<void> {
+    this.pendingApprovals.unshift(a);
+    await this.supabase.insertApproval(a);
+  }
+
+  async setApprovalStatus(refId: string, status: 'Approved' | 'Rejected'): Promise<void> {
+    const a = this.pendingApprovals.find(x => x.id === refId);
+    if (a) a.status = status;
+    await this.supabase.updateApprovalStatus(refId, status);
+  }
+
+  async saveSalaryMonth(month: string): Promise<void> {
+    if (!this.salaryMonths[month]) this.salaryMonths[month] = { excluded: [] };
+    await this.supabase.upsertSalaryMonth(month, this.salaryMonths[month]);
+  }
+
+  async addDisbursement(d: DisbursementRecord): Promise<void> {
+    this.disbursedHistory.unshift(d);
+    await this.supabase.insertDisbursement(d);
+  }
 
   getRole(): UserRole { return this.currentRole$.value; }
   getUser(): any { return this.currentUser$.value; }

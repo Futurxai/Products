@@ -103,12 +103,11 @@ export class AdminDashboardPage {
     this.reviewingAppr = null;
   }
 
-  approve(a: Approval) {
-    a.status = 'Approved';
-    // Apply changes if any
-    if (a.changes) {
-      const emp = this.state.employees.find(e => e.code === a.empCode);
-      if (emp) Object.assign(emp, a.changes);
+  async approve(a: Approval) {
+    await this.state.setApprovalStatus(a.id, 'Approved');
+    // Apply changes to employee if any
+    if (a.changes && a.empCode) {
+      await this.state.updateEmployee(a.empCode, a.changes);
     }
     if (a.subType === 'unlock') {
       this.state.unlockPayroll();
@@ -117,8 +116,8 @@ export class AdminDashboardPage {
     this.closeReview();
   }
 
-  reject(a: Approval) {
-    a.status = 'Rejected';
+  async reject(a: Approval) {
+    await this.state.setApprovalStatus(a.id, 'Rejected');
     this.showToast('Request rejected', 'danger');
     this.closeReview();
   }
@@ -147,7 +146,7 @@ export class AdminDashboardPage {
       this.showToast('Name and email are required', 'danger');
       return;
     }
-    this.state.users.push({
+    await this.state.addUser({
       id: 'USR-' + Date.now(),
       name: this.newUser.name,
       email: this.newUser.email,
@@ -161,8 +160,8 @@ export class AdminDashboardPage {
     this.showToast('User created', 'success');
   }
 
-  toggleUserStatus(u: SystemUser) {
-    u.status = u.status === 'Active' ? 'Inactive' : 'Active';
+  async toggleUserStatus(u: SystemUser) {
+    await this.state.toggleUserStatus(u.id);
     this.showToast(`User ${u.status === 'Active' ? 'activated' : 'deactivated'}`, 'primary');
   }
 

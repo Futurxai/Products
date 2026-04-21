@@ -179,19 +179,15 @@ export class PayrollDashboardPage {
     await a.present();
   }
 
-  private doDisburse(employees: Employee[]) {
-    const existing = this.state.disbursedHistory.find(d => d.month === this.selMonth);
-    if (existing) {
-      existing.employees.push(...employees);
-    } else {
-      this.state.disbursedHistory.unshift({
-        month: this.selMonth,
-        date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
-        employees: [...employees]
-      });
-    }
+  private async doDisburse(employees: Employee[]) {
+    await this.state.addDisbursement({
+      month: this.selMonth,
+      date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+      employees: [...employees]
+    });
     if (!this.state.salaryMonths[this.selMonth]) this.state.salaryMonths[this.selMonth] = { excluded: [] };
     this.state.salaryMonths[this.selMonth].disbursed = true;
+    await this.state.saveSalaryMonth(this.selMonth);
     this.showToast(`Salary disbursed for ${employees.length} employees`, 'success');
   }
 
@@ -211,8 +207,8 @@ export class PayrollDashboardPage {
     await a.present();
   }
 
-  requestUnlock() {
-    this.state.pendingApprovals.unshift({
+  async requestUnlock() {
+    await this.state.addApproval({
       id: 'UNLK-' + Math.floor(Math.random() * 900 + 100),
       empCode: 'PR',
       empName: 'Payroll Team',
@@ -335,7 +331,7 @@ export class PayrollDashboardPage {
       ptApply: true,
       incomeTax: 0
     };
-    this.state.employees.unshift(emp);
+    await this.state.addEmployee(emp);
     this.addingEmp = false;
     this.showToast('Employee added', 'success');
   }
@@ -350,13 +346,15 @@ export class PayrollDashboardPage {
     this.editForm = {};
   }
 
-  saveEditEmp() {
+  async saveEditEmp() {
     if (!this.editingEmp) return;
     const emp = this.editingEmp;
-    // Statutory fields apply immediately
-    emp.pfTag = this.editForm.pfTag;
-    emp.esiApply = this.editForm.esiApply;
-    emp.ptApply = this.editForm.ptApply;
+    // Statutory fields apply immediately (write-through)
+    await this.state.updateEmployee(emp.code, {
+      pfTag: this.editForm.pfTag,
+      esiApply: this.editForm.esiApply,
+      ptApply: this.editForm.ptApply
+    });
     // Other changes go to admin
     const changes = {
       firstName: this.editForm.firstName,
@@ -370,7 +368,7 @@ export class PayrollDashboardPage {
       acc: this.editForm.acc,
       ifsc: this.editForm.ifsc
     };
-    this.state.pendingApprovals.unshift({
+    await this.state.addApproval({
       id: 'EDIT-' + Math.floor(Math.random() * 900 + 100),
       empCode: emp.code,
       empName: emp.name,
@@ -398,16 +396,17 @@ export class PayrollDashboardPage {
     this.holidayForm = { ...this.state.holidays[i] };
   }
 
-  saveHoliday() {
+  async saveHoliday() {
     if (!this.holidayForm.name || !this.holidayForm.date) {
       this.showToast('Name and date are required', 'danger');
       return;
     }
     if (this.editingHolidayIdx !== null) {
-      this.state.holidays[this.editingHolidayIdx] = { ...this.holidayForm };
+      const oldName = this.state.holidays[this.editingHolidayIdx].name;
+      await this.state.updateHoliday(oldName, { ...this.holidayForm }, this.editingHolidayIdx);
       this.showToast('Holiday updated', 'success');
     } else {
-      this.state.holidays.push({ ...this.holidayForm });
+      await this.state.addHoliday({ ...this.holidayForm });
       this.showToast('Holiday added', 'success');
     }
     this.cancelHoliday();
@@ -418,8 +417,8 @@ export class PayrollDashboardPage {
     this.editingHolidayIdx = null;
   }
 
-  deleteHoliday(i: number) {
-    this.state.holidays.splice(i, 1);
+  async deleteHoliday(i: number) {
+    await this.state.removeHoliday(i);
     this.showToast('Holiday removed', 'primary');
   }
 

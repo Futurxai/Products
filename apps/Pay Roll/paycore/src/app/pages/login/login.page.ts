@@ -120,7 +120,7 @@ export class LoginPage {
 
     this.referenceId = 'REG-' + String(Math.floor(Math.random() * 9000 + 1000));
 
-    this.state.pendingApprovals.unshift({
+    await this.state.addApproval({
       id: this.referenceId,
       empCode: f.code,
       empName: `${f.firstName} ${f.lastName}`.trim(),
