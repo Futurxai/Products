@@ -9,47 +9,241 @@
       </div>
     </div>
   </ion-toolbar>
+
+  <ion-toolbar class="tab-bar">
+    <ion-segment [value]="tab" (ionChange)="setTab($any($event.detail.value))" mode="md" scrollable="true">
+      <ion-segment-button value="home"><ion-label>Dashboard</ion-label></ion-segment-button>
+      <ion-segment-button value="payslip"><ion-label>Payslip</ion-label></ion-segment-button>
+      <ion-segment-button value="profile"><ion-label>My Profile</ion-label></ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content class="pc-bg">
-  <div class="page-title">
-    <h2>Dashboard</h2>
-    <p>Welcome back, {{ user?.name || 'User' }}</p>
+
+  <!-- DASHBOARD -->
+  <div *ngIf="tab === 'home'" class="panel">
+    <div class="page-title">
+      <h2>Dashboard</h2>
+      <p>Welcome back, {{ user?.name || 'User' }}</p>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue">📅</div>
+        <div class="stat-label">Current Month</div>
+        <div class="stat-value" style="font-size: 16px;">{{ month }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">💵</div>
+        <div class="stat-label">Net Pay</div>
+        <div class="stat-value money">{{ fmt(net) }}</div>
+        <div class="stat-sub">{{ user?.bank || 'Bank account' }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange">📋</div>
+        <div class="stat-label">Profile Status</div>
+        <div class="stat-value">
+          <span class="chip" [class.chip-green]="pendingCount === 0" [class.chip-orange]="pendingCount > 0">
+            {{ pendingCount > 0 ? '⏳ Pending' : '✓ Approved' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="pendingCount > 0" class="info-banner warn">
+      ⏳ You have <strong>{{ pendingCount }} pending request{{ pendingCount > 1 ? 's' : '' }}</strong> awaiting admin approval.
+    </div>
+
+    <div class="info-banner info">
+      ℹ️ Your {{ month }} payslip is available. Click <strong>Payslip</strong> tab to view and download.
+    </div>
   </div>
 
-  <div class="stat-grid">
-    <div class="stat-card">
-      <div class="stat-icon blue">📅</div>
-      <div class="stat-label">Current Month</div>
-      <div class="stat-value">{{ month }}</div>
+  <!-- PAYSLIP -->
+  <div *ngIf="tab === 'payslip'" class="panel">
+    <div class="page-title">
+      <h2>My Payslip</h2>
+      <p>View and download monthly payslips</p>
     </div>
 
-    <div class="stat-card">
-      <div class="stat-icon green">💵</div>
-      <div class="stat-label">Net Pay</div>
-      <div class="stat-value money">{{ fmt(net) }}</div>
-      <div class="stat-sub">{{ user?.bank || 'Bank account' }}</div>
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">📄 Payslip</div>
+        <div class="btn-row">
+          <button class="btn btn-outline sm" (click)="downloadPayslip(3)">📥 Last 3 Months</button>
+          <button class="btn btn-outline sm" (click)="downloadPayslip(6)">📥 Last 6 Months</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label>Financial Year</label>
+            <select [(ngModel)]="selYear" (change)="changeYear(selYear)">
+              <option value="2025-26">2025-26</option>
+              <option value="2024-25">2024-25</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Month</label>
+            <select [(ngModel)]="selMonth" (change)="selectMonth(selMonth)">
+              <option *ngFor="let m of months" [value]="m.label">{{ m.label }}</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Quick Select</label>
+            <div class="quick-pills">
+              <span *ngFor="let m of months" class="pill" [class.active]="m.label === selMonth" (click)="selectMonth(m.label)">
+                {{ m.short }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="stat-card">
-      <div class="stat-icon orange">📋</div>
-      <div class="stat-label">Profile Status</div>
-      <div class="stat-value">
-        <span class="chip" [class.chip-green]="pendingCount === 0" [class.chip-orange]="pendingCount > 0">
-          {{ pendingCount > 0 ? '⏳ Pending' : '✓ Approved' }}
-        </span>
+    <!-- Payslip Display -->
+    <div class="payslip-card">
+      <div class="payslip-head">
+        <div>
+          <div class="company-name">EMPYREAN HOSPITALITY PVT LTD</div>
+          <div class="company-sub">PF Reg: JKUDK0000000 · ESI Reg: 00000000000</div>
+        </div>
+        <div style="text-align: right;">
+          <div class="month-badge">{{ selMonth.toUpperCase() }}</div>
+          <button class="btn btn-primary sm" style="margin-top: 8px;" (click)="downloadPayslip(1)">📥 Download PDF</button>
+        </div>
+      </div>
+
+      <div class="ps-grid">
+        <div class="ps-field"><label>Employee Code</label><p>{{ user?.code }}</p></div>
+        <div class="ps-field"><label>Employee Name</label><p>{{ user?.name }}</p></div>
+        <div class="ps-field"><label>Designation</label><p>{{ user?.desig || '-' }}</p></div>
+        <div class="ps-field"><label>Department</label><p>{{ user?.dept || '-' }}</p></div>
+        <div class="ps-field"><label>Date of Joining</label><p>{{ user?.doj || '-' }}</p></div>
+        <div class="ps-field"><label>PAN</label><p>{{ user?.pan || '-' }}</p></div>
+        <div class="ps-field"><label>Bank A/C</label><p>{{ user?.bank || '-' }} ****{{ user?.acc ? (user?.acc ?? '' | slice:-4) : '' }}</p></div>
+        <div class="ps-field"><label>UAN</label><p>{{ user?.uan || '-' }}</p></div>
+        <div class="ps-field"><label>Credit Date</label><p>{{ currentMonthObj.creditDate }}</p></div>
+      </div>
+
+      <table class="ps-table">
+        <thead>
+          <tr><th>Earnings</th><th style="text-align: right;">Amount</th><th>Deductions</th><th style="text-align: right;">Amount</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Basic Salary</td>
+            <td style="text-align: right; font-family: monospace;">{{ fmt(user?.basic || 0) }}</td>
+            <td>PF — Employee</td>
+            <td style="text-align: right; font-family: monospace;" [style.color]="pfAmt ? '#dc2626' : '#94a3b8'">{{ pfAmt ? fmt(pfAmt) : 'NIL' }}</td>
+          </tr>
+          <tr>
+            <td>HRA</td>
+            <td style="text-align: right; font-family: monospace;">{{ fmt(user?.hra || 0) }}</td>
+            <td>ESI — Employee</td>
+            <td style="text-align: right; font-family: monospace;" [style.color]="esiAmt ? '#dc2626' : '#94a3b8'">{{ esiAmt ? fmt(esiAmt) : 'NIL' }}</td>
+          </tr>
+          <tr>
+            <td>Special Allowance</td>
+            <td style="text-align: right; font-family: monospace;">{{ fmt(user?.special || 0) }}</td>
+            <td>Professional Tax</td>
+            <td style="text-align: right; font-family: monospace;" [style.color]="ptAmt ? '#dc2626' : '#94a3b8'">{{ ptAmt ? fmt(ptAmt) : 'NIL' }}</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td style="font-weight: 700;">Gross Earnings</td>
+            <td style="text-align: right; font-family: monospace; font-weight: 700;">{{ fmt(gross) }}</td>
+            <td style="font-weight: 700;">Total Deductions</td>
+            <td style="text-align: right; font-family: monospace; font-weight: 700; color: #dc2626;">{{ fmt(totalDed) }}</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="net-pay">
+        <div>
+          <div class="net-label">NET PAY (Take Home)</div>
+          <div class="net-sub">Credited {{ currentMonthObj.creditDate }} · {{ user?.bank || 'Bank' }}</div>
+        </div>
+        <div class="net-value">{{ fmt(net) }}</div>
       </div>
     </div>
   </div>
 
-  <div class="coming-soon">
-    <h3>Phase 2 — Coming Soon</h3>
-    <p>Full Employee module with Payslip page, Profile editor, and PDF download is being built in the next phase.</p>
-    <div class="planned-features">
-      <div class="feature-item">📄 Monthly Payslip with PDF download</div>
-      <div class="feature-item">👤 Profile edit (with admin approval)</div>
-      <div class="feature-item">🔔 Pending approval tracking</div>
-      <div class="feature-item">📥 Bulk payslip download (last 3/6 months)</div>
+  <!-- PROFILE -->
+  <div *ngIf="tab === 'profile'" class="panel">
+    <div class="page-title">
+      <h2>My Profile</h2>
+      <p>{{ editing ? 'Edit your details and submit for admin approval' : 'View your information' }}</p>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="profile-head-user">
+          <div class="avatar-lg">{{ (user?.firstName?.[0] || 'E') + (user?.lastName?.[0] || 'U') }}</div>
+          <div>
+            <div class="profile-name">{{ user?.name }}</div>
+            <div class="profile-desig">{{ user?.desig || '-' }} · <span class="chip chip-green">Active</span></div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button *ngIf="!editing" class="btn btn-outline sm" (click)="editing = true">✏️ Edit</button>
+          <button *ngIf="editing" class="btn btn-outline sm" (click)="editing = false; resetEditModel()">Cancel</button>
+          <button *ngIf="editing" class="btn btn-primary sm" (click)="submitEdit()">💾 Save & Submit</button>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div *ngIf="editing" class="info-banner info" style="margin: 0 0 14px;">
+          ℹ️ Name, Code, Designation can only be edited by Payroll. Other changes require Admin approval.
+        </div>
+
+        <!-- Personal -->
+        <div class="section-title">👤 Personal</div>
+        <div class="form-grid">
+          <div class="field"><label>Employee Code</label><input [value]="user?.code || ''" readonly></div>
+          <div class="field"><label>First Name</label><input [value]="user?.firstName || ''" readonly></div>
+          <div class="field"><label>Last Name</label><input [value]="user?.lastName || ''" readonly></div>
+          <div class="field"><label>Date of Birth</label><input [value]="user?.dob || ''" readonly></div>
+          <div class="field"><label>Gender</label><input [value]="user?.gender || ''" readonly></div>
+          <div class="field"><label>Father's Name</label><input [(ngModel)]="editModel.fatherName" [readonly]="!editing"></div>
+        </div>
+
+        <!-- Contact -->
+        <div class="section-title">📞 Contact</div>
+        <div class="form-grid">
+          <div class="field"><label>Phone</label><input [(ngModel)]="editModel.phone" [readonly]="!editing"></div>
+          <div class="field"><label>Work Email</label><input [(ngModel)]="editModel.workEmail" [readonly]="!editing"></div>
+          <div class="field"><label>Personal Email</label><input [(ngModel)]="editModel.personalEmail" [readonly]="!editing"></div>
+        </div>
+
+        <!-- Work -->
+        <div class="section-title">💼 Work</div>
+        <div class="form-grid">
+          <div class="field"><label>Department</label><input [value]="user?.dept || ''" readonly></div>
+          <div class="field"><label>Designation</label><input [value]="user?.desig || ''" readonly></div>
+          <div class="field"><label>Location</label><input [value]="user?.location || ''" readonly></div>
+          <div class="field"><label>Date of Joining</label><input [value]="user?.doj || ''" readonly></div>
+        </div>
+
+        <!-- Bank -->
+        <div class="section-title">🏦 Bank</div>
+        <div class="form-grid">
+          <div class="field"><label>Bank Name</label><input [(ngModel)]="editModel.bank" [readonly]="!editing"></div>
+          <div class="field"><label>Account Number</label><input [(ngModel)]="editModel.acc" [readonly]="!editing"></div>
+          <div class="field"><label>IFSC Code</label><input [(ngModel)]="editModel.ifsc" [readonly]="!editing"></div>
+        </div>
+
+        <!-- Compliance -->
+        <div class="section-title">🔒 Compliance</div>
+        <div class="form-grid">
+          <div class="field"><label>PAN</label><input [(ngModel)]="editModel.pan" [readonly]="!editing"></div>
+          <div class="field"><label>Aadhaar</label><input [(ngModel)]="editModel.aadhaar" [readonly]="!editing"></div>
+          <div class="field"><label>UAN</label><input [value]="user?.uan || ''" readonly></div>
+        </div>
+      </div>
     </div>
   </div>
+
 </ion-content>

@@ -9,46 +9,282 @@
       </div>
     </div>
   </ion-toolbar>
+
+  <ion-toolbar class="tab-bar">
+    <ion-segment [value]="tab" (ionChange)="setTab($any($event.detail.value))" mode="md" scrollable="true">
+      <ion-segment-button value="home"><ion-label>Dashboard</ion-label></ion-segment-button>
+      <ion-segment-button value="approvals">
+        <ion-label>Approvals <span *ngIf="pendingApprovals > 0" class="badge">{{ pendingApprovals }}</span></ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="users"><ion-label>Users</ion-label></ion-segment-button>
+      <ion-segment-button value="records"><ion-label>Records</ion-label></ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content class="pc-bg">
-  <div class="page-title">
-    <h2>Admin Dashboard</h2>
-    <p>Manage approvals, users, and employee records</p>
+
+  <!-- DASHBOARD -->
+  <div *ngIf="tab === 'home'" class="panel">
+    <div class="page-title">
+      <h2>Admin Dashboard</h2>
+      <p>Manage approvals, users, and employee records</p>
+    </div>
+
+    <div class="stat-grid" style="grid-template-columns: repeat(4, 1fr);">
+      <div class="stat-card">
+        <div class="stat-icon blue">👥</div>
+        <div class="stat-label">Total Employees</div>
+        <div class="stat-value">{{ totalEmp }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange">💼</div>
+        <div class="stat-label">Payroll Users</div>
+        <div class="stat-value">{{ payrollUsers }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon blue">🛡️</div>
+        <div class="stat-label">Admin Users</div>
+        <div class="stat-value">{{ adminUsers }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange">⏳</div>
+        <div class="stat-label">Pending Approvals</div>
+        <div class="stat-value" style="color: #d97706;">{{ pendingApprovals }}</div>
+      </div>
+    </div>
+
+    <div *ngIf="pendingApprovals > 0" class="info-banner info">
+      🔔 You have <strong>{{ pendingApprovals }} approval{{ pendingApprovals > 1 ? 's' : '' }}</strong> awaiting review.
+      <button class="btn btn-primary sm" style="margin-left: 10px;" (click)="setTab('approvals')">Review Now →</button>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Recent Activity</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Action</th><th>Employee</th><th>Type</th><th>Time</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let a of recentActivity">
+              <td>
+                <span class="status-chip" [class.green]="a.status === 'Approved'" [class.red]="a.status === 'Rejected'" [class.orange]="a.status === 'Pending'">
+                  {{ a.status === 'Pending' ? 'Awaiting' : a.status }}
+                </span>
+              </td>
+              <td class="name">{{ a.empName }}</td>
+              <td>{{ a.type }}</td>
+              <td style="font-size: 11px; color: #94a3b8;">{{ a.date }}</td>
+            </tr>
+            <tr *ngIf="recentActivity.length === 0"><td colspan="4" style="text-align: center; padding: 20px; color: #94a3b8;">No activity yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
-  <div class="stat-grid" style="grid-template-columns: repeat(4, 1fr);">
-    <div class="stat-card">
-      <div class="stat-icon blue">👥</div>
-      <div class="stat-label">Total Employees</div>
-      <div class="stat-value">{{ totalEmp }}</div>
+  <!-- APPROVALS -->
+  <div *ngIf="tab === 'approvals'" class="panel">
+    <div class="page-title">
+      <h2>Approval Queue</h2>
+      <p>{{ pendingApprovals }} pending · {{ state.pendingApprovals.length }} total</p>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon orange">💼</div>
-      <div class="stat-label">Payroll Users</div>
-      <div class="stat-value">{{ payrollUsers }}</div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">✓ Approval Management</div>
+        <div class="btn-row">
+          <select [(ngModel)]="apprTypeFilter" style="padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 7px; font-size: 12px;">
+            <option value="">All Types</option>
+            <option>New Registration</option>
+            <option>Profile Edit</option>
+            <option>Bank Update</option>
+            <option>Unlock Request</option>
+          </select>
+          <select [(ngModel)]="apprStatusFilter" style="padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 7px; font-size: 12px;">
+            <option value="">All Status</option>
+            <option>Pending</option>
+            <option>Approved</option>
+            <option>Rejected</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Ref ID</th><th>Employee</th><th>Type</th><th>Submitted</th><th>Status</th><th>Actions</th>
+          </tr></thead>
+          <tbody>
+            <tr *ngFor="let a of filteredApprovals">
+              <td class="num">{{ a.id }}</td>
+              <td class="name">{{ a.empName }} <span style="font-size: 11px; color: #94a3b8; font-family: monospace;">({{ a.empCode }})</span></td>
+              <td><span class="status-chip blue">{{ a.type }}</span></td>
+              <td style="font-size: 11px; color: #94a3b8;">{{ a.date }}</td>
+              <td>
+                <span class="status-chip" [class.green]="a.status === 'Approved'" [class.red]="a.status === 'Rejected'" [class.orange]="a.status === 'Pending'">
+                  {{ a.status }}
+                </span>
+              </td>
+              <td>
+                <div class="btn-row" *ngIf="a.status === 'Pending'">
+                  <button class="btn btn-ghost sm" (click)="reviewApproval(a)">🔍 Review</button>
+                  <button class="btn btn-success sm" (click)="quickApprove(a, $event)">✓</button>
+                  <button class="btn btn-danger sm" (click)="quickReject(a, $event)">✗</button>
+                </div>
+                <span *ngIf="a.status !== 'Pending'" style="font-size: 11px; color: #94a3b8;">Done</span>
+              </td>
+            </tr>
+            <tr *ngIf="filteredApprovals.length === 0"><td colspan="6" style="text-align: center; padding: 20px; color: #94a3b8;">No approvals</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon blue">🛡️</div>
-      <div class="stat-label">Admin Users</div>
-      <div class="stat-value">{{ adminUsers }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon orange">⏳</div>
-      <div class="stat-label">Pending Approvals</div>
-      <div class="stat-value" style="color: #d97706;">{{ pendingCount }}</div>
+
+    <!-- Review Modal -->
+    <div *ngIf="reviewingAppr" class="edit-overlay" (click)="closeReview()">
+      <div class="edit-modal" (click)="$event.stopPropagation()">
+        <div class="modal-title">Review Request — {{ reviewingAppr.empName }}</div>
+        <div class="form-grid" style="margin-bottom: 14px;">
+          <div class="field"><label>Reference ID</label><input [value]="reviewingAppr.id" readonly></div>
+          <div class="field"><label>Type</label><input [value]="reviewingAppr.type" readonly></div>
+          <div class="field"><label>Employee Code</label><input [value]="reviewingAppr.empCode" readonly></div>
+          <div class="field"><label>Submitted</label><input [value]="reviewingAppr.date" readonly></div>
+        </div>
+        <div *ngIf="reviewingAppr.changes" class="info-banner info" style="margin-bottom: 14px;">
+          <strong>Changes Requested:</strong>
+          <div style="margin-top: 6px; display: flex; flex-direction: column; gap: 4px;">
+            <span *ngFor="let c of getChangesList(reviewingAppr.changes)">• {{ c }}</span>
+          </div>
+        </div>
+        <div *ngIf="reviewingAppr.docs" class="info-banner success" style="margin-bottom: 14px;">
+          📎 Documents attached: Aadhaar, PAN, Bank Passbook
+        </div>
+        <div class="btn-row" style="justify-content: flex-end;">
+          <button class="btn btn-outline sm" (click)="closeReview()">Close</button>
+          <button class="btn btn-danger sm" *ngIf="reviewingAppr.status === 'Pending'" (click)="reject(reviewingAppr)">✗ Reject</button>
+          <button class="btn btn-success sm" *ngIf="reviewingAppr.status === 'Pending'" (click)="approve(reviewingAppr)">✓ Approve</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="coming-soon">
-    <h3>Phase 4 — Coming Soon</h3>
-    <p>Full Admin module is being built in the next phase.</p>
-    <div class="planned-features">
-      <div class="feature-item">✅ Approval Management (Registration, Profile Edit, Bank Update, Unlock)</div>
-      <div class="feature-item">👥 User Management (Create/Edit/Activate)</div>
-      <div class="feature-item">🧾 Employee Records (read-only view)</div>
-      <div class="feature-item">🏢 Department Assignment</div>
-      <div class="feature-item">💳 Disbursement approval workflow</div>
+  <!-- USERS -->
+  <div *ngIf="tab === 'users'" class="panel">
+    <div class="page-title">
+      <h2>User Management</h2>
+      <p>{{ state.users.length }} system users</p>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">👥 All System Users</div>
+        <button class="btn btn-primary sm" (click)="startAddUser()">+ Create User</button>
+      </div>
+
+      <div *ngIf="addingUser" class="card-body" style="border-bottom: 1px solid #e2e8f0;">
+        <div class="form-grid">
+          <div class="field"><label>Full Name *</label><input [(ngModel)]="newUser.name" placeholder="Full name"></div>
+          <div class="field"><label>Email *</label><input type="email" [(ngModel)]="newUser.email" placeholder="user@company.in"></div>
+          <div class="field"><label>Employee ID</label><input [(ngModel)]="newUser.empId" placeholder="Link to employee"></div>
+          <div class="field"><label>Role *</label>
+            <select [(ngModel)]="newUser.role">
+              <option value="payroll">payroll</option>
+              <option value="admin">admin</option>
+              <option value="employee">employee</option>
+            </select>
+          </div>
+          <div class="field"><label>Password *</label><input type="password" [(ngModel)]="newUser.pw" placeholder="Temporary password"></div>
+        </div>
+        <div class="btn-row" style="margin-top: 10px;">
+          <button class="btn btn-outline sm" (click)="cancelAddUser()">Cancel</button>
+          <button class="btn btn-primary sm" (click)="saveNewUser()">Create Account</button>
+        </div>
+      </div>
+
+      <div class="card-body" style="padding: 10px 14px; border-bottom: 1px solid #e2e8f0;">
+        <input type="text" [(ngModel)]="userSearch" placeholder="Search users..." style="width: 100%; max-width: 320px; padding: 7px 11px; border: 1px solid #e2e8f0; border-radius: 7px; font-size: 12px;">
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>User ID</th><th>Name</th><th>Email</th><th>Emp ID</th><th>Role</th><th>Status</th><th>Last Login</th><th>Actions</th>
+          </tr></thead>
+          <tbody>
+            <tr *ngFor="let u of filteredUsers">
+              <td class="num">{{ u.id }}</td>
+              <td class="name">{{ u.name }}</td>
+              <td>{{ u.email }}</td>
+              <td class="num">{{ u.empId }}</td>
+              <td>
+                <span class="status-chip" [class.orange]="u.role === 'admin'" [class.blue]="u.role === 'payroll'" [class.green]="u.role === 'employee'">
+                  {{ u.role }}
+                </span>
+              </td>
+              <td>
+                <span class="status-chip" [class.green]="u.status === 'Active'" [class.red]="u.status === 'Inactive'">
+                  {{ u.status }}
+                </span>
+              </td>
+              <td style="font-size: 11px; color: #94a3b8;">{{ u.lastLogin }}</td>
+              <td>
+                <button class="btn" [class.btn-danger]="u.status === 'Active'" [class.btn-success]="u.status !== 'Active'" style="padding: 3px 8px; font-size: 10px; border-radius: 5px;" (click)="toggleUserStatus(u)">
+                  {{ u.status === 'Active' ? '✗ Deactivate' : '✓ Activate' }}
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
+
+  <!-- RECORDS -->
+  <div *ngIf="tab === 'records'" class="panel">
+    <div class="page-title">
+      <h2>Employee Records</h2>
+      <p>Read-only view · {{ state.employees.length }} employees</p>
+    </div>
+
+    <div class="info-banner warn">
+      🔒 Read-only view. Admin can view all records. Editing is restricted to employees themselves (with admin approval).
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">🧾 All Employee Records</div>
+      </div>
+      <div class="card-body" style="padding: 10px 14px; border-bottom: 1px solid #e2e8f0;">
+        <input type="text" [(ngModel)]="recordSearch" placeholder="Search employees..." style="width: 100%; max-width: 320px; padding: 7px 11px; border: 1px solid #e2e8f0; border-radius: 7px; font-size: 12px;">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Code</th><th>Name</th><th>Department</th><th>Designation</th>
+            <th>PAN</th><th>Aadhaar</th><th>Bank</th><th>Annual CTC</th><th>Status</th>
+          </tr></thead>
+          <tbody>
+            <tr *ngFor="let emp of filteredRecords">
+              <td class="num">{{ emp.code }}</td>
+              <td class="name">{{ emp.name }}</td>
+              <td>{{ emp.dept }}</td>
+              <td>{{ emp.desig }}</td>
+              <td class="num">{{ emp.pan || '-' }}</td>
+              <td class="num">{{ emp.aadhaar ? '****' + (emp.aadhaar.slice(-4)) : '-' }}</td>
+              <td>{{ emp.bank || '-' }}</td>
+              <td class="num">{{ calc.fmt(emp.ctc) }}</td>
+              <td>
+                <span class="status-chip" [class.green]="emp.status === 'Active'" [class.red]="emp.status === 'Terminated'">
+                  {{ emp.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
 </ion-content>

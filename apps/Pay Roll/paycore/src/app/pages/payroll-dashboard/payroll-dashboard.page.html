@@ -9,47 +9,559 @@
       </div>
     </div>
   </ion-toolbar>
+
+  <ion-toolbar class="tab-bar">
+    <ion-segment [value]="tab" (ionChange)="setTab($any($event.detail.value))" mode="md" scrollable="true">
+      <ion-segment-button value="home"><ion-label>Dashboard</ion-label></ion-segment-button>
+      <ion-segment-button value="employees"><ion-label>Employees</ion-label></ion-segment-button>
+      <ion-segment-button value="salary"><ion-label>Salary Calc</ion-label></ion-segment-button>
+      <ion-segment-button value="taxpay"><ion-label>TaxPay</ion-label></ion-segment-button>
+      <ion-segment-button value="disbursed"><ion-label>Disbursed</ion-label></ion-segment-button>
+      <ion-segment-button value="payslips"><ion-label>Payslips</ion-label></ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content class="pc-bg">
-  <div class="page-title">
-    <h2>Payroll Dashboard</h2>
-    <p>Manage employees, salary, tax, and disbursements</p>
+
+  <!-- DASHBOARD -->
+  <div *ngIf="tab === 'home'" class="panel">
+    <div class="page-title">
+      <h2>Payroll Dashboard</h2>
+      <p>Manage employees, salary, tax and disbursements</p>
+    </div>
+
+    <div class="stat-grid" style="grid-template-columns: repeat(4, 1fr);">
+      <div class="stat-card">
+        <div class="stat-icon blue">👥</div>
+        <div class="stat-label">Total Employees</div>
+        <div class="stat-value">{{ totalEmployees }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">✓</div>
+        <div class="stat-label">Active</div>
+        <div class="stat-value">{{ activeEmployees }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange">⏳</div>
+        <div class="stat-label">Pending Queue</div>
+        <div class="stat-value" style="color: #d97706;">{{ pendingCount }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon blue">💳</div>
+        <div class="stat-label">Annual Payroll</div>
+        <div class="stat-value money">{{ calc.fmtL(totalCTC) }}</div>
+      </div>
+    </div>
+
+    <!-- Payroll period control -->
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">
+            🗓️ Current Payroll Period — <strong>{{ state.payrollPeriod }}</strong>
+            <span class="status-chip" [class.red]="state.isPayrollLocked()" [class.green]="!state.isPayrollLocked()" style="margin-left: 8px;">
+              {{ state.isPayrollLocked() ? '🔒 LOCKED' : '✓ Open' }}
+            </span>
+          </div>
+          <div style="font-size: 11px; color: #94a3b8; margin-top: 3px;">
+            {{ state.isPayrollLocked() ? 'Calculations are frozen. Request Admin unlock.' : 'Finalize all calculations before confirming.' }}
+          </div>
+        </div>
+        <div class="btn-row">
+          <button *ngIf="state.isPayrollLocked()" class="btn btn-warn sm" (click)="requestUnlock()">🔓 Request Unlock</button>
+          <button *ngIf="!state.isPayrollLocked()" class="btn btn-success sm" (click)="confirmLockPayroll()">✓ Confirm & Lock</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Holidays -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">📅 Holidays Calendar</div>
+        <button class="btn btn-primary sm" (click)="startAddHoliday()">+ Add Holiday</button>
+      </div>
+      <div class="card-body">
+        <div *ngIf="addingHoliday" style="padding: 10px 0 16px; border-bottom: 1px solid #e2e8f0; margin-bottom: 14px;">
+          <div class="form-grid" style="grid-template-columns: 2fr 1fr 1fr;">
+            <div class="field"><label>Name</label><input [(ngModel)]="holidayForm.name" placeholder="e.g. Diwali"></div>
+            <div class="field"><label>Date</label><input type="date" [(ngModel)]="holidayForm.date"></div>
+            <div class="field"><label>Type</label>
+              <select [(ngModel)]="holidayForm.type">
+                <option>National Holiday</option>
+                <option>Regional Holiday</option>
+                <option>Company Holiday</option>
+                <option>Restricted Holiday</option>
+              </select>
+            </div>
+          </div>
+          <div class="btn-row" style="margin-top: 10px;">
+            <button class="btn btn-outline sm" (click)="cancelHoliday()">Cancel</button>
+            <button class="btn btn-primary sm" (click)="saveHoliday()">Save</button>
+          </div>
+        </div>
+        <div *ngFor="let h of sortedHolidays; let i = index" class="holiday-item">
+          <div>
+            <div class="h-name">{{ h.name }}</div>
+            <div class="h-date">{{ formatDate(h.date) }} · <span class="status-chip" [class.blue]="h.type === 'National Holiday'" [class.green]="h.type === 'Company Holiday'" [class.gray]="h.type !== 'National Holiday' && h.type !== 'Company Holiday'">{{ h.type }}</span></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-ghost sm" (click)="editHoliday(i)">✏️</button>
+            <button class="btn btn-ghost sm" (click)="deleteHoliday(i)">🗑️</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="stat-grid" style="grid-template-columns: repeat(4, 1fr);">
-    <div class="stat-card">
-      <div class="stat-icon blue">👥</div>
-      <div class="stat-label">Total Employees</div>
-      <div class="stat-value">{{ totalEmp }}</div>
+  <!-- EMPLOYEES -->
+  <div *ngIf="tab === 'employees'" class="panel">
+    <div class="page-title">
+      <h2>Employee Management</h2>
+      <p>{{ totalEmployees }} employees total · {{ activeEmployees }} active</p>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon green">✓</div>
-      <div class="stat-label">Active</div>
-      <div class="stat-value">{{ activeCount }}</div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">👥 All Employees</div>
+        <button class="btn btn-primary sm" (click)="startAddEmp()">+ Add Employee</button>
+      </div>
+
+      <div *ngIf="addingEmp" class="card-body" style="border-bottom: 1px solid #e2e8f0;">
+        <div class="form-grid">
+          <div class="field"><label>Code *</label><input [(ngModel)]="newEmp.code" placeholder="e.g. 310581"></div>
+          <div class="field"><label>Full Name *</label><input [(ngModel)]="newEmp.name" placeholder="Full name"></div>
+          <div class="field"><label>Department *</label>
+            <select [(ngModel)]="newEmp.dept">
+              <option>Accounts</option>
+              <option>Engineering</option>
+              <option>Information Technology</option>
+              <option>F&B Production</option>
+              <option>Adventure</option>
+              <option>Quality Control</option>
+              <option>Human Resources</option>
+            </select>
+          </div>
+          <div class="field"><label>Designation</label><input [(ngModel)]="newEmp.desig" placeholder="Job title"></div>
+          <div class="field"><label>Annual CTC</label><input type="number" [(ngModel)]="newEmp.ctc" placeholder="650000"></div>
+          <div class="field"><label>Location</label><input [(ngModel)]="newEmp.location"></div>
+        </div>
+        <div class="btn-row" style="margin-top: 10px;">
+          <button class="btn btn-outline sm" (click)="cancelAddEmp()">Cancel</button>
+          <button class="btn btn-primary sm" (click)="saveNewEmp()">Add Employee</button>
+        </div>
+      </div>
+
+      <div class="card-body" style="padding: 10px 14px; border-bottom: 1px solid #e2e8f0;">
+        <div class="filter-row">
+          <div class="filter-group" style="flex: 1; min-width: 200px;">
+            <input type="text" [(ngModel)]="empSearch" placeholder="Search name, code, dept..." style="width: 100%;">
+          </div>
+          <div class="filter-group">
+            <select [(ngModel)]="empStatusFilter">
+              <option value="">All Status</option>
+              <option value="Active">Active</option>
+              <option value="Terminated">Terminated</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <select [(ngModel)]="empDeptFilter">
+              <option value="">All Departments</option>
+              <option>Accounts</option>
+              <option>Engineering</option>
+              <option>Information Technology</option>
+              <option>F&B Production</option>
+              <option>Adventure</option>
+              <option>Quality Control</option>
+              <option>Human Resources</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Code</th><th>Name</th><th>Dept</th><th>Designation</th><th>Location</th>
+            <th>Annual CTC</th><th>Basic/Mo</th><th>PF Tag</th><th>Status</th><th>Actions</th>
+          </tr></thead>
+          <tbody>
+            <tr *ngFor="let emp of filteredEmployees">
+              <td class="num">{{ emp.code }}</td>
+              <td class="name">{{ emp.name }}</td>
+              <td>{{ emp.dept }}</td>
+              <td>{{ emp.desig }}</td>
+              <td>{{ emp.location || '-' }}</td>
+              <td class="num">{{ calc.fmt(emp.ctc) }}</td>
+              <td class="num">{{ calc.fmt(emp.basic) }}</td>
+              <td>
+                <span class="pf-tag" [style.background]="pfTagColor(emp.pfTag)">{{ emp.pfTag || 'F' }}</span>
+              </td>
+              <td>
+                <span class="status-chip" [class.green]="emp.status === 'Active'" [class.red]="emp.status === 'Terminated'">
+                  {{ emp.status }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-ghost sm" (click)="startEditEmp(emp)">✏️ Edit</button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredEmployees.length === 0"><td colspan="10" style="text-align:center; padding: 20px; color: #94a3b8;">No employees found</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon orange">⏳</div>
-      <div class="stat-label">Pending Queue</div>
-      <div class="stat-value" style="color: #d97706;">{{ pendingCount }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon blue">💳</div>
-      <div class="stat-label">Annual Payroll</div>
-      <div class="stat-value money">{{ calc.fmtL(totalCTC) }}</div>
+
+    <!-- Edit Employee Modal (inline) -->
+    <div *ngIf="editingEmp" class="edit-overlay" (click)="cancelEdit()">
+      <div class="edit-modal" (click)="$event.stopPropagation()">
+        <div class="modal-title">Edit Employee — {{ editingEmp.name }}</div>
+        <div class="info-banner warn" style="margin-bottom: 14px;">
+          ⚠️ PF/ESI/PT apply immediately. Other changes sent to Admin for approval.
+        </div>
+        <div class="form-grid">
+          <div class="field"><label>First Name</label><input [(ngModel)]="editForm.firstName"></div>
+          <div class="field"><label>Last Name</label><input [(ngModel)]="editForm.lastName"></div>
+          <div class="field"><label>Designation</label><input [(ngModel)]="editForm.desig"></div>
+          <div class="field"><label>Department</label>
+            <select [(ngModel)]="editForm.dept">
+              <option>Accounts</option><option>Engineering</option><option>Information Technology</option>
+              <option>F&B Production</option><option>Adventure</option><option>Quality Control</option><option>Human Resources</option>
+            </select>
+          </div>
+          <div class="field"><label>Annual CTC</label><input type="number" [(ngModel)]="editForm.ctc"></div>
+          <div class="field"><label>Phone</label><input [(ngModel)]="editForm.phone"></div>
+          <div class="field"><label>Email</label><input [(ngModel)]="editForm.personalEmail"></div>
+          <div class="field"><label>Bank</label><input [(ngModel)]="editForm.bank"></div>
+          <div class="field"><label>Account Number</label><input [(ngModel)]="editForm.acc"></div>
+          <div class="field"><label>IFSC</label><input [(ngModel)]="editForm.ifsc"></div>
+          <div class="field" style="grid-column: span 2;">
+            <label>PF Tag</label>
+            <select [(ngModel)]="editForm.pfTag">
+              <option value="F">F — Basic × 12%</option>
+              <option value="FN">FN — Capped ₹1,800/mo</option>
+              <option value="N">N — (Gross-HRA) × 12%</option>
+              <option value="M">M — Manual opt-in</option>
+              <option value="NIL">NIL — No PF</option>
+            </select>
+          </div>
+          <div class="field"><label>ESI Applicable</label>
+            <select [(ngModel)]="editForm.esiApply">
+              <option [ngValue]="true">Yes (Auto, Gross ≤ ₹21k)</option>
+              <option [ngValue]="false">No (Opt-out)</option>
+            </select>
+          </div>
+          <div class="field"><label>PT Applicable</label>
+            <select [(ngModel)]="editForm.ptApply">
+              <option [ngValue]="true">Yes (Apply PT slab)</option>
+              <option [ngValue]="false">No (Exempt)</option>
+            </select>
+          </div>
+        </div>
+        <div class="btn-row" style="justify-content: flex-end; margin-top: 16px;">
+          <button class="btn btn-outline sm" (click)="cancelEdit()">Cancel</button>
+          <button class="btn btn-warn sm" (click)="saveEditEmp()">Send for Admin Approval →</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="coming-soon">
-    <h3>Phase 3 — Coming Soon</h3>
-    <p>Full Payroll module is the biggest — being built in the next phase.</p>
-    <div class="planned-features">
-      <div class="feature-item">👥 Employee Management (CRUD, Import/Export)</div>
-      <div class="feature-item">💰 Salary Calculation with PF/ESI/PT</div>
-      <div class="feature-item">🧾 TaxPay — Old & New Regime</div>
-      <div class="feature-item">✅ Disbursement History</div>
-      <div class="feature-item">📄 Payslip Management</div>
-      <div class="feature-item">🔒 Payroll Lock/Unlock with Admin approval</div>
+  <!-- SALARY CALC -->
+  <div *ngIf="tab === 'salary'" class="panel">
+    <div class="page-title">
+      <h2>Salary Calculation</h2>
+      <p>Review, hold/release, disburse for {{ selMonth }}</p>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">
+          ⚙️ Period: <strong>{{ selMonth }}</strong>
+          <span class="status-chip" [class.red]="state.isPayrollLocked()" [class.green]="!state.isPayrollLocked()" style="margin-left: 8px;">
+            {{ state.isPayrollLocked() ? '🔒 LOCKED' : '✓ Open' }}
+          </span>
+        </div>
+        <div class="btn-row">
+          <select [(ngModel)]="selMonth" [disabled]="state.isPayrollLocked()" style="padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 7px; font-size: 12px;">
+            <option *ngFor="let m of months" [value]="m">{{ m }}</option>
+          </select>
+          <button *ngIf="!state.isPayrollLocked()" class="btn btn-success sm" (click)="confirmLockPayroll()">🔒 Lock</button>
+          <button *ngIf="state.isPayrollLocked()" class="btn btn-warn sm" (click)="requestUnlock()">🔓 Request Unlock</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">💰 Included Employees ({{ includedEmps.length }})</div>
+          <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;" *ngIf="heldEmps.length > 0">
+            {{ heldEmps.length }} on hold
+          </div>
+        </div>
+        <button class="btn btn-primary sm" (click)="confirmDisbursement()" [disabled]="state.isPayrollLocked() || includedEmps.length === 0">
+          💳 Disburse Salary
+        </button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Incl</th><th>Code</th><th>Name</th><th>Dept</th>
+            <th>Basic</th><th>HRA</th><th>Special</th><th>Gross</th>
+            <th>PF</th><th>ESI</th><th>PT</th><th>TDS</th>
+            <th>Total Ded</th><th>Net Pay</th>
+          </tr></thead>
+          <tbody>
+            <tr *ngFor="let emp of includedEmps">
+              <td>
+                <input type="checkbox" [checked]="!isExcluded(emp.code)" (change)="toggleExclude(emp.code, $event)" [disabled]="state.isPayrollLocked()">
+              </td>
+              <td class="num">{{ emp.code }}</td>
+              <td class="name">{{ emp.name }}</td>
+              <td>{{ emp.dept }}</td>
+              <td class="num">{{ calc.fmt(emp.basic) }}</td>
+              <td class="num">{{ calc.fmt(emp.hra) }}</td>
+              <td class="num">{{ calc.fmt(emp.special) }}</td>
+              <td class="num" style="font-weight: 700;">{{ calc.fmt(emp.basic + emp.hra + emp.special) }}</td>
+              <td class="num" style="color: #dc2626;">{{ calc.fmt(calc.calcPF(emp)) }}</td>
+              <td class="num" [style.color]="calc.calcESI(emp) ? '#dc2626' : '#94a3b8'">{{ calc.calcESI(emp) ? calc.fmt(calc.calcESI(emp)) : 'NIL' }}</td>
+              <td class="num" [style.color]="calc.calcPT(emp) ? '#dc2626' : '#94a3b8'">{{ calc.calcPT(emp) ? calc.fmt(calc.calcPT(emp)) : 'NIL' }}</td>
+              <td class="num" [style.color]="(emp.incomeTax || 0) ? '#dc2626' : '#94a3b8'">{{ (emp.incomeTax || 0) ? calc.fmt(emp.incomeTax || 0) : 'NIL' }}</td>
+              <td class="num" style="color: #dc2626; font-weight: 600;">{{ calc.fmt(empTotalDed(emp)) }}</td>
+              <td class="num" style="color: #059669; font-weight: 700;">{{ calc.fmt(empNet(emp)) }}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="7" style="font-weight: 700;">Total ({{ includedEmps.length }})</td>
+              <td class="num" style="font-weight: 700;">{{ calc.fmt(totalGross) }}</td>
+              <td class="num" style="color: #dc2626;">{{ calc.fmt(totalPF) }}</td>
+              <td class="num" style="color: #dc2626;">{{ calc.fmt(totalESI) }}</td>
+              <td class="num" style="color: #dc2626;">{{ calc.fmt(totalPT) }}</td>
+              <td class="num" style="color: #dc2626;">{{ totalIT ? calc.fmt(totalIT) : 'NIL' }}</td>
+              <td class="num" style="color: #dc2626; font-weight: 700;">{{ calc.fmt(totalDed) }}</td>
+              <td class="num" style="color: #059669; font-weight: 700;">{{ calc.fmt(totalNet) }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" *ngIf="heldEmps.length > 0">
+      <div class="card-head">
+        <div class="card-title">⏸ On Hold ({{ heldEmps.length }})</div>
+        <button class="btn btn-success sm" (click)="releaseAllHold()" [disabled]="state.isPayrollLocked()">▶ Release All</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Code</th><th>Name</th><th>Dept</th><th>Gross</th><th>Net Pay</th><th>Action</th>
+          </tr></thead>
+          <tbody>
+            <tr *ngFor="let emp of heldEmps" style="background: #fffbeb;">
+              <td class="num">{{ emp.code }}</td>
+              <td class="name" style="color: #d97706;">{{ emp.name }}</td>
+              <td>{{ emp.dept }}</td>
+              <td class="num">{{ calc.fmt(emp.basic + emp.hra + emp.special) }}</td>
+              <td class="num">{{ calc.fmt(empNet(emp)) }}</td>
+              <td>
+                <button class="btn btn-success sm" (click)="releaseHold(emp.code)" [disabled]="state.isPayrollLocked()">▶ Release</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
+
+  <!-- TAXPAY -->
+  <div *ngIf="tab === 'taxpay'" class="panel">
+    <div class="page-title">
+      <h2>TaxPay — FY 2025-26</h2>
+      <p>Income Tax calculation (Old & New Regime) · Y = New · N = Old</p>
+    </div>
+
+    <div class="stat-grid" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="stat-card">
+        <div class="stat-icon blue">👥</div>
+        <div class="stat-label">Active Employees</div>
+        <div class="stat-value">{{ taxActiveEmps.length }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange">💸</div>
+        <div class="stat-label">Tax Liable</div>
+        <div class="stat-value" style="color: #dc2626;">{{ taxLiableCount }}</div>
+        <div class="stat-sub">{{ taxActiveEmps.length - taxLiableCount }} NIL tax</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon blue">💰</div>
+        <div class="stat-label">Monthly TDS Total</div>
+        <div class="stat-value money">{{ calc.fmt(totalMonthlyTDS) }}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">🧾 TaxPay Calculator</div>
+        <button class="btn btn-primary sm" (click)="applyTDSToSalary()">✓ Apply TDS to Salary Calc</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Code</th><th>Name</th><th>Dept</th><th>Regime</th>
+            <th>Total Income</th><th>Std Deduction</th>
+            <th>Taxable Income</th><th>Annual Tax</th><th>Monthly TDS</th>
+          </tr></thead>
+          <tbody>
+            <tr *ngFor="let emp of taxActiveEmps">
+              <td class="num">{{ emp.code }}</td>
+              <td class="name">{{ emp.name }}</td>
+              <td>{{ emp.dept }}</td>
+              <td>
+                <select (change)="updateRegime(emp.code, $any($event.target).value)" [value]="emp.taxRegime || 'new'" style="padding: 3px 7px; border-radius: 5px; border: 1px solid #e2e8f0; font-size: 11px; font-weight: 700;">
+                  <option value="new">Y — New</option>
+                  <option value="old">N — Old</option>
+                </select>
+              </td>
+              <td class="num">{{ calc.fmt(getTaxWorksheet(emp).totalGross) }}</td>
+              <td class="num" style="color: #059669;">{{ calc.fmt(getTaxWorksheet(emp).stdDed) }}</td>
+              <td class="num" style="font-weight: 700;">{{ calc.fmt(getTaxWorksheet(emp).rounded) }}</td>
+              <td class="num" [style.color]="getTaxWorksheet(emp).annualTax ? '#dc2626' : '#94a3b8'" style="font-weight: 600;">
+                {{ getTaxWorksheet(emp).annualTax ? calc.fmt(getTaxWorksheet(emp).annualTax) : 'NIL' }}
+              </td>
+              <td class="num" [style.color]="getTaxWorksheet(emp).monthlyTDS ? '#dc2626' : '#94a3b8'" style="font-weight: 700;">
+                {{ getTaxWorksheet(emp).monthlyTDS ? calc.fmt(getTaxWorksheet(emp).monthlyTDS) : 'NIL' }}
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="7" style="font-weight: 700;">Total ({{ taxActiveEmps.length }} employees)</td>
+              <td class="num" style="color: #dc2626; font-weight: 700;">{{ calc.fmt(totalAnnualTax) }}</td>
+              <td class="num" style="color: #dc2626; font-weight: 700;">{{ calc.fmt(totalMonthlyTDS) }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title" style="color: #1a56db;">Y — New Tax Regime Slabs (FY 2025-26)</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Income Range</th><th>Rate</th><th>Max Tax on Slab</th></tr></thead>
+          <tbody>
+            <tr><td>Up to ₹3,00,000</td><td style="color: #059669; font-weight: 700;">NIL</td><td class="num">₹0</td></tr>
+            <tr><td>₹3,00,001 – ₹7,00,000</td><td style="color: #d97706; font-weight: 700;">5%</td><td class="num">₹20,000</td></tr>
+            <tr><td>₹7,00,001 – ₹10,00,000</td><td style="color: #d97706; font-weight: 700;">10%</td><td class="num">₹30,000</td></tr>
+            <tr><td>₹10,00,001 – ₹12,00,000</td><td style="color: #dc2626; font-weight: 700;">15%</td><td class="num">₹30,000</td></tr>
+            <tr><td>₹12,00,001 – ₹15,00,000</td><td style="color: #dc2626; font-weight: 700;">20%</td><td class="num">₹60,000</td></tr>
+            <tr><td>Above ₹15,00,000</td><td style="color: #dc2626; font-weight: 800;">30%</td><td class="num" style="color: #dc2626;">30% on excess</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="padding: 10px 18px; font-size: 11px; color: #94a3b8;">
+        Rebate u/s 87A: No tax if income ≤ ₹7,00,000 · Std Deduction ₹75,000 · +4% Cess · No Chapter VIA deductions
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title" style="color: #d97706;">N — Old Tax Regime Slabs (FY 2025-26)</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Income Range</th><th>Rate</th><th>Deductions Allowed</th></tr></thead>
+          <tbody>
+            <tr><td>Up to ₹2,50,000</td><td style="color: #059669; font-weight: 700;">NIL</td><td style="font-size: 11px; color: #94a3b8;">—</td></tr>
+            <tr><td>₹2,50,001 – ₹5,00,000</td><td style="color: #d97706; font-weight: 700;">5%</td><td style="font-size: 11px;">Sec 80C (₹1.5L), 80D</td></tr>
+            <tr><td>₹5,00,001 – ₹10,00,000</td><td style="color: #dc2626; font-weight: 700;">20%</td><td style="font-size: 11px;">HRA Exempt, LTA, NPS</td></tr>
+            <tr><td>Above ₹10,00,000</td><td style="color: #dc2626; font-weight: 800;">30%</td><td style="font-size: 11px;">All Sec 10 & VIA</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="padding: 10px 18px; font-size: 11px; color: #94a3b8;">
+        Rebate u/s 87A: No tax if income ≤ ₹5,00,000 · Std Deduction ₹50,000 · +4% Cess
+      </div>
+    </div>
+  </div>
+
+  <!-- DISBURSED -->
+  <div *ngIf="tab === 'disbursed'" class="panel">
+    <div class="page-title">
+      <h2>Disbursed History</h2>
+      <p>Completed salary disbursements</p>
+    </div>
+
+    <div *ngIf="state.disbursedHistory.length === 0" class="card">
+      <div class="card-body" style="text-align: center; padding: 50px 20px;">
+        <div style="font-size: 36px; margin-bottom: 10px;">📭</div>
+        <div style="font-size: 14px; font-weight: 700; color: #64748b; margin-bottom: 5px;">No Disbursements Yet</div>
+        <div style="font-size: 12px; color: #94a3b8;">Completed disbursements will appear here</div>
+      </div>
+    </div>
+
+    <div *ngFor="let d of state.disbursedHistory" class="card">
+      <div class="card-head">
+        <div class="card-title">✓ {{ d.month }} — Disbursed on {{ d.date }}</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Code</th><th>Name</th><th>Dept</th><th>Gross</th>
+            <th>PF</th><th>ESI</th><th>PT</th><th>Net Pay</th><th>Bank</th><th>Status</th>
+          </tr></thead>
+          <tbody>
+            <tr *ngFor="let emp of d.employees">
+              <td class="num">{{ emp.code }}</td>
+              <td class="name">{{ emp.name }}</td>
+              <td>{{ emp.dept }}</td>
+              <td class="num">{{ calc.fmt(emp.basic + emp.hra + emp.special) }}</td>
+              <td class="num" style="color: #dc2626;">{{ calc.fmt(calc.calcPF(emp)) }}</td>
+              <td class="num" [style.color]="calc.calcESI(emp) ? '#dc2626' : '#94a3b8'">{{ calc.calcESI(emp) ? calc.fmt(calc.calcESI(emp)) : 'NIL' }}</td>
+              <td class="num" [style.color]="calc.calcPT(emp) ? '#dc2626' : '#94a3b8'">{{ calc.calcPT(emp) ? calc.fmt(calc.calcPT(emp)) : 'NIL' }}</td>
+              <td class="num" style="color: #059669; font-weight: 700;">{{ calc.fmt(empNet(emp)) }}</td>
+              <td>{{ emp.bank || '-' }}</td>
+              <td><span class="status-chip green">✓ Disbursed</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYSLIPS -->
+  <div *ngIf="tab === 'payslips'" class="panel">
+    <div class="page-title">
+      <h2>Payslip Management</h2>
+      <p>Generated payslips for all active employees</p>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">📄 All Payslips — March 2026</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Code</th><th>Name</th><th>Month</th><th>Gross</th>
+            <th>Deductions</th><th>Net Pay</th><th>Status</th>
+          </tr></thead>
+          <tbody>
+            <tr *ngFor="let emp of taxActiveEmps">
+              <td class="num">{{ emp.code }}</td>
+              <td class="name">{{ emp.name }}</td>
+              <td>Mar 2026</td>
+              <td class="num">{{ calc.fmt(emp.basic + emp.hra + emp.special) }}</td>
+              <td class="num" style="color: #dc2626;">{{ calc.fmt(empTotalDed(emp)) }}</td>
+              <td class="num" style="color: #059669; font-weight: 700;">{{ calc.fmt(empNet(emp)) }}</td>
+              <td><span class="status-chip green">Generated</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
 </ion-content>

@@ -82,6 +82,22 @@ export interface DisbursementRecord {
   employees: Employee[];
 }
 
+export interface PayslipMonth {
+  label: string;
+  short: string;
+  year: string;
+  creditDate: string;
+}
+
+export const PAYSLIP_MONTHS: PayslipMonth[] = [
+  { label: 'March 2026',    short: 'Mar 26', year: '2025-26', creditDate: '08 Apr 2026' },
+  { label: 'February 2026', short: 'Feb 26', year: '2025-26', creditDate: '07 Mar 2026' },
+  { label: 'January 2026',  short: 'Jan 26', year: '2025-26', creditDate: '08 Feb 2026' },
+  { label: 'December 2025', short: 'Dec 25', year: '2025-26', creditDate: '08 Jan 2026' },
+  { label: 'November 2025', short: 'Nov 25', year: '2025-26', creditDate: '08 Dec 2025' },
+  { label: 'October 2025',  short: 'Oct 25', year: '2025-26', creditDate: '08 Nov 2025' },
+];
+
 @Injectable({ providedIn: 'root' })
 export class AppStateService {
 
