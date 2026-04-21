@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">PayCore</string>
+    <string name="title_activity_main">PayCore</string>
+    <string name="package_name">com.futurx.paycore</string>
+    <string name="custom_url_scheme">com.futurx.paycore</string>
+</resources>
