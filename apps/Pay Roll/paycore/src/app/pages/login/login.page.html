@@ -5,40 +5,224 @@
       <div class="logo-text">Pay<span>Core</span></div>
     </div>
 
-    <div class="login-card">
+    <!-- REGISTRATION PENDING SCREEN -->
+    <div *ngIf="registrationPending" class="login-card">
+      <div class="pending-screen">
+        <div class="pending-icon">⏳</div>
+        <div class="pending-title">Registration Submitted!</div>
+        <div class="pending-sub">
+          Your application is pending admin review.<br>
+          You'll receive an email once approved.<br>
+          <br>
+          <span class="ref-id">Ref: {{ referenceId }}</span>
+        </div>
+        <button class="btn-login" style="margin-top: 20px;" (click)="resetToLogin()">← Back to Login</button>
+      </div>
+    </div>
+
+    <!-- NORMAL LOGIN/REGISTRATION CARD -->
+    <div *ngIf="!registrationPending" class="login-card">
       <div class="login-title">Welcome back</div>
       <div class="login-sub">Sign in to your payroll workspace</div>
 
+      <!-- Role Tabs -->
       <div class="role-tabs">
         <button class="role-tab" [class.active]="selectedRole === 'employee'" (click)="selectRole('employee')">
-          Employee
+          👤 Employee
         </button>
         <button class="role-tab" [class.active]="selectedRole === 'payroll'" (click)="selectRole('payroll')">
-          Payroll
+          💼 Payroll
         </button>
         <button class="role-tab" [class.active]="selectedRole === 'admin'" (click)="selectRole('admin')">
-          Admin
+          🛡️ Admin
         </button>
       </div>
 
-      <div class="input-group">
-        <label>Employee ID</label>
-        <input type="text" [(ngModel)]="empCode" placeholder="e.g. 310569" />
+      <!-- Employee Sub-Options (only for Employee role) -->
+      <div *ngIf="selectedRole === 'employee'" class="emp-options">
+        <div class="emp-option" [class.active]="empOption === 'existing'" (click)="setEmpOption('existing')">
+          <div class="emp-icon">🔑</div>
+          <div class="emp-label">Existing Employee</div>
+        </div>
+        <div class="emp-option" [class.active]="empOption === 'register'" (click)="setEmpOption('register')">
+          <div class="emp-icon">📝</div>
+          <div class="emp-label">New Registration</div>
+        </div>
       </div>
 
-      <div class="input-group">
-        <label>Password</label>
-        <input type="password" [(ngModel)]="password" placeholder="••••••••" />
+      <!-- EXISTING LOGIN FORM -->
+      <div *ngIf="empOption === 'existing' || selectedRole !== 'employee'">
+        <div class="input-group">
+          <label>Employee ID</label>
+          <input type="text" [(ngModel)]="empCode" placeholder="e.g. 310569" />
+        </div>
+
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" [(ngModel)]="password" placeholder="••••••••" />
+        </div>
+
+        <button class="btn-login" (click)="doLogin()">Sign In →</button>
+
+        <div class="demo-hint">
+          <strong>Demo credentials:</strong><br>
+          Employee: 310569 / password<br>
+          Payroll / Admin: any / password
+        </div>
       </div>
 
-      <button class="btn-login" (click)="doLogin()">Sign In →</button>
+      <!-- NEW REGISTRATION FORM -->
+      <div *ngIf="selectedRole === 'employee' && empOption === 'register'" class="reg-form">
+        <div class="reg-scroll">
 
-      <div class="demo-hint">
-        <strong>Demo credentials:</strong><br>
-        Employee: 310569 / password<br>
-        Payroll: any / password<br>
-        Admin: any / password
+          <!-- Account Details -->
+          <div class="section-header">ACCOUNT DETAILS</div>
+          <div class="form-row">
+            <div class="input-group">
+              <label>Employee ID <span class="req">*</span></label>
+              <input type="text" [(ngModel)]="regForm.code" placeholder="e.g. 310580">
+            </div>
+            <div class="input-group">
+              <label>Password <span class="req">*</span></label>
+              <input type="password" [(ngModel)]="regForm.password" placeholder="Min 8 chars">
+            </div>
+            <div class="input-group">
+              <label>First Name <span class="req">*</span></label>
+              <input type="text" [(ngModel)]="regForm.firstName" placeholder="First name">
+            </div>
+            <div class="input-group">
+              <label>Last Name <span class="req">*</span></label>
+              <input type="text" [(ngModel)]="regForm.lastName" placeholder="Last name">
+            </div>
+            <div class="input-group">
+              <label>Gender <span class="req">*</span></label>
+              <select [(ngModel)]="regForm.gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Date of Birth <span class="req">*</span></label>
+              <input type="date" [(ngModel)]="regForm.dob">
+            </div>
+            <div class="input-group">
+              <label>Email <span class="req">*</span></label>
+              <input type="email" [(ngModel)]="regForm.email" placeholder="you@email.com">
+            </div>
+            <div class="input-group">
+              <label>Phone <span class="req">*</span></label>
+              <input type="text" [(ngModel)]="regForm.phone" placeholder="+91 9XXXXXXXXX">
+            </div>
+          </div>
+          <div class="input-group full-width">
+            <label>Address <span class="req">*</span></label>
+            <input type="text" [(ngModel)]="regForm.address" placeholder="Full residential address">
+          </div>
+          <div class="input-group full-width">
+            <label>Father's Name <span class="req">*</span></label>
+            <input type="text" [(ngModel)]="regForm.fatherName" placeholder="Father's full name">
+          </div>
+
+          <!-- Compliance -->
+          <div class="section-header">COMPLIANCE DETAILS</div>
+          <div class="form-row">
+            <div class="input-group">
+              <label>PAN Number <span class="req">*</span></label>
+              <input type="text" [(ngModel)]="regForm.pan" placeholder="ABCDE1234F">
+            </div>
+            <div class="input-group">
+              <label>Aadhaar Number <span class="req">*</span></label>
+              <input type="text" [(ngModel)]="regForm.aadhaar" placeholder="12-digit number">
+            </div>
+            <div class="input-group">
+              <label>PF Number</label>
+              <input type="text" [(ngModel)]="regForm.pf" placeholder="Optional">
+            </div>
+            <div class="input-group">
+              <label>UAN Number</label>
+              <input type="text" [(ngModel)]="regForm.uan" placeholder="Optional">
+            </div>
+          </div>
+
+          <!-- Bank -->
+          <div class="section-header">BANK DETAILS</div>
+          <div class="form-row">
+            <div class="input-group">
+              <label>Bank Name <span class="req">*</span></label>
+              <input type="text" [(ngModel)]="regForm.bank" placeholder="e.g. HDFC Bank">
+            </div>
+            <div class="input-group">
+              <label>Account Number <span class="req">*</span></label>
+              <input type="text" [(ngModel)]="regForm.acc" placeholder="Account number">
+            </div>
+            <div class="input-group">
+              <label>IFSC Code <span class="req">*</span></label>
+              <input type="text" [(ngModel)]="regForm.ifsc" placeholder="HDFC0001234">
+            </div>
+            <div class="input-group">
+              <label>Pay Mode</label>
+              <select [(ngModel)]="regForm.payMode">
+                <option value="Bank Transfer">Bank Transfer</option>
+                <option value="Cheque">Cheque</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Work -->
+          <div class="section-header">WORK DETAILS</div>
+          <div class="form-row">
+            <div class="input-group">
+              <label>Department <span class="req">*</span></label>
+              <select [(ngModel)]="regForm.dept">
+                <option>Accounts</option>
+                <option>Engineering</option>
+                <option>Information Technology</option>
+                <option>F&B Production</option>
+                <option>Adventure</option>
+                <option>Quality Control</option>
+                <option>Human Resources</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Designation <span class="req">*</span></label>
+              <input type="text" [(ngModel)]="regForm.desig" placeholder="Job title">
+            </div>
+            <div class="input-group">
+              <label>Date of Joining <span class="req">*</span></label>
+              <input type="date" [(ngModel)]="regForm.doj">
+            </div>
+            <div class="input-group">
+              <label>Location / Branch</label>
+              <input type="text" [(ngModel)]="regForm.location" placeholder="e.g. Patnitop Site">
+            </div>
+          </div>
+
+          <!-- Documents -->
+          <div class="section-header">DOCUMENT UPLOAD (REQUIRED)</div>
+          <div class="upload-grid">
+            <div class="upload-box" [class.done]="uploads.pan" (click)="markUpload('pan')">
+              <div class="upload-icon">{{ uploads.pan ? '✓' : '🗂️' }}</div>
+              <div class="upload-title">PAN Card <span class="req">*</span></div>
+              <div class="upload-hint">{{ uploads.pan ? 'Uploaded successfully' : 'Click to upload PDF/JPG · Required' }}</div>
+            </div>
+            <div class="upload-box" [class.done]="uploads.aadhaar" (click)="markUpload('aadhaar')">
+              <div class="upload-icon">{{ uploads.aadhaar ? '✓' : '🪪' }}</div>
+              <div class="upload-title">Aadhaar Card <span class="opt">(Optional)</span></div>
+              <div class="upload-hint">{{ uploads.aadhaar ? 'Uploaded successfully' : 'Click to upload PDF/JPG · Optional' }}</div>
+            </div>
+            <div class="upload-box full-width" [class.done]="uploads.bank" (click)="markUpload('bank')">
+              <div class="upload-icon">{{ uploads.bank ? '✓' : '🏦' }}</div>
+              <div class="upload-title">Bank Passbook / Cancelled Cheque <span class="req">*</span></div>
+              <div class="upload-hint">{{ uploads.bank ? 'Uploaded successfully' : 'Click to upload PDF/JPG/PNG · Required' }}</div>
+            </div>
+          </div>
+
+        </div>
+
+        <button class="btn-login" style="margin-top: 14px;" (click)="submitRegistration()">Submit for Approval →</button>
       </div>
+
     </div>
 
     <div class="footer-text">PayCore v3.0 · Secured · Enterprise Payroll</div>

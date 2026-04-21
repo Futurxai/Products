@@ -13,8 +13,23 @@ import { PayrollCalcService } from '../../services/payroll-calc';
 export class EmployeeDashboardPage {
 
   tab: 'home' | 'payslip' | 'profile' = 'home';
+  sidebarOpen = false;
   user: Employee;
   month = 'March 2026';
+
+  navItems = [
+    { id: 'home', icon: '🏠', label: 'Dashboard' },
+    { id: 'payslip', icon: '📄', label: 'Payslip' },
+    { id: 'profile', icon: '👤', label: 'My Profile' }
+  ];
+
+  get pageTitle(): string {
+    const m: any = { home: 'Dashboard', payslip: 'My Payslips', profile: 'My Profile' };
+    return m[this.tab] || 'Dashboard';
+  }
+
+  toggleSidebar() { this.sidebarOpen = !this.sidebarOpen; }
+  closeSidebar() { this.sidebarOpen = false; }
 
   // Payslip state
   months = PAYSLIP_MONTHS;
@@ -50,6 +65,7 @@ export class EmployeeDashboardPage {
   setTab(t: 'home' | 'payslip' | 'profile') {
     this.tab = t;
     if (t === 'profile') { this.editing = false; this.resetEditModel(); }
+    if (window.innerWidth < 900) this.closeSidebar();
   }
 
   selectMonth(label: string) {

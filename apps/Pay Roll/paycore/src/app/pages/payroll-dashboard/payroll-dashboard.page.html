@@ -1,28 +1,55 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar class="pc-toolbar">
-    <div class="toolbar-inner">
-      <div class="brand"><span class="brand-icon">P</span>Pay<span class="brand-accent">Core</span></div>
-      <div class="user-info">
-        <span class="role-pill payroll">Payroll</span>
-        <span class="user-name">{{ user?.name || 'User' }}</span>
-        <button class="btn-logout" (click)="logout()">Sign Out</button>
+<ion-content class="pc-bg" scrollY="false">
+  <div class="layout">
+
+    <!-- ========== SIDEBAR ========== -->
+    <div class="sb-overlay" [class.open]="sidebarOpen" (click)="closeSidebar()"></div>
+    <nav class="sidebar" [class.open]="sidebarOpen">
+      <div class="sb-logo">
+        <div class="sb-logo-icon">P</div>
+        <div class="sb-logo-text">Pay<span>Core</span></div>
       </div>
-    </div>
-  </ion-toolbar>
 
-  <ion-toolbar class="tab-bar">
-    <ion-segment [value]="tab" (ionChange)="setTab($any($event.detail.value))" mode="md" scrollable="true">
-      <ion-segment-button value="home"><ion-label>Dashboard</ion-label></ion-segment-button>
-      <ion-segment-button value="employees"><ion-label>Employees</ion-label></ion-segment-button>
-      <ion-segment-button value="salary"><ion-label>Salary Calc</ion-label></ion-segment-button>
-      <ion-segment-button value="taxpay"><ion-label>TaxPay</ion-label></ion-segment-button>
-      <ion-segment-button value="disbursed"><ion-label>Disbursed</ion-label></ion-segment-button>
-      <ion-segment-button value="payslips"><ion-label>Payslips</ion-label></ion-segment-button>
-    </ion-segment>
-  </ion-toolbar>
-</ion-header>
+      <div class="sb-nav">
+        <div class="sb-section-title">Navigation</div>
+        <button *ngFor="let item of navItems" class="sb-item" [class.active]="tab === item.id"
+                (click)="setTab($any(item.id))">
+          <span class="sb-icon">{{ item.icon }}</span>
+          {{ item.label }}
+        </button>
+      </div>
 
-<ion-content class="pc-bg">
+      <div class="sb-footer">
+        <div class="sb-user">
+          <div class="sb-avatar">{{ user?.initials || 'VP' }}</div>
+          <div>
+            <div class="sb-user-name">{{ user?.name || 'User' }}</div>
+            <div class="sb-user-role">Payroll Team</div>
+          </div>
+        </div>
+        <button class="sb-logout" (click)="logout()">🚪 Sign Out</button>
+      </div>
+    </nav>
+
+    <!-- ========== MAIN AREA ========== -->
+    <div class="main-area">
+
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="hamburger" (click)="toggleSidebar()">☰</button>
+          <div class="topbar-title">{{ pageTitle }}</div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn">
+            🔔
+            <span *ngIf="pendingCount > 0" class="notif-dot">{{ pendingCount }}</span>
+          </button>
+          <div class="topbar-avatar">{{ user?.initials || 'VP' }}</div>
+        </div>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="content-area">
 
   <!-- DASHBOARD -->
   <div *ngIf="tab === 'home'" class="panel">
@@ -564,4 +591,7 @@
     </div>
   </div>
 
+      </div><!-- /content-area -->
+    </div><!-- /main-area -->
+  </div><!-- /layout -->
 </ion-content>

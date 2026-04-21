@@ -34,4 +34,25 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import "@ionic/angular/css/palettes/dark.system.css";
+/* @import "@ionic/angular/css/palettes/dark.system.css"; */
+
+/* Force form inputs inside role pages to white bg + dark text (fix dark mode visibility) */
+.pc-bg select,
+.pc-bg input,
+.pc-bg textarea {
+  background-color: #ffffff !important;
+  color: #113a98 !important;
+  color-scheme: light;
+}
+
+.pc-bg select option {
+  background-color: #ffffff !important;
+  color: #6b7488 !important;
+}
+
+.pc-bg input[readonly],
+.pc-bg input:disabled,
+.pc-bg select:disabled {
+  background-color: #f8fafc !important;
+  color: #64748b !important;
+}

@@ -15,7 +15,32 @@ type PayrollTab = 'home' | 'employees' | 'salary' | 'taxpay' | 'disbursed' | 'pa
 export class PayrollDashboardPage {
 
   tab: PayrollTab = 'home';
+  sidebarOpen = false;
   user: any;
+
+  navItems = [
+    { id: 'home', icon: '🏠', label: 'Dashboard' },
+    { id: 'employees', icon: '👥', label: 'Employees' },
+    { id: 'salary', icon: '💰', label: 'Salary Calculation' },
+    { id: 'taxpay', icon: '🧾', label: 'TaxPay' },
+    { id: 'disbursed', icon: '✅', label: 'Disbursed History' },
+    { id: 'payslips', icon: '📄', label: 'Payslips' }
+  ];
+
+  get pageTitle(): string {
+    const m: any = {
+      home: 'Dashboard',
+      employees: 'Employee Management',
+      salary: 'Salary Calculation',
+      taxpay: 'TaxPay Calculation',
+      disbursed: 'Disbursed History',
+      payslips: 'Payslip Management'
+    };
+    return m[this.tab] || 'Dashboard';
+  }
+
+  toggleSidebar() { this.sidebarOpen = !this.sidebarOpen; }
+  closeSidebar() { this.sidebarOpen = false; }
 
   // Salary month selector
   selMonth = 'March 2026';
@@ -50,7 +75,10 @@ export class PayrollDashboardPage {
     if (!state.salaryMonths[this.selMonth]) state.salaryMonths[this.selMonth] = { excluded: [] };
   }
 
-  setTab(t: PayrollTab) { this.tab = t; }
+  setTab(t: PayrollTab) {
+    this.tab = t;
+    if (window.innerWidth < 900) this.closeSidebar();
+  }
 
   // ============ COMPUTED ============
   get totalEmployees(): number { return this.state.employees.length; }

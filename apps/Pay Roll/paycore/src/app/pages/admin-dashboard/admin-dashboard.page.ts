@@ -15,7 +15,28 @@ type AdminTab = 'home' | 'approvals' | 'users' | 'records';
 export class AdminDashboardPage {
 
   tab: AdminTab = 'home';
+  sidebarOpen = false;
   user: any;
+
+  navItems = [
+    { id: 'home', icon: '🏠', label: 'Dashboard' },
+    { id: 'approvals', icon: '✅', label: 'Approvals' },
+    { id: 'users', icon: '👥', label: 'User Management' },
+    { id: 'records', icon: '🧾', label: 'Employee Records' }
+  ];
+
+  get pageTitle(): string {
+    const m: any = {
+      home: 'Admin Dashboard',
+      approvals: 'Approval Management',
+      users: 'User Management',
+      records: 'Employee Records'
+    };
+    return m[this.tab] || 'Dashboard';
+  }
+
+  toggleSidebar() { this.sidebarOpen = !this.sidebarOpen; }
+  closeSidebar() { this.sidebarOpen = false; }
 
   // Approval review
   reviewingAppr: Approval | null = null;
@@ -40,7 +61,10 @@ export class AdminDashboardPage {
     this.user = state.getUser();
   }
 
-  setTab(t: AdminTab) { this.tab = t; }
+  setTab(t: AdminTab) {
+    this.tab = t;
+    if (window.innerWidth < 900) this.closeSidebar();
+  }
 
   get totalEmp(): number { return this.state.employees.length; }
   get payrollUsers(): number { return this.state.users.filter(u => u.role === 'payroll').length; }
