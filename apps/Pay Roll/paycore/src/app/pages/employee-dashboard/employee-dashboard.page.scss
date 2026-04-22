@@ -19,6 +19,8 @@
   height: 100vh;
   z-index: 200;
   transition: transform 0.25s;
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 .sb-logo {
@@ -198,17 +200,19 @@
 }
 
 .topbar {
-  height: 56px;
+  min-height: 56px;
   background: #fff;
   border-bottom: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 22px;
+  padding-top: env(safe-area-inset-top, 0);
   position: sticky;
   top: 0;
   z-index: 100;
   flex-shrink: 0;
+  box-sizing: content-box;
 }
 
 .topbar-left {
@@ -221,13 +225,19 @@
   display: none;
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 22px;
   cursor: pointer;
-  color: #64748b;
-  padding: 4px 8px;
-  border-radius: 5px;
+  color: #0f172a;
+  padding: 8px 12px;
+  border-radius: 6px;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: rgba(26, 86, 219, 0.15);
+  touch-action: manipulation;
 
-  &:hover { background: #f1f5f9; }
+  &:hover, &:active { background: #f1f5f9; }
 }
 
 .topbar-title {
@@ -296,6 +306,7 @@
   overflow-x: hidden;
   min-height: 0;
   padding: 20px 0;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0) + 24px);
   -webkit-overflow-scrolling: touch;
 }
 
@@ -816,13 +827,29 @@
 }
 
 @media (max-width: 768px) {
-  .stat-grid { grid-template-columns: 1fr; }
+  .stat-grid { grid-template-columns: 1fr; padding: 0 14px 14px; gap: 10px; }
   .toolbar-inner { padding: 0 12px; }
   .user-info { gap: 6px; }
   .role-pill, .user-name { font-size: 10px; }
   .btn-logout { padding: 4px 8px; font-size: 11px; }
   .ps-grid { grid-template-columns: repeat(2, 1fr); }
   .form-grid { grid-template-columns: 1fr; }
-  .payslip-card { padding: 14px; }
+  .payslip-card { padding: 14px; margin: 0 14px 14px; }
   .net-value { font-size: 18px; }
+
+  .card { margin: 0 14px 14px; }
+  .page-title { padding: 14px 18px 8px; }
+  .page-title h2 { font-size: 18px; }
+  .info-banner { margin: 0 14px 12px; }
+  .topbar { padding: 0 12px; padding-top: env(safe-area-inset-top, 0); }
+  .topbar-title { font-size: 14px; }
+  .topbar-icon-btn { width: 36px; height: 36px; }
+  .content-area { padding: 14px 0 30px; padding-bottom: calc(env(safe-area-inset-bottom, 0) + 30px); }
+
+  .stat-card { padding: 14px 16px; }
+  .stat-card .stat-value { font-size: 18px; }
+  .stat-card .stat-value.money { font-size: 16px; }
+
+  /* Sidebar becomes full-width drawer on mobile */
+  .sidebar { width: 260px; }
 }
