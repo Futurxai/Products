@@ -298,6 +298,18 @@
     .upload-hint { color: #6ee7b7; }
   }
 
+  &.uploading {
+    border-color: #1a56db;
+    background: rgba(26, 86, 219, 0.1);
+    pointer-events: none;
+    opacity: 0.75;
+
+    .upload-title { color: #93c5fd; }
+    .upload-hint { color: #93c5fd; }
+  }
+
+  display: block;
+
   &.full-width {
     grid-column: span 2;
   }

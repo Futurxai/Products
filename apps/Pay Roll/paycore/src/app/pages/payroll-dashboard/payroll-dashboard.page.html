@@ -151,7 +151,10 @@
     <div class="card">
       <div class="card-head">
         <div class="card-title">👥 All Employees</div>
-        <button class="btn btn-primary sm" (click)="startAddEmp()">+ Add Employee</button>
+        <div class="btn-row">
+          <button class="btn btn-outline sm" (click)="exportEmployees()">📥 Export CSV</button>
+          <button class="btn btn-primary sm" (click)="startAddEmp()">+ Add Employee</button>
+        </div>
       </div>
 
       <div *ngIf="addingEmp" class="card-body" style="border-bottom: 1px solid #e2e8f0;">
@@ -326,9 +329,12 @@
             {{ heldEmps.length }} on hold
           </div>
         </div>
-        <button class="btn btn-primary sm" (click)="confirmDisbursement()" [disabled]="state.isPayrollLocked() || includedEmps.length === 0">
-          💳 Disburse Salary
-        </button>
+        <div class="btn-row">
+          <button class="btn btn-outline sm" (click)="exportSalary()" [disabled]="includedEmps.length === 0">📥 Export CSV</button>
+          <button class="btn btn-primary sm" (click)="confirmDisbursement()" [disabled]="state.isPayrollLocked() || includedEmps.length === 0">
+            💳 Disburse Salary
+          </button>
+        </div>
       </div>
       <div class="table-wrap">
         <table>
@@ -430,7 +436,10 @@
     <div class="card">
       <div class="card-head">
         <div class="card-title">🧾 TaxPay Calculator</div>
-        <button class="btn btn-primary sm" (click)="applyTDSToSalary()">✓ Apply TDS to Salary Calc</button>
+        <div class="btn-row">
+          <button class="btn btn-outline sm" (click)="exportTax()">📥 Export CSV</button>
+          <button class="btn btn-primary sm" (click)="applyTDSToSalary()">✓ Apply TDS to Salary Calc</button>
+        </div>
       </div>
       <div class="table-wrap">
         <table>
@@ -533,6 +542,7 @@
     <div *ngFor="let d of state.disbursedHistory" class="card">
       <div class="card-head">
         <div class="card-title">✓ {{ d.month }} — Disbursed on {{ d.date }}</div>
+        <button class="btn btn-outline sm" (click)="exportDisbursement(d.month)">📥 Export CSV</button>
       </div>
       <div class="table-wrap">
         <table>

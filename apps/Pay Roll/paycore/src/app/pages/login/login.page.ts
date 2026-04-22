@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { AppStateService, UserRole } from '../../services/app-state';
+import { SupabaseService } from '../../services/supabase.service';
 
 type EmpOption = 'existing' | 'register';
 
@@ -25,11 +26,15 @@ export class LoginPage {
   // Registration form
   regForm: any = this.blankForm();
 
-  // Upload state
-  uploads: any = { pan: false, aadhaar: false, bank: false };
+  // Upload state: tracks uploaded file URLs (real Supabase Storage)
+  uploads: { pan: string | null; aadhaar: string | null; bank: string | null } =
+    { pan: null, aadhaar: null, bank: null };
+  uploading: { pan: boolean; aadhaar: boolean; bank: boolean } =
+    { pan: false, aadhaar: false, bank: false };
 
   constructor(
     private state: AppStateService,
+    private supabase: SupabaseService,
     private router: Router,
     private toastCtrl: ToastController
   ) {}
@@ -54,16 +59,43 @@ export class LoginPage {
     };
   }
 
-  async markUpload(type: string) {
-    this.uploads[type] = true;
-    const labels: any = { pan: 'PAN Card', aadhaar: 'Aadhaar Card', bank: 'Bank Passbook' };
-    const t = await this.toastCtrl.create({
-      message: `${labels[type]} uploaded`,
-      duration: 1500,
-      color: 'success',
-      position: 'top'
-    });
-    await t.present();
+  async uploadFile(event: Event, type: 'pan' | 'aadhaar' | 'bank') {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      const t = await this.toastCtrl.create({
+        message: 'File too large (max 5MB)',
+        duration: 2000, color: 'danger', position: 'top'
+      });
+      await t.present();
+      input.value = '';
+      return;
+    }
+
+    const empCode = this.regForm.code || 'pending-' + Date.now();
+    this.uploading[type] = true;
+    const url = await this.supabase.uploadDoc(empCode, type, file);
+    this.uploading[type] = false;
+
+    if (url) {
+      this.uploads[type] = url;
+      const labels: any = { pan: 'PAN Card', aadhaar: 'Aadhaar Card', bank: 'Bank Passbook' };
+      const t = await this.toastCtrl.create({
+        message: `${labels[type]} uploaded successfully`,
+        duration: 1500, color: 'success', position: 'top'
+      });
+      await t.present();
+    } else {
+      const t = await this.toastCtrl.create({
+        message: 'Upload failed. Please try again.',
+        duration: 2500, color: 'danger', position: 'top'
+      });
+      await t.present();
+      input.value = '';
+    }
   }
 
   async doLogin(): Promise<void> {
@@ -129,7 +161,14 @@ export class LoginPage {
       date: 'Just now',
       status: 'Pending',
       docs: true,
-      data: { ...f }
+      data: {
+        ...f,
+        docUrls: {
+          pan: this.uploads.pan,
+          aadhaar: this.uploads.aadhaar,
+          bank: this.uploads.bank
+        }
+      }
     });
 
     this.registrationPending = true;
@@ -139,6 +178,6 @@ export class LoginPage {
     this.registrationPending = false;
     this.empOption = 'existing';
     this.regForm = this.blankForm();
-    this.uploads = { pan: false, aadhaar: false, bank: false };
+    this.uploads = { pan: null, aadhaar: null, bank: null };
   }
 }

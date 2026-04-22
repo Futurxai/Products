@@ -147,6 +147,18 @@ export class SupabaseService {
     if (error) console.error('insertDisbursement:', error);
   }
 
+  // ========== FILE STORAGE ==========
+  async uploadDoc(empCode: string, docType: 'pan' | 'aadhaar' | 'bank', file: File): Promise<string | null> {
+    const ext = file.name.split('.').pop() || 'bin';
+    const path = `${empCode}/${docType}-${Date.now()}.${ext}`;
+    const { error } = await this.client.storage
+      .from('registration-docs')
+      .upload(path, file, { cacheControl: '3600', upsert: true });
+    if (error) { console.error('uploadDoc:', error); return null; }
+    const { data } = this.client.storage.from('registration-docs').getPublicUrl(path);
+    return data?.publicUrl || null;
+  }
+
   // ========== MAPPERS ==========
   private fromDbEmployee(r: any): Employee {
     return {

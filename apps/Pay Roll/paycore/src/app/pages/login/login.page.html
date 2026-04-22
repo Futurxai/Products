@@ -201,21 +201,24 @@
           <!-- Documents -->
           <div class="section-header">DOCUMENT UPLOAD (REQUIRED)</div>
           <div class="upload-grid">
-            <div class="upload-box" [class.done]="uploads.pan" (click)="markUpload('pan')">
-              <div class="upload-icon">{{ uploads.pan ? '✓' : '🗂️' }}</div>
+            <label class="upload-box" [class.done]="uploads.pan" [class.uploading]="uploading.pan">
+              <input type="file" accept="image/*,application/pdf" (change)="uploadFile($event, 'pan')" [disabled]="uploading.pan" style="display: none;">
+              <div class="upload-icon">{{ uploading.pan ? '⏳' : (uploads.pan ? '✓' : '🗂️') }}</div>
               <div class="upload-title">PAN Card <span class="req">*</span></div>
-              <div class="upload-hint">{{ uploads.pan ? 'Uploaded successfully' : 'Click to upload PDF/JPG · Required' }}</div>
-            </div>
-            <div class="upload-box" [class.done]="uploads.aadhaar" (click)="markUpload('aadhaar')">
-              <div class="upload-icon">{{ uploads.aadhaar ? '✓' : '🪪' }}</div>
+              <div class="upload-hint">{{ uploading.pan ? 'Uploading...' : (uploads.pan ? 'Uploaded ✓ Tap to replace' : 'Tap to upload PDF/JPG · Required') }}</div>
+            </label>
+            <label class="upload-box" [class.done]="uploads.aadhaar" [class.uploading]="uploading.aadhaar">
+              <input type="file" accept="image/*,application/pdf" (change)="uploadFile($event, 'aadhaar')" [disabled]="uploading.aadhaar" style="display: none;">
+              <div class="upload-icon">{{ uploading.aadhaar ? '⏳' : (uploads.aadhaar ? '✓' : '🪪') }}</div>
               <div class="upload-title">Aadhaar Card <span class="opt">(Optional)</span></div>
-              <div class="upload-hint">{{ uploads.aadhaar ? 'Uploaded successfully' : 'Click to upload PDF/JPG · Optional' }}</div>
-            </div>
-            <div class="upload-box full-width" [class.done]="uploads.bank" (click)="markUpload('bank')">
-              <div class="upload-icon">{{ uploads.bank ? '✓' : '🏦' }}</div>
+              <div class="upload-hint">{{ uploading.aadhaar ? 'Uploading...' : (uploads.aadhaar ? 'Uploaded ✓ Tap to replace' : 'Tap to upload PDF/JPG · Optional') }}</div>
+            </label>
+            <label class="upload-box full-width" [class.done]="uploads.bank" [class.uploading]="uploading.bank">
+              <input type="file" accept="image/*,application/pdf" (change)="uploadFile($event, 'bank')" [disabled]="uploading.bank" style="display: none;">
+              <div class="upload-icon">{{ uploading.bank ? '⏳' : (uploads.bank ? '✓' : '🏦') }}</div>
               <div class="upload-title">Bank Passbook / Cancelled Cheque <span class="req">*</span></div>
-              <div class="upload-hint">{{ uploads.bank ? 'Uploaded successfully' : 'Click to upload PDF/JPG/PNG · Required' }}</div>
-            </div>
+              <div class="upload-hint">{{ uploading.bank ? 'Uploading...' : (uploads.bank ? 'Uploaded ✓ Tap to replace' : 'Tap to upload PDF/JPG/PNG · Required') }}</div>
+            </label>
           </div>
 
         </div>

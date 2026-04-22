@@ -186,8 +186,24 @@
             <span *ngFor="let c of getChangesList(reviewingAppr.changes)">• {{ c }}</span>
           </div>
         </div>
-        <div *ngIf="reviewingAppr.docs" class="info-banner success" style="margin-bottom: 14px;">
-          📎 Documents attached: Aadhaar, PAN, Bank Passbook
+        <div *ngIf="reviewingAppr.docs && reviewingAppr.data?.docUrls" style="margin-bottom: 14px;">
+          <div style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">
+            📎 Attached Documents
+          </div>
+          <div class="doc-list">
+            <a *ngIf="reviewingAppr.data.docUrls.pan" [href]="reviewingAppr.data.docUrls.pan" target="_blank" class="doc-link">
+              🗂️ PAN Card <span>View →</span>
+            </a>
+            <a *ngIf="reviewingAppr.data.docUrls.aadhaar" [href]="reviewingAppr.data.docUrls.aadhaar" target="_blank" class="doc-link">
+              🪪 Aadhaar Card <span>View →</span>
+            </a>
+            <a *ngIf="reviewingAppr.data.docUrls.bank" [href]="reviewingAppr.data.docUrls.bank" target="_blank" class="doc-link">
+              🏦 Bank Passbook <span>View →</span>
+            </a>
+          </div>
+        </div>
+        <div *ngIf="reviewingAppr.docs && !reviewingAppr.data?.docUrls" class="info-banner info" style="margin-bottom: 14px;">
+          📎 Documents attached (legacy — no URLs available)
         </div>
         <div class="btn-row" style="justify-content: flex-end;">
           <button class="btn btn-outline sm" (click)="closeReview()">Close</button>

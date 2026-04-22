@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController, AlertController } from '@ionic/angular';
-import { AppStateService, Employee, Holiday, PAYSLIP_MONTHS } from '../../services/app-state';
+import { AppStateService, Employee, Holiday } from '../../services/app-state';
 import { PayrollCalcService } from '../../services/payroll-calc';
+import { ExportService } from '../../services/export.service';
 
 type PayrollTab = 'home' | 'employees' | 'salary' | 'taxpay' | 'disbursed' | 'payslips';
 
@@ -69,7 +70,8 @@ export class PayrollDashboardPage {
     public calc: PayrollCalcService,
     private router: Router,
     private toastCtrl: ToastController,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private exportSvc: ExportService
   ) {
     this.user = state.getUser();
     if (!state.salaryMonths[this.selMonth]) state.salaryMonths[this.selMonth] = { excluded: [] };
@@ -436,6 +438,113 @@ export class PayrollDashboardPage {
       ]
     });
     await a.present();
+  }
+
+  // ========== EXPORTS ==========
+  exportSalary() {
+    const fmt = (n: number) => String(Math.round(n || 0));
+    this.exportSvc.exportCSV(
+      `Salary-${this.selMonth.replace(' ', '-')}.csv`,
+      [
+        { key: 'code', label: 'Emp Code' },
+        { key: 'name', label: 'Name' },
+        { key: 'dept', label: 'Department' },
+        { key: 'basic', label: 'Basic', formatter: (v) => fmt(v) },
+        { key: 'hra', label: 'HRA', formatter: (v) => fmt(v) },
+        { key: 'special', label: 'Special Allowance', formatter: (v) => fmt(v) },
+        { key: 'gross', label: 'Gross', formatter: (_, r) => fmt(r.basic + r.hra + r.special) },
+        { key: 'pfTag', label: 'PF Tag' },
+        { key: 'pf', label: 'PF (Employee)', formatter: (_, r) => fmt(this.calc.calcPF(r)) },
+        { key: 'esi', label: 'ESI (Employee)', formatter: (_, r) => fmt(this.calc.calcESI(r)) },
+        { key: 'pt', label: 'Professional Tax', formatter: (_, r) => fmt(this.calc.calcPT(r)) },
+        { key: 'incomeTax', label: 'Monthly TDS', formatter: (v) => fmt(v || 0) },
+        { key: 'totalDed', label: 'Total Deductions', formatter: (_, r) => fmt(this.empTotalDed(r)) },
+        { key: 'net', label: 'Net Pay', formatter: (_, r) => fmt(this.empNet(r)) },
+        { key: 'bank', label: 'Bank' },
+        { key: 'acc', label: 'Account Number' },
+        { key: 'ifsc', label: 'IFSC Code' },
+      ],
+      this.includedEmps
+    );
+    this.showToast(`Exported ${this.includedEmps.length} employees`, 'success');
+  }
+
+  exportTax() {
+    const fmt = (n: number) => String(Math.round(n || 0));
+    this.exportSvc.exportCSV(
+      `TaxPay-FY-2025-26.csv`,
+      [
+        { key: 'code', label: 'Emp Code' },
+        { key: 'name', label: 'Name' },
+        { key: 'dept', label: 'Department' },
+        { key: 'taxRegime', label: 'Regime', formatter: (v) => v === 'old' ? 'N (Old)' : 'Y (New)' },
+        { key: 'totalGross', label: 'Total Income', formatter: (_, r) => fmt(this.getTaxWorksheet(r).totalGross) },
+        { key: 'stdDed', label: 'Std Deduction', formatter: (_, r) => fmt(this.getTaxWorksheet(r).stdDed) },
+        { key: 'rounded', label: 'Taxable Income', formatter: (_, r) => fmt(this.getTaxWorksheet(r).rounded) },
+        { key: 'annualTax', label: 'Annual Tax', formatter: (_, r) => fmt(this.getTaxWorksheet(r).annualTax) },
+        { key: 'monthlyTDS', label: 'Monthly TDS', formatter: (_, r) => fmt(this.getTaxWorksheet(r).monthlyTDS) },
+      ],
+      this.taxActiveEmps
+    );
+    this.showToast('Tax report exported', 'success');
+  }
+
+  exportDisbursement(month: string) {
+    const d = this.state.disbursedHistory.find(x => x.month === month);
+    if (!d) { this.showToast('No disbursement data', 'danger'); return; }
+    const fmt = (n: number) => String(Math.round(n || 0));
+    this.exportSvc.exportCSV(
+      `Disbursement-${month.replace(' ', '-')}.csv`,
+      [
+        { key: 'code', label: 'Emp Code' },
+        { key: 'name', label: 'Name' },
+        { key: 'dept', label: 'Department' },
+        { key: 'basic', label: 'Basic', formatter: (v) => fmt(v) },
+        { key: 'hra', label: 'HRA', formatter: (v) => fmt(v) },
+        { key: 'special', label: 'Special', formatter: (v) => fmt(v) },
+        { key: 'gross', label: 'Gross', formatter: (_, r) => fmt(r.basic + r.hra + r.special) },
+        { key: 'pf', label: 'PF', formatter: (_, r) => fmt(this.calc.calcPF(r)) },
+        { key: 'esi', label: 'ESI', formatter: (_, r) => fmt(this.calc.calcESI(r)) },
+        { key: 'pt', label: 'PT', formatter: (_, r) => fmt(this.calc.calcPT(r)) },
+        { key: 'net', label: 'Net Pay', formatter: (_, r) => fmt(this.empNet(r)) },
+        { key: 'bank', label: 'Bank' },
+        { key: 'acc', label: 'Account Number' },
+      ],
+      d.employees
+    );
+    this.showToast(`Exported ${d.employees.length} disbursements`, 'success');
+  }
+
+  exportEmployees() {
+    const fmt = (n: number) => String(Math.round(n || 0));
+    this.exportSvc.exportCSV(
+      'Employees.csv',
+      [
+        { key: 'code', label: 'Code' },
+        { key: 'firstName', label: 'First Name' },
+        { key: 'lastName', label: 'Last Name' },
+        { key: 'dept', label: 'Department' },
+        { key: 'desig', label: 'Designation' },
+        { key: 'status', label: 'Status' },
+        { key: 'location', label: 'Location' },
+        { key: 'ctc', label: 'Annual CTC', formatter: (v) => fmt(v) },
+        { key: 'basic', label: 'Basic/Mo', formatter: (v) => fmt(v) },
+        { key: 'hra', label: 'HRA/Mo', formatter: (v) => fmt(v) },
+        { key: 'special', label: 'Special/Mo', formatter: (v) => fmt(v) },
+        { key: 'pan', label: 'PAN' },
+        { key: 'aadhaar', label: 'Aadhaar' },
+        { key: 'bank', label: 'Bank' },
+        { key: 'acc', label: 'Account Number' },
+        { key: 'ifsc', label: 'IFSC' },
+        { key: 'pfTag', label: 'PF Tag' },
+        { key: 'esiApply', label: 'ESI Applicable' },
+        { key: 'ptApply', label: 'PT Applicable' },
+        { key: 'phone', label: 'Phone' },
+        { key: 'personalEmail', label: 'Personal Email' },
+      ],
+      this.filteredEmployees
+    );
+    this.showToast(`Exported ${this.filteredEmployees.length} employees`, 'success');
   }
 
   private async showToast(message: string, color: string = 'primary') {
