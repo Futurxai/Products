@@ -7,14 +7,24 @@
       ".firebase",
       "**/node_modules/**"
     ],
+    "redirects": [
+      { "source": "/old/", "destination": "/old", "type": 301 }
+    ],
     "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
+      { "source": "/old", "destination": "/legacy.html" },
+      { "source": "/lovedigitally/premium", "destination": "/apps/lovedigitally-premium.html" },
+      { "source": "/api/order/create", "function": { "functionId": "createOrder", "region": "asia-south1" } },
+      { "source": "/api/order/verify", "function": { "functionId": "verifyOrder", "region": "asia-south1" } },
+      { "source": "/api/subscription/create", "function": { "functionId": "createSubscription", "region": "asia-south1" } },
+      { "source": "/api/subscription/verify", "function": { "functionId": "verifySubscription", "region": "asia-south1" } },
+      { "source": "/api/razorpay/webhook", "function": { "functionId": "razorpayWebhook", "region": "asia-south1" } }
     ]
   },
   "firestore": {
     "rules": "firestore.rules"
+  },
+  "functions": {
+    "source": "functions",
+    "ignore": ["node_modules", ".git", "*.log", ".env*"]
   }
 }

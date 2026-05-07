@@ -33,3 +33,13 @@ eatwell-mobile/ios/
 coverage/
 cypress/screenshots/
 cypress/videos/
+
+# Logs and backups
+*.log
+*.bak
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Stray placeholder files
+REPLACE_ME

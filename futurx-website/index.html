@@ -1,203 +1,977 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Futurx — Building mobile apps for India. EatWell, PGSeat, Payroll, LoveDigitally.">
-  <title>Futurx — Apps for India</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Futurx.ai — Be Relaxed. AI Does Everything.</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;1,9..40,300&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --sky:#38BDF8;--sky-dim:#0EA5E9;--sky-glow:#7DD3FC;--sky-faint:#BAE6FD;
+  --space:#020C1B;--space2:#030F1E;--card:#050E1A;
+  --glass:rgba(5,18,35,0.8);
+  --border:rgba(56,189,248,0.1);--border-md:rgba(56,189,248,0.22);--border-hi:rgba(56,189,248,0.5);
+  --text:#E0F2FE;--muted:#6B9AB5;--dim:#2E5468;
+  --fh:'Syne',sans-serif;--fb:'DM Sans',sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--space);color:var(--text);font-family:var(--fb);font-size:14px;line-height:1.6;overflow-x:hidden;cursor:default;}
+
+/* STARFIELD */
+#sf{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+.nb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(90px);}
+.nb1{width:600px;height:400px;top:-120px;left:-180px;background:radial-gradient(ellipse,rgba(56,189,248,0.05) 0%,transparent 70%);}
+.nb2{width:500px;height:500px;top:40%;right:-200px;background:radial-gradient(ellipse,rgba(14,165,233,0.04) 0%,transparent 70%);}
+.nb3{width:600px;height:300px;bottom:5%;left:15%;background:radial-gradient(ellipse,rgba(125,211,252,0.035) 0%,transparent 70%);}
+
+.page{position:relative;z-index:1;}
+
+/* ══ NAV ══════════════════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.9rem 4rem;
+  background:rgba(2,12,27,0.88);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.logo{font-family:var(--fh);font-size:1.3rem;font-weight:800;color:var(--sky);letter-spacing:-0.03em;text-decoration:none;}
+.logo span{color:rgba(224,242,254,0.28);font-weight:400;}
+
+.navl{display:flex;align-items:center;gap:0;list-style:none;}
+.navl>li{position:relative;}
+.navl>li>a{
+  display:flex;align-items:center;gap:5px;
+  color:rgba(224,242,254,0.6);text-decoration:none;
+  font-size:0.82rem;font-weight:300;padding:0.55rem 1rem;
+  transition:color .2s;border-radius:6px;
+  white-space:nowrap;
+}
+.navl>li>a:hover{color:#fff;}
+.navl>li>a .arr{font-size:0.6rem;transition:transform .25s;display:inline-block;opacity:0.5;}
+.navl>li:hover>a .arr{transform:rotate(180deg);}
+
+/* DROPDOWN */
+.dropdown{
+  position:absolute;top:calc(100% + 8px);left:0;
+  background:rgba(4,14,26,0.97);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border:0.5px solid var(--border-md);
+  border-radius:14px;
+  padding:0.5rem;
+  min-width:220px;
+  opacity:0;pointer-events:none;
+  transform:translateY(-6px);
+  transition:opacity .22s ease,transform .22s ease;
+  box-shadow:0 20px 50px rgba(0,0,0,0.5);
+}
+.navl>li:hover .dropdown{opacity:1;pointer-events:all;transform:translateY(0);}
+.dd-item{
+  display:flex;align-items:center;gap:10px;
+  padding:0.6rem 0.85rem;
+  border-radius:8px;
+  cursor:pointer;
+  transition:background .18s;
+  text-decoration:none;
+}
+.dd-item:hover{background:rgba(56,189,248,0.07);}
+.dd-icon{
+  width:28px;height:28px;border-radius:7px;
+  background:rgba(56,189,248,0.08);border:0.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.85rem;flex-shrink:0;
+}
+.dd-name{font-family:var(--fh);font-size:0.78rem;font-weight:700;color:#fff;}
+.dd-sub{font-size:0.68rem;color:var(--muted);font-weight:300;}
+.dd-sep{height:0.5px;background:var(--border);margin:0.35rem 0.5rem;}
+
+.navr{display:flex;align-items:center;gap:1rem;}
+.ncta{
+  background:var(--sky);color:#020C1B;border:none;
+  padding:0.46rem 1.2rem;border-radius:100px;
+  font-family:var(--fh);font-weight:700;font-size:0.78rem;
+  cursor:pointer;transition:opacity .2s,transform .15s;
+  text-decoration:none;display:inline-block;
+}
+.ncta:hover{opacity:0.88;transform:scale(1.03);}
+
+/* HAMBURGER */
+.hbg{display:none;flex-direction:column;gap:4px;background:none;border:none;padding:4px;cursor:pointer;}
+.hbg span{display:block;width:20px;height:1.5px;background:var(--text);border-radius:2px;transition:all .3s;}
+.hbg.op span:nth-child(1){transform:rotate(45deg) translate(4px,4px);}
+.hbg.op span:nth-child(2){opacity:0;}
+.hbg.op span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px);}
+
+/* MOBILE MENU */
+.mmenu{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(2,8,20,0.97);backdrop-filter:blur(30px);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;opacity:0;pointer-events:none;transition:opacity .3s;}
+.mmenu.op{opacity:1;pointer-events:all;}
+.mmenu a{font-family:var(--fh);font-size:1.6rem;font-weight:800;color:var(--text);text-decoration:none;transition:color .2s;}
+.mmenu a:hover{color:var(--sky);}
+
+/* ══ HERO ══════════════════════════════════════════════════ */
+.hero{
+  min-height:92vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;padding:8rem 2rem 5rem;
+  position:relative;overflow:hidden;
+}
+.orbit{position:absolute;border-radius:50%;border:0.5px solid rgba(56,189,248,0.07);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;}
+.orbit::after{content:'';position:absolute;width:7px;height:7px;background:var(--sky);border-radius:50%;top:-3.5px;left:50%;transform:translateX(-50%);box-shadow:0 0 10px var(--sky),0 0 20px rgba(56,189,248,0.35);}
+.oa{width:520px;height:520px;animation:ospin 50s linear infinite;}
+.ob{width:340px;height:340px;animation:ospin 30s linear infinite reverse;}
+.ob::after{top:auto;bottom:-3.5px;background:var(--sky-glow);}
+.oc{width:720px;height:720px;border-color:rgba(56,189,248,0.03);animation:ospin 80s linear infinite;}
+.oc::after{display:none;}
+@keyframes ospin{from{transform:translate(-50%,-50%) rotate(0deg);}to{transform:translate(-50%,-50%) rotate(360deg);}}
+
+.hbadge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(56,189,248,0.06);border:0.5px solid var(--border-md);
+  border-radius:100px;padding:0.32rem 1rem;
+  font-size:0.68rem;color:var(--sky-glow);letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:2rem;animation:fup .9s ease both;
+}
+.bdot{width:5px;height:5px;background:var(--sky);border-radius:50%;animation:pulse 2.2s ease-in-out infinite;box-shadow:0 0 7px var(--sky);}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(1.6);}}
+
+.hero h1{
+  font-family:var(--fh);
+  font-size:clamp(2.6rem,6.5vw,5.5rem);
+  font-weight:800;line-height:1.02;letter-spacing:-0.04em;color:#fff;
+  margin-bottom:0.4rem;animation:fup 1s .1s ease both;
+}
+.sky-line{display:block;color:var(--sky);text-shadow:0 0 60px rgba(56,189,248,0.2);animation:fup 1s .25s ease both;}
+.hsub{
+  font-size:0.95rem;color:var(--muted);font-weight:300;font-style:italic;
+  max-width:420px;margin:1.4rem auto 2.6rem;
+  animation:fup 1s .4s ease both;
+}
+.hctas{display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap;animation:fup 1s .55s ease both;}
+.btnp{background:var(--sky);color:#020C1B;border:none;padding:.72rem 1.9rem;border-radius:100px;font-family:var(--fh);font-weight:700;font-size:0.82rem;cursor:pointer;transition:opacity .2s,transform .2s,box-shadow .2s;text-decoration:none;display:inline-block;}
+.btnp:hover{opacity:.88;transform:translateY(-2px);box-shadow:0 12px 30px rgba(56,189,248,0.22);}
+.btng{background:transparent;color:var(--sky);border:0.5px solid var(--border-md);padding:.72rem 1.9rem;border-radius:100px;font-family:var(--fh);font-weight:700;font-size:0.82rem;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block;}
+.btng:hover{background:rgba(56,189,248,0.07);transform:translateY(-2px);border-color:var(--border-hi);}
+
+.srhint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--dim);font-size:0.62rem;letter-spacing:.12em;text-transform:uppercase;animation:fin 2s 1.2s both;}
+.sline{width:1px;height:36px;background:linear-gradient(to bottom,var(--sky),transparent);animation:ssc 2.2s ease-in-out infinite;}
+@keyframes ssc{0%,100%{opacity:.25;}50%{opacity:1;}}
+
+/* ══ TRUST STRIP ══════════════════════════════════════════ */
+.tstrip{display:flex;align-items:stretch;justify-content:center;flex-wrap:wrap;border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);background:rgba(3,15,30,0.5);}
+.tsi{display:flex;align-items:center;gap:8px;padding:0.9rem 2.2rem;font-size:0.74rem;color:var(--muted);letter-spacing:.05em;font-weight:300;border-right:0.5px solid var(--border);transition:color .2s;}
+.tsi:last-child{border-right:none;}
+.tsi:hover{color:var(--sky-faint);}
+.tsd{width:4px;height:4px;background:var(--sky);border-radius:50%;flex-shrink:0;}
+
+/* ══ PROOF BAR ══════════════════════════════════════════ */
+.proof{
+  display:flex;align-items:center;justify-content:center;
+  gap:5rem;flex-wrap:wrap;
+  padding:3.5rem 4rem;
+  border-bottom:0.5px solid var(--border);
+}
+.pstat{text-align:center;}
+.pnum{font-family:var(--fh);font-size:2.2rem;font-weight:800;color:#fff;display:block;line-height:1;letter-spacing:-0.03em;}
+.pnum span{color:var(--sky);}
+.plbl{font-size:0.7rem;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-top:.4rem;display:block;font-weight:300;}
+.pdiv{width:.5px;height:48px;background:var(--border);}
+
+/* ══ PRODUCTS SECTION ═════════════════════════════════════ */
+.products-section{
+  max-width:1100px;margin:0 auto;
+  padding:5rem 4rem;
+}
+.sec-header{text-align:center;margin-bottom:3rem;}
+.eyb{font-family:var(--fh);font-size:0.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sky-dim);font-weight:700;margin-bottom:.7rem;}
+.stit{font-family:var(--fh);font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:800;color:#fff;line-height:1.1;letter-spacing:-0.025em;}
+.ssub{color:var(--muted);font-weight:300;margin-top:.7rem;font-size:0.82rem;max-width:400px;margin-left:auto;margin-right:auto;}
+
+/* PRODUCT TABS */
+.prod-tabs{
+  display:flex;align-items:center;justify-content:center;
+  gap:.5rem;margin-bottom:2.5rem;
+  flex-wrap:wrap;
+}
+.ptab{
+  display:flex;align-items:center;gap:7px;
+  padding:.52rem 1.2rem;border-radius:100px;
+  background:transparent;
+  border:0.5px solid var(--border);
+  color:var(--muted);font-size:0.78rem;font-family:var(--fh);font-weight:700;
+  cursor:pointer;transition:all .22s;white-space:nowrap;
+}
+.ptab:hover{border-color:var(--border-md);color:var(--sky-faint);}
+.ptab.active{
+  background:rgba(56,189,248,0.1);
+  border-color:var(--border-hi);
+  color:var(--sky);
+}
+
+/* PRODUCT PANEL */
+.prod-panel{
+  display:none;
+  animation:panelIn .3s ease both;
+}
+.prod-panel.active{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;}
+@keyframes panelIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* LEFT: sub-product list */
+.sub-list{display:flex;flex-direction:column;gap:.6rem;}
+.sub-item{
+  background:var(--card);border:0.5px solid var(--border);
+  border-radius:12px;overflow:hidden;
+  transition:border-color .2s;
+}
+.sub-item.open{border-color:var(--border-md);}
+.sub-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.85rem 1rem;cursor:pointer;
+  transition:background .18s;
+}
+.sub-header:hover{background:rgba(56,189,248,0.04);}
+.sub-left{display:flex;align-items:center;gap:10px;}
+.sub-icon{
+  width:30px;height:30px;border-radius:8px;
+  background:rgba(56,189,248,0.08);border:0.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.85rem;flex-shrink:0;
+}
+.sub-name{font-family:var(--fh);font-size:0.8rem;font-weight:700;color:#fff;}
+.sub-arrow{
+  font-size:0.65rem;color:var(--muted);
+  transition:transform .25s;
+}
+.sub-item.open .sub-arrow{transform:rotate(180deg);color:var(--sky);}
+.sub-body{
+  max-height:0;overflow:hidden;
+  transition:max-height .35s ease;
+}
+.sub-item.open .sub-body{max-height:300px;}
+.sub-content{
+  padding:.1rem 1rem 1rem 1rem;
+  border-top:0.5px solid var(--border);
+}
+.sub-desc{font-size:0.76rem;color:var(--muted);font-weight:300;line-height:1.65;margin-bottom:.8rem;padding-top:.75rem;}
+.sub-features{list-style:none;display:flex;flex-direction:column;gap:.4rem;}
+.sub-features li{
+  font-size:0.74rem;color:rgba(224,242,254,0.65);
+  display:flex;align-items:center;gap:7px;font-weight:300;
+}
+.sub-features li::before{content:'';width:3px;height:3px;background:var(--sky);border-radius:50%;flex-shrink:0;}
+
+/* RIGHT: product showcase */
+.prod-showcase{
+  position:sticky;top:100px;
+}
+.showcase-card{
+  background:rgba(5,18,35,0.8);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:0.5px solid var(--border-md);
+  border-radius:18px;overflow:hidden;
+  box-shadow:0 30px 60px rgba(0,0,0,0.4),inset 0 1px 0 rgba(56,189,248,0.08);
+}
+.sc-hero{
+  padding:1.5rem;
+  border-bottom:0.5px solid var(--border);
+  background:rgba(56,189,248,0.02);
+}
+.sc-product-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(56,189,248,0.08);border:0.5px solid var(--border-md);
+  border-radius:100px;padding:.22rem .7rem;
+  font-size:0.65rem;color:var(--sky);letter-spacing:.08em;text-transform:uppercase;font-weight:600;
+  margin-bottom:.8rem;
+}
+.sc-title{font-family:var(--fh);font-size:1.2rem;font-weight:800;color:#fff;line-height:1.15;margin-bottom:.4rem;}
+.sc-title em{color:var(--sky);font-style:normal;}
+.sc-tagline{font-size:0.75rem;color:var(--muted);font-weight:300;font-style:italic;}
+
+.sc-body{padding:1.2rem 1.5rem;}
+.sc-cta{display:block;margin-top:1rem;padding:.7rem 1rem;background:var(--sky);border:none;border-radius:100px;text-align:center;font-family:var(--fh);font-weight:700;font-size:.78rem;color:#020C1B;text-decoration:none;transition:opacity .2s,transform .2s,box-shadow .2s;}
+.sc-cta:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 8px 20px rgba(56,189,248,0.22);}
+
+/* health mockup */
+.mock-row-item{
+  display:flex;align-items:center;gap:9px;
+  background:rgba(56,189,248,0.03);border:0.5px solid var(--border);
+  border-radius:9px;padding:.6rem .8rem;margin-bottom:.5rem;
+  transition:border-color .2s;
+}
+.mock-row-item:hover{border-color:var(--border-md);}
+.mav{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;font-family:var(--fh);flex-shrink:0;}
+.mpn{font-size:.74rem;font-weight:600;color:#fff;font-family:var(--fh);}
+.mps{font-size:.63rem;color:var(--muted);font-weight:300;}
+.mst{margin-left:auto;font-size:.6rem;padding:.15rem .5rem;border-radius:100px;font-weight:400;flex-shrink:0;}
+.sa{background:rgba(56,189,248,0.1);color:var(--sky-glow);}
+.sr{background:rgba(186,230,253,0.07);color:var(--sky-faint);}
+.sd{background:rgba(56,189,248,0.05);color:var(--muted);}
+
+.ai-box{background:rgba(56,189,248,0.05);border:0.5px solid var(--border-md);border-radius:9px;padding:.7rem .85rem;margin-top:.5rem;}
+.ai-lbl{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sky);font-weight:600;margin-bottom:.3rem;}
+.ai-txt{font-size:.72rem;color:var(--muted);font-weight:300;line-height:1.5;}
+.td{display:inline-block;width:3px;height:3px;background:var(--sky);border-radius:50%;margin-left:2px;animation:typ 1.4s ease-in-out infinite;}
+.td:nth-child(2){animation-delay:.2s;}.td:nth-child(3){animation-delay:.4s;}
+@keyframes typ{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-3px);}}
+
+/* accounts mockup */
+.chart-row{display:flex;align-items:flex-end;gap:5px;height:58px;margin-bottom:.9rem;}
+.cbar{flex:1;border-radius:3px 3px 0 0;background:rgba(56,189,248,0.15);border:0.5px solid var(--border);transition:background .3s;}
+.cbar.hi{background:rgba(56,189,248,0.5);border-color:var(--sky);}
+.metrics-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.8rem;}
+.met{background:rgba(56,189,248,0.04);border:0.5px solid var(--border);border-radius:8px;padding:.55rem .65rem;}
+.metv{font-family:var(--fh);font-size:.9rem;font-weight:800;color:#fff;}
+.metl{font-size:.6rem;color:var(--muted);font-weight:300;}
+.frow{display:flex;align-items:center;justify-content:space-between;padding:.42rem 0;border-bottom:0.5px solid rgba(56,189,248,0.05);font-size:.72rem;}
+.frow:last-child{border-bottom:none;}
+.frn{color:rgba(224,242,254,0.65);font-weight:300;}
+.frv{font-family:var(--fh);font-weight:700;color:var(--sky);font-size:.72rem;}
+
+/* shield mockup */
+.shield-score{text-align:center;padding:.8rem 0 1rem;}
+.score-circle{
+  width:90px;height:90px;border-radius:50%;
+  border:2.5px solid rgba(56,189,248,0.2);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto .6rem;position:relative;
+}
+.score-circle::before{content:'';position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(56,189,248,0.08);}
+.score-val{font-family:var(--fh);font-size:1.5rem;font-weight:800;color:#fff;line-height:1;}
+.score-lbl{font-size:0.58rem;color:var(--sky);letter-spacing:.08em;text-align:center;margin-top:2px;}
+.alert-row{display:flex;align-items:center;gap:8px;background:rgba(56,189,248,0.03);border:0.5px solid var(--border);border-radius:8px;padding:.55rem .75rem;margin-bottom:.4rem;font-size:.72rem;}
+.alert-row:last-child{margin-bottom:0;}
+.adt{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.aok{background:#22C55E;box-shadow:0 0 5px rgba(34,197,94,0.4);}
+.aw{background:#F59E0B;box-shadow:0 0 5px rgba(245,158,11,0.4);}
+.ask{background:var(--sky);box-shadow:0 0 5px rgba(56,189,248,0.4);}
+.atx{color:rgba(224,242,254,0.7);font-weight:300;flex:1;}
+.atm{color:var(--dim);font-size:.62rem;}
+
+/* ══ FEATURES ══════════════════════════════════════════════ */
+.feats{max-width:1100px;margin:0 auto;padding:4rem 4rem 5rem;}
+.feats-hd{text-align:center;margin-bottom:2.5rem;}
+.fgr{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.8rem;}
+.fb{background:var(--card);border:0.5px solid var(--border);border-radius:14px;padding:1.4rem 1.5rem;transition:border-color .25s,transform .25s;}
+.fb:hover{border-color:var(--border-md);transform:translateY(-4px);}
+.fbi{font-size:1.3rem;margin-bottom:.7rem;display:block;}
+.fbt{font-family:var(--fh);font-size:.82rem;font-weight:700;color:#fff;margin-bottom:.3rem;}
+.fbd{font-size:.74rem;color:var(--muted);font-weight:300;line-height:1.6;}
+
+/* ══ PHILOSOPHY ════════════════════════════════════════════ */
+.phil{padding:5rem 4rem;text-align:center;border-top:0.5px solid var(--border);}
+.phil h2{font-family:var(--fh);font-size:clamp(1.8rem,4vw,3rem);font-weight:800;color:#fff;line-height:1.05;letter-spacing:-0.03em;max-width:600px;margin:0 auto 1rem;}
+.phil h2 em{color:var(--sky);font-style:normal;}
+.philsub{font-size:.88rem;color:var(--muted);font-weight:300;font-style:italic;margin-bottom:2.5rem;}
+.psteps{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;max-width:560px;margin:0 auto 2.5rem;}
+.pstep{text-align:center;flex:1;min-width:140px;padding:1.2rem .8rem;position:relative;}
+.pstep::after{content:'→';position:absolute;right:-10px;top:50%;transform:translateY(-50%);color:var(--border-md);font-size:1rem;}
+.pstep:last-child::after{display:none;}
+.psn{font-family:var(--fh);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sky);font-weight:700;margin-bottom:.4rem;}
+.pst{font-size:.8rem;color:var(--muted);font-weight:300;line-height:1.5;}
+
+/* ══ WAITLIST ══════════════════════════════════════════════ */
+.wl{padding:5rem 4rem;text-align:center;border-top:0.5px solid var(--border);}
+.wli{max-width:480px;margin:0 auto;}
+.wl .stit{font-size:clamp(1.6rem,3.5vw,2.4rem);margin-bottom:.6rem;}
+.wl .ssub{margin:0 auto 2rem;}
+.ewrap{display:flex;background:rgba(5,14,26,0.9);border:0.5px solid var(--border-md);border-radius:100px;overflow:hidden;padding:.32rem .32rem .32rem 1.2rem;max-width:400px;margin:0 auto;transition:border-color .3s,box-shadow .3s;}
+.ewrap:focus-within{border-color:var(--border-hi);box-shadow:0 0 25px rgba(56,189,248,0.07);}
+.ewrap input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--fb);font-size:.82rem;font-weight:300;padding:.35rem 0;min-width:0;}
+.ewrap input::placeholder{color:var(--dim);}
+.ewrap button{background:var(--sky);color:#020C1B;border:none;padding:.56rem 1.2rem;border-radius:100px;font-family:var(--fh);font-weight:700;font-size:.76rem;cursor:pointer;flex-shrink:0;transition:opacity .2s;}
+.ewrap button:hover{opacity:.88;}
+.fnote{font-size:.68rem;color:var(--dim);margin-top:.8rem;font-weight:300;}
+.calt{margin-top:1.8rem;font-size:.76rem;color:var(--muted);font-weight:300;}
+.calt a{color:var(--sky);text-decoration:none;transition:opacity .2s;}
+.calt a:hover{opacity:.75;}
+
+/* ══ FOOTER ════════════════════════════════════════════════ */
+footer{border-top:0.5px solid var(--border);padding:2.2rem 4rem;background:rgba(2,8,20,0.6);}
+.ftop{display:flex;align-items:flex-start;justify-content:space-between;gap:2.5rem;flex-wrap:wrap;margin-bottom:2rem;}
+.ftagl{font-size:.74rem;color:var(--muted);font-weight:300;margin-top:.4rem;max-width:180px;line-height:1.5;}
+.fcols{display:flex;gap:3.5rem;flex-wrap:wrap;}
+.fcol h4{font-family:var(--fh);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sky-dim);font-weight:700;margin-bottom:.8rem;}
+.fcol ul{list-style:none;display:flex;flex-direction:column;gap:.45rem;}
+.fcol a{font-size:.74rem;color:var(--muted);text-decoration:none;font-weight:300;transition:color .2s;}
+.fcol a:hover{color:var(--text);}
+.fbot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;padding-top:1.5rem;border-top:0.5px solid var(--border);}
+.fcp{font-size:.68rem;color:var(--dim);font-weight:300;}
+.fmd{font-size:.68rem;color:var(--dim);font-weight:300;}
+.fmd span{color:var(--sky);}
+
+/* ANIMATIONS */
+@keyframes fup{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fin{from{opacity:0;}to{opacity:1;}}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s ease;}
+.reveal.vis{opacity:1;transform:translateY(0);}
+.rd1{transition-delay:.07s;}.rd2{transition-delay:.14s;}.rd3{transition-delay:.21s;}.rd4{transition-delay:.28s;}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  nav{padding:.85rem 1.5rem;}
+  .navl{display:none;}.hbg{display:flex;}
+  .prod-panel.active{grid-template-columns:1fr;}
+  .prod-showcase{position:static;}
+  .proof{gap:2.5rem;padding:2.5rem 2rem;}.pdiv{display:none;}
+  .products-section{padding:3.5rem 1.5rem;}
+  .feats{padding:3rem 1.5rem 4rem;}
+  .phil,.wl{padding:4rem 1.5rem;}
+  footer{padding:2rem 1.5rem;}
+  .ftop{flex-direction:column;}
+  .fbot{flex-direction:column;text-align:center;}
+  .tsi{padding:.8rem 1.2rem;font-size:.7rem;}
+}
+@media(max-width:480px){
+  .hero h1{font-size:2.4rem;}
+  .phil h2{font-size:1.8rem;}
+  .psteps{gap:0;}
+}
+</style>
 </head>
 <body>
 
-  <!-- NAVBAR -->
-  <nav class="navbar">
-    <div class="container nav-container">
-      <a href="/" class="logo">Futurx<span class="dot">.</span></a>
-      <ul class="nav-links">
-        <li><a href="#apps">Apps</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#team">Team</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-      <button class="nav-toggle" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </nav>
+<canvas id="sf"></canvas>
+<div class="nb nb1"></div>
+<div class="nb nb2"></div>
+<div class="nb nb3"></div>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="container">
-      <p class="hero-tag">Made in Tamil Nadu</p>
-      <h1>We build apps<br>for <span class="highlight">India</span></h1>
-      <p class="hero-sub">4 mobile apps. One mission. Empowering everyday life with simple, powerful technology.</p>
-      <div class="hero-buttons">
-        <a href="#apps" class="btn btn-primary">See Our Apps</a>
-        <a href="#contact" class="btn btn-outline">Get in Touch</a>
+<!-- MOBILE MENU -->
+<div class="mmenu" id="mm">
+  <a href="#products" onclick="cm()">Products</a>
+  <a href="#features" onclick="cm()">Features</a>
+  <a href="#about"    onclick="cm()">About</a>
+  <a href="#waitlist" onclick="cm()" style="color:var(--sky)">Get Early Access →</a>
+</div>
+
+<div class="page">
+
+<!-- ── NAV ───────────────────────────────────────────────── -->
+<nav id="navbar">
+  <a href="#" class="logo">futurx<span>.ai</span></a>
+  <ul class="navl">
+    <li>
+      <a href="#products">Products <span class="arr">▼</span></a>
+      <div class="dropdown">
+        <a class="dd-item" href="apps/eatwell.html">
+          <div class="dd-icon">🥗</div>
+          <div><div class="dd-name">Futurx EatWell</div><div class="dd-sub">Nutrition &amp; Wellness</div></div>
+        </a>
+        <div class="dd-sep"></div>
+        <a class="dd-item" href="apps/lovedigitally.html">
+          <div class="dd-icon">💖</div>
+          <div><div class="dd-name">Futurx LoveDigitally</div><div class="dd-sub">Privacy-First Social</div></div>
+        </a>
+        <div class="dd-sep"></div>
+        <a class="dd-item" href="apps/payroll.html">
+          <div class="dd-icon">💵</div>
+          <div><div class="dd-name">Futurx Payroll</div><div class="dd-sub">SME Billing &amp; Invoicing</div></div>
+        </a>
       </div>
-    </div>
-  </section>
+    </li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#waitlist">Contact</a></li>
+  </ul>
+  <div class="navr">
+    <a href="#waitlist" class="ncta">Get Early Access</a>
+    <button class="hbg" id="hb" onclick="tm()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
 
-  <!-- APPS -->
-  <section id="apps" class="apps">
-    <div class="container">
-      <p class="section-tag">Our Products</p>
-      <h2>4 Apps. Built for You.</h2>
-      <div class="apps-grid">
+<!-- ── HERO ───────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="orbit oc"></div>
+  <div class="orbit oa"></div>
+  <div class="orbit ob"></div>
+  <div class="hbadge"><span class="bdot"></span>AI-Powered · India-Built · Universe-Scale</div>
+  <h1>be relaxed.<span class="sky-line">AI does everything.</span></h1>
+  <p class="hsub">Three real apps, built for India. One calm operator. You.</p>
+  <div class="hctas">
+    <a href="#products" class="btnp">Explore Products</a>
+    <a href="#waitlist" class="btng">Get Early Access</a>
+  </div>
+  <div class="srhint"><div class="sline"></div>scroll</div>
+</section>
 
-        <a href="apps/eatwell.html" class="app-card" style="--accent: #1D9E75">
-          <div class="app-icon">&#127860;</div>
-          <h3>EatWell</h3>
-          <p>Nutrition & meal planning with Indian food database. Track calories, plan meals, eat healthy.</p>
-          <span class="app-status live">Live</span>
-        </a>
+<!-- ── TRUST STRIP ────────────────────────────────────────── -->
+<div class="tstrip">
+  <div class="tsi"><span class="tsd"></span>Futurx EatWell</div>
+  <div class="tsi"><span class="tsd"></span>Futurx LoveDigitally</div>
+  <div class="tsi"><span class="tsd"></span>Futurx Payroll</div>
+  <div class="tsi"><span class="tsd"></span>Made in India 🇮🇳</div>
+</div>
 
-        <a href="apps/pgseat.html" class="app-card" style="--accent: #6C5CE7">
-          <div class="app-icon">&#127915;</div>
-          <h3>PGSeat</h3>
-          <p>Book event seats instantly. Interactive seat maps, QR tickets, and fast Razorpay payments.</p>
-          <span class="app-status building">Building</span>
-        </a>
+<!-- ── PROOF ──────────────────────────────────────────────── -->
+<div class="proof reveal">
+  <div class="pstat"><span class="pnum">3</span><span class="plbl">Apps in build</span></div>
+  <div class="pdiv"></div>
+  <div class="pstat"><span class="pnum" id="p1">1000<span>+</span></span><span class="plbl">On waitlist</span></div>
+  <div class="pdiv"></div>
+  <div class="pstat"><span class="pnum">🇮🇳</span><span class="plbl">Made in India</span></div>
+  <div class="pdiv"></div>
+  <div class="pstat"><span class="pnum">0</span><span class="plbl">Stress required</span></div>
+</div>
 
-        <a href="apps/payroll.html" class="app-card" style="--accent: #0984E3">
-          <div class="app-icon">&#128176;</div>
-          <h3>Payroll</h3>
-          <p>Payment & billing for small businesses. GST invoices, expense tracking, Razorpay integration.</p>
-          <span class="app-status building">Building</span>
-        </a>
+<!-- ══ PRODUCTS SECTION ════════════════════════════════════ -->
+<section class="products-section" id="products">
+  <div class="sec-header reveal">
+    <div class="eyb">Our Products</div>
+    <h2 class="stit">Three apps. One galaxy.</h2>
+    <p class="ssub">Select a product to explore what AI can do for you.</p>
+  </div>
 
-        <a href="apps/lovedigitally.html" class="app-card" style="--accent: #E84393">
-          <div class="app-icon">&#128156;</div>
-          <h3>LoveDigitally</h3>
-          <p>Connect meaningfully. Privacy-first social platform for relationships and events.</p>
-          <span class="app-status building">Building</span>
-        </a>
+  <div class="prod-tabs reveal">
+    <button class="ptab active" id="tab-eatwell"  onclick="showProduct('eatwell')">🥗 EatWell</button>
+    <button class="ptab"        id="tab-love"     onclick="showProduct('love')">💖 LoveDigitally</button>
+    <button class="ptab"        id="tab-payroll"  onclick="showProduct('payroll')">💵 Payroll</button>
+  </div>
 
+  <!-- ─── EATWELL PANEL ─────────────────────────────────── -->
+  <div class="prod-panel active" id="panel-eatwell">
+    <div class="sub-list">
+
+      <div class="sub-item open" id="si-ew-plan">
+        <div class="sub-header" onclick="toggleSub('si-ew-plan')">
+          <div class="sub-left"><div class="sub-icon">🥗</div><div class="sub-name">AI Meal Plans</div></div>
+          <span class="sub-arrow">▼</span>
+        </div>
+        <div class="sub-body"><div class="sub-content">
+          <p class="sub-desc">Personalised Indian meal plans for diabetes, weight loss, PCOS and pregnancy — rooted in regional cuisine.</p>
+          <ul class="sub-features">
+            <li>Goal-based weekly plans</li>
+            <li>Tamil / North-Indian / Vegan options</li>
+            <li>Calorie &amp; macro auto-tracking</li>
+            <li>Auto grocery list</li>
+          </ul>
+        </div></div>
       </div>
-    </div>
-  </section>
 
-  <!-- ABOUT -->
-  <section id="about" class="about">
-    <div class="container">
-      <p class="section-tag">About Futurx</p>
-      <h2>Technology for Everyday Life</h2>
-      <div class="about-grid">
-        <div class="about-text">
-          <p>Futurx is a technology company based in Tamil Nadu, India. We build mobile apps that solve real problems for real people.</p>
-          <p>Our apps are designed mobile-first, support Tamil and English, and work even on slow networks. We use modern technology — Ionic, Angular, Supabase, Firebase — to deliver fast, reliable experiences.</p>
-          <div class="stats">
-            <div class="stat">
-              <span class="stat-num">4</span>
-              <span class="stat-label">Apps</span>
-            </div>
-            <div class="stat">
-              <span class="stat-num">5</span>
-              <span class="stat-label">Team Members</span>
-            </div>
-            <div class="stat">
-              <span class="stat-num">TN</span>
-              <span class="stat-label">Based in Tamil Nadu</span>
-            </div>
+      <div class="sub-item" id="si-ew-track">
+        <div class="sub-header" onclick="toggleSub('si-ew-track')">
+          <div class="sub-left"><div class="sub-icon">📷</div><div class="sub-name">Photo-to-Calorie</div></div>
+          <span class="sub-arrow">▼</span>
+        </div>
+        <div class="sub-body"><div class="sub-content">
+          <p class="sub-desc">Snap your plate. AI identifies the food, estimates portions, and logs calories &amp; nutrients automatically.</p>
+          <ul class="sub-features">
+            <li>Indian food recognition</li>
+            <li>Portion size estimation</li>
+            <li>Macro &amp; micro nutrient log</li>
+            <li>Daily nudge &amp; streaks</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <div class="sub-item" id="si-ew-doc">
+        <div class="sub-header" onclick="toggleSub('si-ew-doc')">
+          <div class="sub-left"><div class="sub-icon">👩‍⚕️</div><div class="sub-name">Dietitian Connect</div></div>
+          <span class="sub-arrow">▼</span>
+        </div>
+        <div class="sub-body"><div class="sub-content">
+          <p class="sub-desc">Chat with a real Indian dietitian when AI isn't enough — affordable, in your language, on your schedule.</p>
+          <ul class="sub-features">
+            <li>Verified certified dietitians</li>
+            <li>Chat / video consultations</li>
+            <li>Custom plans for chronic conditions</li>
+            <li>Family wellness packs</li>
+          </ul>
+        </div></div>
+      </div>
+
+    </div>
+    <div class="prod-showcase">
+      <div class="showcase-card">
+        <div class="sc-hero">
+          <div class="sc-product-badge">🥗 Futurx EatWell</div>
+          <div class="sc-title">Eat well. <em>Live light.</em></div>
+          <div class="sc-tagline">Indian nutrition AI for real Indian plates.</div>
+        </div>
+        <div class="sc-body">
+          <div class="metrics-row">
+            <div class="met"><div class="metv">1,840</div><div class="metl">kcal Today</div></div>
+            <div class="met"><div class="metv">−4.2 kg</div><div class="metl">In 8 weeks</div></div>
           </div>
-        </div>
-        <div class="about-tech">
-          <h4>Our Stack</h4>
-          <div class="tech-tags">
-            <span>Ionic</span>
-            <span>Angular</span>
-            <span>Supabase</span>
-            <span>Firebase</span>
-            <span>Capacitor</span>
-            <span>Razorpay</span>
-            <span>TypeScript</span>
-            <span>Claude AI</span>
+          <div class="frow"><span class="frn">Breakfast · Idli + Sambar</span><span class="frv">320 kcal</span></div>
+          <div class="frow"><span class="frn">Lunch · Brown Rice + Dal</span><span class="frv">540 kcal</span></div>
+          <div class="frow"><span class="frn">Snack · Sprouts</span><span class="frv">180 kcal</span></div>
+          <div class="ai-box">
+            <div class="ai-lbl">✦ AI Coach</div>
+            <div class="ai-txt">Protein is 18g short today. Try grilled paneer or moong dal at dinner.<span class="td"></span><span class="td"></span><span class="td"></span></div>
           </div>
+          <a href="apps/eatwell.html" class="sc-cta">Visit EatWell →</a>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- TEAM -->
-  <section id="team" class="team">
-    <div class="container">
-      <p class="section-tag">Our Team</p>
-      <h2>The People Behind Futurx</h2>
-      <div class="team-grid">
-        <div class="team-card">
-          <div class="team-avatar">B</div>
-          <h4>Balaji</h4>
-          <p>Developer</p>
-          <span>Products & App Development</span>
+  <!-- ─── PAYROLL PANEL ─────────────────────────────────── -->
+  <div class="prod-panel" id="panel-payroll">
+    <div class="sub-list">
+
+      <div class="sub-item open" id="si-pr-inv">
+        <div class="sub-header" onclick="toggleSub('si-pr-inv')">
+          <div class="sub-left"><div class="sub-icon">🧾</div><div class="sub-name">Quick Invoicing</div></div>
+          <span class="sub-arrow">▼</span>
         </div>
-        <div class="team-card">
-          <div class="team-avatar">K</div>
-          <h4>Kaviya</h4>
-          <p>Marketing</p>
-          <span>Content & Growth Strategy</span>
+        <div class="sub-body"><div class="sub-content">
+          <p class="sub-desc">Mobile-first GST invoices for small businesses. Create, send and get paid in under a minute — straight from your phone.</p>
+          <ul class="sub-features">
+            <li>GST-compliant invoices &amp; estimates</li>
+            <li>Send via WhatsApp / email / SMS</li>
+            <li>Multi-currency &amp; multi-language</li>
+            <li>Recurring &amp; auto-reminder invoices</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <div class="sub-item" id="si-pr-pay">
+        <div class="sub-header" onclick="toggleSub('si-pr-pay')">
+          <div class="sub-left"><div class="sub-icon">💳</div><div class="sub-name">Razorpay Payments</div></div>
+          <span class="sub-arrow">▼</span>
         </div>
-        <div class="team-card">
-          <div class="team-avatar">R</div>
-          <h4>Raji</h4>
-          <p>Operations</p>
-          <span>Agent Automation & Ops</span>
+        <div class="sub-body"><div class="sub-content">
+          <p class="sub-desc">One-tap payment links on every invoice. Customers pay via UPI, card or wallet. Money lands in your bank — auto-reconciled.</p>
+          <ul class="sub-features">
+            <li>UPI / card / wallet on every invoice</li>
+            <li>Razorpay-powered settlement</li>
+            <li>Auto reconciliation &amp; receipts</li>
+            <li>Refunds in one tap</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <div class="sub-item" id="si-pr-exp">
+        <div class="sub-header" onclick="toggleSub('si-pr-exp')">
+          <div class="sub-left"><div class="sub-icon">📷</div><div class="sub-name">Expense &amp; Receipt Capture</div></div>
+          <span class="sub-arrow">▼</span>
         </div>
-        <div class="team-card">
-          <div class="team-avatar">J</div>
-          <h4>Joshua</h4>
-          <p>Strategy</p>
-          <span>Vision & Business Planning</span>
+        <div class="sub-body"><div class="sub-content">
+          <p class="sub-desc">Snap a bill — AI reads vendor, GST, amount and category. Every expense logged, ready for tax season.</p>
+          <ul class="sub-features">
+            <li>Photo-to-expense AI</li>
+            <li>Auto-categorisation</li>
+            <li>Mileage &amp; travel logs</li>
+            <li>GST input credit tracking</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <div class="sub-item" id="si-pr-cash">
+        <div class="sub-header" onclick="toggleSub('si-pr-cash')">
+          <div class="sub-left"><div class="sub-icon">📈</div><div class="sub-name">Daily Cash Flow</div></div>
+          <span class="sub-arrow">▼</span>
+        </div>
+        <div class="sub-body"><div class="sub-content">
+          <p class="sub-desc">A simple "what came in, what went out" view. AI flags slow payers and predicts next month's cash position.</p>
+          <ul class="sub-features">
+            <li>Daily cash position</li>
+            <li>Slow payer alerts</li>
+            <li>Cash flow forecast (30/60/90 days)</li>
+            <li>Profit summary by client</li>
+          </ul>
+        </div></div>
+      </div>
+
+    </div>
+    <div class="prod-showcase">
+      <div class="showcase-card">
+        <div class="sc-hero">
+          <div class="sc-product-badge">💵 Futurx Payroll</div>
+          <div class="sc-title">Bill, get paid, <em>relax.</em></div>
+          <div class="sc-tagline">Invoicing &amp; expenses for small business — built mobile-first.</div>
+        </div>
+        <div class="sc-body">
+          <div class="metrics-row">
+            <div class="met"><div class="metv">₹2.84L</div><div class="metl">Received (30d)</div></div>
+            <div class="met"><div class="metv">₹62k</div><div class="metl">Pending</div></div>
+          </div>
+          <div class="frow"><span class="frn">Invoice #INV-208</span><span class="frv">✓ Paid · UPI</span></div>
+          <div class="frow"><span class="frn">Invoice #INV-209</span><span class="frv">✓ Paid · Card</span></div>
+          <div class="frow"><span class="frn">Invoice #INV-211</span><span class="frv" style="color:var(--sky-glow)">Due 3 days</span></div>
+          <div class="frow"><span class="frn">Expense · Petrol</span><span class="frv">₹1,820 logged</span></div>
+          <div class="ai-box">
+            <div class="ai-lbl">✦ AI Money Coach</div>
+            <div class="ai-txt">3 invoices likely to clear today. Forecast +₹48k by Friday.<span class="td"></span><span class="td"></span><span class="td"></span></div>
+          </div>
+          <a href="apps/payroll.html" class="sc-cta">Visit Payroll →</a>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- CONTACT -->
-  <section id="contact" class="contact">
-    <div class="container">
-      <p class="section-tag">Get in Touch</p>
-      <h2>Let's Build Together</h2>
-      <p class="contact-sub">Want to collaborate, invest, or just say hello?</p>
-      <div class="contact-grid">
-        <div class="contact-item">
-          <span class="contact-icon">&#127760;</span>
-          <h4>Website</h4>
-          <p>futurx.in</p>
+  <!-- ─── LOVEDIGITALLY PANEL ───────────────────────────── -->
+  <div class="prod-panel" id="panel-love">
+    <div class="sub-list">
+
+      <div class="sub-item open" id="si-lv-match">
+        <div class="sub-header" onclick="toggleSub('si-lv-match')">
+          <div class="sub-left"><div class="sub-icon">💖</div><div class="sub-name">Meaningful Matching</div></div>
+          <span class="sub-arrow">▼</span>
         </div>
-        <div class="contact-item">
-          <span class="contact-icon">&#128231;</span>
-          <h4>Email</h4>
-          <p>hello@futurx.in</p>
+        <div class="sub-body"><div class="sub-content">
+          <p class="sub-desc">No endless swiping. AI introduces you to people who actually share your values, interests and intent.</p>
+          <ul class="sub-features">
+            <li>Intent-based matching (friendship · dating · marriage)</li>
+            <li>Values &amp; interest deep profiles</li>
+            <li>Curated daily introductions</li>
+            <li>No public profile photos by default</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <div class="sub-item" id="si-lv-priv">
+        <div class="sub-header" onclick="toggleSub('si-lv-priv')">
+          <div class="sub-left"><div class="sub-icon">🔒</div><div class="sub-name">Privacy-First Chat</div></div>
+          <span class="sub-arrow">▼</span>
         </div>
-        <div class="contact-item">
-          <span class="contact-icon">&#128205;</span>
-          <h4>Location</h4>
-          <p>Tamil Nadu, India</p>
+        <div class="sub-body"><div class="sub-content">
+          <p class="sub-desc">End-to-end encrypted conversations. You decide when to share photos, your name, or your number — never automatic.</p>
+          <ul class="sub-features">
+            <li>End-to-end encrypted chat</li>
+            <li>Disappearing messages</li>
+            <li>Selective photo unlock</li>
+            <li>One-tap block &amp; report</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <div class="sub-item" id="si-lv-event">
+        <div class="sub-header" onclick="toggleSub('si-lv-event')">
+          <div class="sub-left"><div class="sub-icon">🎉</div><div class="sub-name">Local Events &amp; Meetups</div></div>
+          <span class="sub-arrow">▼</span>
+        </div>
+        <div class="sub-body"><div class="sub-content">
+          <p class="sub-desc">Discover small, vetted in-person events nearby. Meet people in real life, safely — book club, coffee walks, dance.</p>
+          <ul class="sub-features">
+            <li>Curated local events &amp; circles</li>
+            <li>Verified attendee identities</li>
+            <li>Public meet-up venues only</li>
+            <li>RSVP &amp; check-in</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <div class="sub-item" id="si-lv-safety">
+        <div class="sub-header" onclick="toggleSub('si-lv-safety')">
+          <div class="sub-left"><div class="sub-icon">🛡️</div><div class="sub-name">Safety &amp; Verification</div></div>
+          <span class="sub-arrow">▼</span>
+        </div>
+        <div class="sub-body"><div class="sub-content">
+          <p class="sub-desc">Aadhaar / phone-verified profiles only. AI moderation, panic button, and a real human safety team — 24×7.</p>
+          <ul class="sub-features">
+            <li>Phone &amp; ID verification</li>
+            <li>AI photo &amp; chat moderation</li>
+            <li>SOS / panic button</li>
+            <li>24×7 human trust team</li>
+          </ul>
+        </div></div>
+      </div>
+
+    </div>
+    <div class="prod-showcase">
+      <div class="showcase-card">
+        <div class="sc-hero">
+          <div class="sc-product-badge">💖 Futurx LoveDigitally</div>
+          <div class="sc-title">Connect <em>meaningfully.</em></div>
+          <div class="sc-tagline">Privacy-first social. Real people. Real intent.</div>
+        </div>
+        <div class="sc-body">
+          <div class="mock-row-item">
+            <div class="mav" style="background:rgba(56,189,248,0.12);color:var(--sky)">A</div>
+            <div><div class="mpn">Ananya · Verified ✓</div><div class="mps">Books · Yoga · Carnatic</div></div>
+            <span class="mst sa">94% match</span>
+          </div>
+          <div class="mock-row-item">
+            <div class="mav" style="background:rgba(125,211,252,0.1);color:var(--sky-glow)">K</div>
+            <div><div class="mpn">Karthik · Verified ✓</div><div class="mps">Cycling · Coffee · Films</div></div>
+            <span class="mst sr">87% match</span>
+          </div>
+          <div class="mock-row-item">
+            <div class="mav" style="background:rgba(56,189,248,0.07);color:var(--muted)">P</div>
+            <div><div class="mpn">Priya · Verified ✓</div><div class="mps">Hiking · Cooking · Tamil lit.</div></div>
+            <span class="mst sd">82% match</span>
+          </div>
+          <div class="ai-box">
+            <div class="ai-lbl">✦ AI Companion</div>
+            <div class="ai-txt">3 nearby book-club meetups this weekend. Verified circles only.<span class="td"></span><span class="td"></span><span class="td"></span></div>
+          </div>
+          <a href="apps/lovedigitally.html" class="sc-cta">Visit LoveDigitally →</a>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-top">
-        <a href="/" class="logo">Futurx<span class="dot">.</span></a>
-        <p>Building apps for India.</p>
-      </div>
-      <div class="footer-links">
-        <a href="#apps">Apps</a>
-        <a href="#about">About</a>
-        <a href="#team">Team</a>
-        <a href="#contact">Contact</a>
-        <a href="https://github.com/Futurxai" target="_blank">GitHub</a>
-      </div>
-      <p class="copyright">&copy; 2026 Futurx. Made with care in Tamil Nadu.</p>
+</section>
+
+<!-- ── FEATURES ────────────────────────────────────────────── -->
+<section class="feats" id="features">
+  <div class="feats-hd reveal">
+    <div class="eyb">Why Futurx.ai</div>
+    <h2 class="stit">Everything you need. Nothing you don't.</h2>
+  </div>
+  <div class="fgr">
+    <div class="fb reveal rd1"><span class="fbi">⚡</span><div class="fbt">Instant AI</div><p class="fbd">Every query answered in milliseconds. No loading, no lag.</p></div>
+    <div class="fb reveal rd2"><span class="fbi">🔒</span><div class="fbt">Privacy-First</div><p class="fbd">End-to-end encrypted. Your data stays yours, always.</p></div>
+    <div class="fb reveal rd3"><span class="fbi">🇮🇳</span><div class="fbt">Built for India</div><p class="fbd">GST, UPI, Indian languages — designed for Indian users.</p></div>
+    <div class="fb reveal rd4"><span class="fbi">📱</span><div class="fbt">Mobile-First</div><p class="fbd">Full iOS and Android apps. Work from anywhere.</p></div>
+    <div class="fb reveal rd1"><span class="fbi">🔗</span><div class="fbt">Razorpay Inside</div><p class="fbd">UPI, card &amp; wallet payments — already wired in.</p></div>
+    <div class="fb reveal rd2"><span class="fbi">🧩</span><div class="fbt">Modular</div><p class="fbd">Pick one app or all three. Scale as you grow.</p></div>
+  </div>
+</section>
+
+<!-- ── PHILOSOPHY ─────────────────────────────────────────── -->
+<section class="phil reveal" id="about">
+  <div class="eyb">The Futurx Philosophy</div>
+  <h2>You were never meant<br/>to do it <em>all.</em></h2>
+  <p class="philsub">"Hand it to the AI. Take a breath. Watch it happen."</p>
+  <div class="psteps">
+    <div class="pstep"><div class="psn">Step 01</div><div class="pst">You describe the problem</div></div>
+    <div class="pstep"><div class="psn">Step 02</div><div class="pst">AI does the work</div></div>
+    <div class="pstep"><div class="psn">Step 03</div><div class="pst">You review &amp; relax</div></div>
+  </div>
+  <a href="#waitlist" class="btnp">Join the Mission</a>
+</section>
+
+<!-- ── WAITLIST ───────────────────────────────────────────── -->
+<section class="wl reveal" id="waitlist">
+  <div class="wli">
+    <div class="eyb">Early Access</div>
+    <h2 class="stit">Be first in orbit.</h2>
+    <p class="ssub">Join early users of EatWell, LoveDigitally and Payroll — apps built for India.</p>
+    <form class="ewrap" onsubmit="hs(event)">
+      <input type="email" placeholder="your@email.com" required/>
+      <button type="submit">Notify Me</button>
+    </form>
+    <p class="fnote">No spam. Just launch updates. Unsubscribe anytime.</p>
+    <p class="calt">Questions? <a href="mailto:futurx.ai@outlook.com">futurx.ai@outlook.com</a></p>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────── -->
+<footer>
+  <div class="ftop">
+    <div>
+      <a href="#" class="logo">futurx<span>.ai</span></a>
+      <p class="ftagl">Be relaxed. AI does everything.</p>
     </div>
-  </footer>
+    <div class="fcols">
+      <div class="fcol">
+        <h4>Apps</h4>
+        <ul>
+          <li><a href="apps/eatwell.html">Futurx EatWell</a></li>
+          <li><a href="apps/lovedigitally.html">Futurx LoveDigitally</a></li>
+          <li><a href="apps/payroll.html">Futurx Payroll</a></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#about">About</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#waitlist">Early Access</a></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:futurx.ai@outlook.com">futurx.ai@outlook.com</a></li>
+          <li><a href="#waitlist">Join Waitlist</a></li>
+          <li><a href="#">Press Kit</a></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="/legal/terms.html">Terms & Conditions</a></li>
+          <li><a href="/legal/privacy.html">Privacy Policy</a></li>
+          <li><a href="/legal/refund.html">Refunds & Cancellation</a></li>
+          <li><a href="/legal/contact.html">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="fbot">
+    <p class="fcp">© 2026 Futurx.ai · Chennai, India · All rights reserved.</p>
+    <p class="fmd">Made with <span>♥</span> in India</p>
+  </div>
+</footer>
 
-  <script src="js/main.js"></script>
+</div>
+
+<script>
+/* STARFIELD */
+(function(){
+  const c=document.getElementById('sf'),ctx=c.getContext('2d');
+  let W,H,stars=[];
+  function rz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  function ini(){
+    stars=[];const n=Math.floor(W*H/4000);
+    for(let i=0;i<n;i++){
+      const s=Math.random();
+      stars.push({x:Math.random()*W,y:Math.random()*H,r:s<.55?.5:s<.88?.8:1.2,a:.1+Math.random()*.7,sp:.003+Math.random()*.008,ph:Math.random()*Math.PI*2,c:Math.random()>.8?'#7DD3FC':'#E0F2FE'});
+    }
+  }
+  let f=0;
+  function dr(){
+    f++;ctx.fillStyle='#020C1B';ctx.fillRect(0,0,W,H);
+    const vg=ctx.createRadialGradient(W/2,H/2,H*.15,W/2,H/2,H*.8);
+    vg.addColorStop(0,'rgba(2,12,27,0)');vg.addColorStop(1,'rgba(1,5,12,0.55)');
+    ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+    for(const s of stars){
+      const t=s.a*(.55+.45*Math.sin(f*s.sp+s.ph));
+      ctx.globalAlpha=t;ctx.fillStyle=s.c;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
+    }
+    ctx.globalAlpha=1;requestAnimationFrame(dr);
+  }
+  window.addEventListener('resize',()=>{rz();ini();});rz();ini();dr();
+})();
+
+/* SCROLL REVEAL */
+const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('vis');});},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+/* PRODUCT TAB SWITCHING */
+function showProduct(id){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.prod-panel').forEach(p=>p.classList.remove('active'));
+  const tab=document.getElementById('tab-'+id);
+  const panel=document.getElementById('panel-'+id);
+  if(tab)tab.classList.add('active');
+  if(panel)panel.classList.add('active');
+  document.getElementById('products').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ACCORDION */
+function toggleSub(id){
+  const item=document.getElementById(id);
+  const isOpen=item.classList.contains('open');
+  item.closest('.sub-list').querySelectorAll('.sub-item').forEach(s=>s.classList.remove('open'));
+  if(!isOpen)item.classList.add('open');
+}
+
+/* MOBILE MENU */
+function tm(){document.getElementById('mm').classList.toggle('op');document.getElementById('hb').classList.toggle('op');}
+function cm(){document.getElementById('mm').classList.remove('op');document.getElementById('hb').classList.remove('op');}
+
+/* WAITLIST */
+function hs(e){
+  e.preventDefault();
+  const b=e.target.querySelector('button'),i=e.target.querySelector('input');
+  b.textContent="✓ You're in orbit!";b.style.background='#0EA5E9';
+  i.value='';i.disabled=true;b.disabled=true;
+}
+
+/* COUNTER */
+function cnt(el,target,suf){
+  let s=0;const inc=target/60;
+  const t=setInterval(()=>{s=Math.min(s+inc,target);el.innerHTML=Math.floor(s)+'<span>'+suf+'</span>';if(s>=target)clearInterval(t);},25);
+}
+const po=new IntersectionObserver(e=>{
+  if(e[0].isIntersecting){cnt(document.getElementById('p1'),1000,'+');po.disconnect();}
+},{threshold:.4});
+const pe=document.querySelector('.proof');if(pe)po.observe(pe);
+</script>
 </body>
 </html>

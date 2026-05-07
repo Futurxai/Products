@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Welcome to Premium ✨ — Love Digitally</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--pk:#FF6B81;--pk2:#E8446A;--lv2:#7C3AED;--dark:#1E0F20;--mid:#6B4C6E;--blush:#FFE4E9}
+  body{font-family:'DM Sans',system-ui,sans-serif;background:linear-gradient(155deg,#FFF0F3 0%,#EDE9FF 55%,#FFF8F9 100%);color:var(--dark);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-weight:300;line-height:1.7}
+  .card{background:#fff;border-radius:24px;padding:48px 36px;max-width:520px;width:100%;box-shadow:0 16px 48px rgba(255,107,129,.18);text-align:center;border:1px solid var(--blush)}
+  .check{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--pk),var(--pk2));display:inline-flex;align-items:center;justify-content:center;font-size:36px;color:#fff;margin-bottom:18px;box-shadow:0 12px 28px rgba(232,68,106,.32)}
+  h1{font-family:'Playfair Display',serif;font-size:34px;font-weight:700;color:var(--dark);margin-bottom:10px;letter-spacing:-.5px}
+  h1 em{font-style:italic;background:linear-gradient(135deg,var(--pk),#B8A9F5);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .lede{font-size:15px;color:var(--mid);margin-bottom:24px}
+  .receipt{background:#FFFAFB;border:1px dashed var(--blush);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--mid);margin-bottom:28px;text-align:left}
+  .receipt strong{color:var(--dark);font-weight:600}
+  .pid{font-family:monospace;font-size:12px;background:var(--blush);padding:2px 6px;border-radius:4px;color:var(--pk2);font-weight:600}
+  .btn{display:inline-block;padding:14px 32px;border-radius:30px;background:linear-gradient(135deg,var(--pk),var(--pk2));color:#fff;font-weight:700;text-decoration:none;font-size:15px;box-shadow:0 8px 24px rgba(232,68,106,.32)}
+  .btn:hover{transform:translateY(-2px)}
+  .footer{margin-top:24px;font-size:11px;color:var(--mid)}
+  .footer a{color:var(--mid);text-decoration:none;margin:0 6px}
+  .footer a:hover{color:var(--pk)}
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="check">✓</div>
+  <h1>Welcome to <em>Premium</em></h1>
+  <p class="lede">Your subscription is active. Thank you for supporting Love Digitally — let's go make some unforgettable moments.</p>
+
+  <div class="receipt">
+    <strong>Payment ID:</strong><br>
+    <span class="pid" id="pid">loading...</span><br><br>
+    <strong>What's next?</strong><br>
+    Your premium features will be unlocked shortly. We'll send a receipt to your email within a few minutes.
+  </div>
+
+  <a href="/apps/lovedigitally.html" class="btn">Start Creating →</a>
+
+  <div class="footer">
+    Need help? <a href="/legal/contact.html">Contact us</a>·
+    <a href="/legal/refund.html">Cancel anytime</a>
+  </div>
+</main>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const pid = params.get('p');
+  document.getElementById('pid').textContent = pid || '(not provided)';
+</script>
+</body>
+</html>
