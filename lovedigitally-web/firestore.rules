@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Love Digitally pages — public read, create allowed only with a Razorpay paymentId.
+    // No server signature verification (no Cloud Functions on Spark plan); we trust the
+    // Razorpay Payment Page redirect. Acceptable for ₹9 stakes / creator-tool use case.
+    match /lovedigitally_pages/{pageId} {
+      allow read: if true;
+      allow create: if
+        request.resource.data.keys().hasOnly(['tpl', 'data', 'paymentId', 'createdAt'])
+        && request.resource.data.tpl is string
+        && request.resource.data.tpl in ['love', 'proposal', 'quiz', 'slides', 'album', 'countdown']
+        && request.resource.data.data is map
+        && request.resource.data.paymentId is string
+        && request.resource.data.paymentId.size() > 5
+        && request.resource.data.paymentId.matches('^pay_[A-Za-z0-9]+$')
+        && request.resource.data.createdAt is timestamp;
+      allow update, delete: if false;
+    }
+
+    // Order / subscription / webhook records — server-only, not client-readable
+    match /lovedigitally_orders/{id} {
+      allow read, write: if false;
+    }
+    match /lovedigitally_subscriptions/{id} {
+      allow read, write: if false;
+    }
+    match /lovedigitally_webhook_events/{id} {
+      allow read, write: if false;
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

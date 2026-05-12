@@ -5,19 +5,13 @@
       "firebase.json",
       "firestore.rules",
       ".firebase",
-      "**/node_modules/**"
-    ],
-    "redirects": [
-      { "source": "/old/", "destination": "/old", "type": 301 }
+      "**/node_modules/**",
+      "functions/**",
+      "*.md"
     ],
     "rewrites": [
-      { "source": "/old", "destination": "/legacy.html" },
-      { "source": "/lovedigitally", "destination": "/apps/lovedigitally.html" },
-      { "source": "/lovedigitally/premium", "destination": "/apps/lovedigitally-premium.html" },
-      { "source": "/lovedigitally/premium/success", "destination": "/apps/lovedigitally-premium-success.html" },
-      { "source": "/eatwell", "destination": "/apps/eatwell.html" },
-      { "source": "/payroll", "destination": "/apps/payroll.html" },
-      { "source": "/pgseat", "destination": "/apps/pgseat.html" },
+      { "source": "/premium", "destination": "/premium.html" },
+      { "source": "/premium/success", "destination": "/premium-success.html" },
       { "source": "/api/order/create", "function": { "functionId": "createOrder", "region": "asia-south1" } },
       { "source": "/api/order/verify", "function": { "functionId": "verifyOrder", "region": "asia-south1" } },
       { "source": "/api/page/publish", "function": { "functionId": "publishPage", "region": "asia-south1" } },

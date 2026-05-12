@@ -2,18 +2,21 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Love Digitally published pages — public read, public create, no edit/delete
+    // Love Digitally pages — public read, writes ONLY via Cloud Function (Admin SDK bypasses rules)
     match /lovedigitally_pages/{pageId} {
       allow read: if true;
+      allow create, update, delete: if false;
+    }
 
-      allow create: if
-        request.resource.data.keys().hasOnly(['tpl', 'data', 'createdAt'])
-        && request.resource.data.tpl is string
-        && request.resource.data.tpl in ['love', 'proposal', 'quiz', 'slides', 'album', 'countdown']
-        && request.resource.data.data is map
-        && request.resource.data.createdAt is timestamp;
-
-      allow update, delete: if false;
+    // Subscription / order records — server-only writes, no client read
+    match /lovedigitally_subscriptions/{id} {
+      allow read, write: if false;
+    }
+    match /lovedigitally_orders/{id} {
+      allow read, write: if false;
+    }
+    match /lovedigitally_webhook_events/{id} {
+      allow read, write: if false;
     }
 
     // Default deny everything else

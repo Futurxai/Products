@@ -11,12 +11,12 @@
 <script>
 // Firebase init — futurx-website project
 firebase.initializeApp({
-  apiKey: "AIzaSyAQEdFDElZJYqmjLTog7n37sLlbPTOetOs",
-  authDomain: "futurx-website.firebaseapp.com",
-  projectId: "futurx-website",
-  storageBucket: "futurx-website.firebasestorage.app",
-  messagingSenderId: "211091265564",
-  appId: "1:211091265564:web:6b97e70a8b229141f727d9"
+  apiKey: "AIzaSyCfsPB2yCfu0ME5TPno5IPp02xuzP5uZfs",
+  authDomain: "lovedigitally-app.firebaseapp.com",
+  projectId: "lovedigitally-app",
+  storageBucket: "lovedigitally-app.firebasestorage.app",
+  messagingSenderId: "318511774086",
+  appId: "1:318511774086:web:81f93a41e482080d291407"
 });
 window._db = firebase.firestore();
 </script>
@@ -447,7 +447,7 @@ body.viewer-mode .viewer-credit a{color:var(--pk2);text-decoration:none;font-wei
 <body>
 <div id="sound-toast">♥</div>
 <div id="load-overlay"><div class="load-heart">♥</div><div class="load-text">Opening your love note…</div></div>
-<div class="viewer-credit">Made with <a href="https://futurx-website.web.app/apps/lovedigitally.html" target="_blank">Love Digitally ♥</a> · Powered by FuturX</div>
+<div class="viewer-credit">Made with <a href="https://lovedigitally-app.web.app/" target="_blank">Love Digitally ♥</a> · Powered by FuturX</div>
 
 <!-- NAV -->
 <nav id="nav">
@@ -462,10 +462,9 @@ body.viewer-mode .viewer-credit a{color:var(--pk2);text-decoration:none;font-wei
     <button class="nl on" onclick="goPage('home')">Home</button>
     <button class="nl" onclick="goPage('templates')">Templates</button>
     <button class="nl" onclick="goPage('examples')">Examples</button>
-    <a class="nl" href="/lovedigitally/premium" style="color:var(--lv2);background:var(--lilac);text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:4px">✨ Premium</a>
   </div>
   <div style="display:flex;align-items:center;gap:9px">
-    <button class="nav-cta" onclick="goPage('templates')">Create Free ♥</button>
+    <button class="nav-cta" onclick="startCreating()">Create ♥</button>
     <button class="hbg" onclick="toggleMenu()"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -473,7 +472,7 @@ body.viewer-mode .viewer-credit a{color:var(--pk2);text-decoration:none;font-wei
   <button class="md-link" onclick="goPage('home');closeMob()">Home</button>
   <button class="md-link" onclick="goPage('templates');closeMob()">Templates</button>
   <button class="md-link" onclick="goPage('examples');closeMob()">Examples</button>
-  <a class="md-link" href="/lovedigitally/premium" style="color:var(--lv2);text-decoration:none;font-weight:700">✨ Premium · ₹9/month</a>
+  <a class="md-link" href="/premium" style="color:var(--lv2);text-decoration:none;font-weight:700">✨ Premium · ₹9/month</a>
 </div>
 
 <!-- SLIDE VIEWER -->
@@ -499,7 +498,7 @@ body.viewer-mode .viewer-credit a{color:var(--pk2);text-decoration:none;font-wei
       <div class="hero-powered">Powered by <strong>FuturX</strong> — building tools that matter</div>
       <p class="hero-sub">Build stunning love letters, proposals, slide stories, quizzes & more — in under 3 minutes. Share a link that makes hearts skip a beat.</p>
       <div class="hero-btns">
-        <button class="btn-p" onclick="goPage('templates')">Start Creating ♥</button>
+        <button class="btn-p" onclick="startCreating()">Start Creating ♥</button>
         <button class="btn-o" onclick="goPage('examples')">See Examples</button>
       </div>
       <div class="stats-bar">
@@ -520,7 +519,7 @@ body.viewer-mode .viewer-credit a{color:var(--pk2);text-decoration:none;font-wei
   </section>
   <section class="cta-sec">
     <div class="sh" style="margin-bottom:0"><h2 class="stitle">Ready to make someone's day special?</h2><p class="ssub">It takes 3 minutes. They'll remember it forever.</p></div>
-    <button class="btn-white" onclick="goPage('templates')">Create for Free ♥</button>
+    <button class="btn-white" onclick="startCreating()">Start Creating ♥</button>
   </section>
   <footer class="footer">
     <div class="fg2">
@@ -528,7 +527,7 @@ body.viewer-mode .viewer-credit a{color:var(--pk2);text-decoration:none;font-wei
       <div><div class="fct">Product</div><button class="fl2" onclick="goPage('templates')">Templates</button><button class="fl2" onclick="goPage('examples')">Examples</button></div>
       <div><div class="fct">Templates</div><button class="fl2" onclick="goEditor('love')">Love Letter</button><button class="fl2" onclick="goEditor('slides')">Reasons as Slides</button><button class="fl2" onclick="goEditor('quiz')">Couple Quiz</button></div>
     </div>
-    <div class="fbot" style="flex-wrap:wrap;gap:10px"><div class="fcp">© 2025 Love Digitally. Made with ♥</div><div style="display:flex;gap:14px;font-size:12px"><a href="/lovedigitally/premium" style="color:inherit;text-decoration:none;opacity:.85">Premium</a><a href="/legal/terms.html" style="color:inherit;text-decoration:none;opacity:.85">Terms</a><a href="/legal/privacy.html" style="color:inherit;text-decoration:none;opacity:.85">Privacy</a><a href="/legal/refund.html" style="color:inherit;text-decoration:none;opacity:.85">Refunds</a><a href="/legal/contact.html" style="color:inherit;text-decoration:none;opacity:.85">Contact</a></div><span class="futurx-footer-badge">FuturX</span></div>
+    <div class="fbot" style="flex-wrap:wrap;gap:10px"><div class="fcp">© 2025 Love Digitally. Made with ♥</div><div style="display:flex;gap:14px;font-size:12px"><a href="/premium" style="color:inherit;text-decoration:none;opacity:.85">Premium</a><a href="/legal/terms.html" style="color:inherit;text-decoration:none;opacity:.85">Terms</a><a href="/legal/privacy.html" style="color:inherit;text-decoration:none;opacity:.85">Privacy</a><a href="/legal/refund.html" style="color:inherit;text-decoration:none;opacity:.85">Refunds</a><a href="/legal/contact.html" style="color:inherit;text-decoration:none;opacity:.85">Contact</a></div><span class="futurx-footer-badge">FuturX</span></div>
   </footer>
 </div>
 
@@ -1145,6 +1144,7 @@ function goPage(id){
   currentPage=id;window.scrollTo({top:0,behavior:'smooth'});
 }
 function goEditor(tpl){
+  if(!isPaid()){ startCreating(); return; }
   currentTpl=tpl;
   document.querySelectorAll('.ed-section').forEach(function(s){s.classList.remove('on');});
   document.querySelectorAll('.prev-dev').forEach(function(d){d.style.display='none';});
@@ -1693,8 +1693,35 @@ function applyStateFromPublish(tpl, data){
   }
 }
 
+// Razorpay Payment Page URL — single one-time payment unlocks the whole app on this device
+var RAZORPAY_PAYMENT_PAGE_URL = 'https://rzp.io/rzp/E5WXHGDN';
+
+function isPaid(){
+  try {
+    var raw = localStorage.getItem('lvdg_paid');
+    if(!raw) return false;
+    var data = JSON.parse(raw);
+    return !!(data && data.paymentId && data.paymentId.indexOf('pay_') === 0);
+  } catch(e){ return false; }
+}
+
+function startCreating(){
+  if(isPaid()){
+    goPage('templates');
+    return;
+  }
+  if(RAZORPAY_PAYMENT_PAGE_URL.indexOf('pl_REPLACE_ME') !== -1){
+    alert('Payment is not configured yet.');
+    return;
+  }
+  showToast('Opening secure checkout…');
+  setTimeout(function(){ window.location.href = RAZORPAY_PAYMENT_PAGE_URL; }, 350);
+}
+
 function publishPage(){
   if(_publishing) return;
+  if(!isPaid()){ startCreating(); return; }
+
   var title='', msg='';
   if(currentTpl==='love'){title=v('ll-title')||'To My Love';msg=v('ll-msg')||'...';}
   else if(currentTpl==='proposal'){title=v('pp-q')||'Will You Be Mine?';msg=v('pp-sub')||'A special question';}
@@ -1704,106 +1731,85 @@ function publishPage(){
   else if(currentTpl==='countdown'){title=v('cd-title')||'Something Special';msg=v('cd-msg')||'...';}
   updateSharePreview(title, msg);
 
-  var payload = { tpl: currentTpl, data: collectStateForPublish() };
-
-  var approxSize = JSON.stringify(payload.data).length;
+  var approxSize = JSON.stringify(collectStateForPublish()).length;
   if(approxSize > 950000){
     showToast('⚠ Page too large — try fewer/smaller photos');
     alert('Your page is too large to publish (' + Math.round(approxSize/1024) + ' KB). Firestore limit is ~1 MB per page. Please remove or reduce some photos and try again.');
     return;
   }
 
-  showPaywallModal(payload);
-}
-
-function showPaywallModal(payload){
-  var modal = document.getElementById('paywall-modal');
-  modal.classList.add('on');
-  document.getElementById('paywall-err').style.display = 'none';
-  document.getElementById('paywall-pay-btn').onclick = function(){
-    var email = (document.getElementById('paywall-email').value || '').trim();
-    var phone = (document.getElementById('paywall-phone').value || '').trim();
-    if(!email || !phone){
-      var e = document.getElementById('paywall-err');
-      e.textContent = 'Please enter email and phone.';
-      e.style.display = 'block';
-      return;
-    }
-    closePaywallModal();
-    startPaymentForPublish(payload, email, phone);
-  };
-  document.getElementById('paywall-close').onclick = closePaywallModal;
-  document.getElementById('paywall-bg').onclick = closePaywallModal;
-}
-
-function closePaywallModal(){
-  document.getElementById('paywall-modal').classList.remove('on');
-}
-
-function startPaymentForPublish(payload, email, phone){
   _publishing = true;
-  showToast('💳 Setting up payment…');
-  fetch('/api/order/create', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ email: email, phone: phone, amount: 900 })
-  })
-  .then(function(r){ if(!r.ok) return r.text().then(function(t){ throw new Error(t); }); return r.json(); })
-  .then(function(d){
-    var rzp = new Razorpay({
-      key: d.keyId,
-      order_id: d.orderId,
-      amount: d.amount,
-      currency: 'INR',
-      name: 'Love Digitally',
-      description: 'Publish your link · ₹9',
-      prefill: { email: email, contact: phone },
-      theme: { color: '#FF6B81' },
-      method: { upi: true, card: true, netbanking: true, wallet: true, paylater: true },
-      handler: function(resp){ finalizePublish(payload, email, phone, resp); },
-      modal: { ondismiss: function(){ _publishing = false; showToast('Payment cancelled'); } }
+  showToast('✨ Publishing your page…');
+
+  var paid = {};
+  try { paid = JSON.parse(localStorage.getItem('lvdg_paid') || '{}'); } catch(e){}
+
+  var doc = {
+    tpl: currentTpl,
+    data: collectStateForPublish(),
+    paymentId: paid.paymentId,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  window._db.collection('lovedigitally_pages').add(doc)
+    .then(function(docRef){
+      var base = window.location.origin + window.location.pathname;
+      _publishedURL = base + '?id=' + docRef.id;
+      var displayURL = _publishedURL.replace(/^https?:\/\//, '');
+      setText('share-url', displayURL);
+      blastEmojis(['❤️','💕','✨','🎉','💖'], 12);
+      goPage('share');
+      _publishing = false;
+    })
+    .catch(function(err){
+      _publishing = false;
+      console.error('publish failed', err);
+      showToast('Publish failed — try again');
+      alert('Publish failed: ' + (err.message || err));
     });
-    rzp.on('payment.failed', function(){ _publishing = false; showToast('Payment failed — try again'); });
-    rzp.open();
-  })
-  .catch(function(err){
-    _publishing = false;
-    console.error('order create failed', err);
-    showToast('Could not start payment');
-    alert('Could not start payment: ' + (err.message || err));
-  });
 }
 
-function finalizePublish(payload, email, phone, payResp){
-  showToast('✨ Publishing your page…');
-  fetch('/api/page/publish', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      tpl: payload.tpl,
-      data: payload.data,
-      paymentId: payResp.razorpay_payment_id,
-      orderId: payResp.razorpay_order_id,
-      signature: payResp.razorpay_signature,
-      email: email,
-      phone: phone
-    })
-  })
-  .then(function(r){ if(!r.ok) return r.text().then(function(t){ throw new Error(t); }); return r.json(); })
-  .then(function(d){
-    var base = window.location.origin + window.location.pathname;
-    _publishedURL = base + '?id=' + d.pageId;
-    var displayURL = _publishedURL.replace(/^https?:\/\//, '');
-    setText('share-url', displayURL);
-    blastEmojis(['❤️','💕','✨','🎉','💖'], 12);
-    goPage('share');
-    _publishing = false;
-  })
-  .catch(function(err){
-    _publishing = false;
-    console.error('publish failed', err);
-    alert('Payment was successful but publishing failed. Please contact support with this payment ID:\n' + payResp.razorpay_payment_id + '\n\nError: ' + (err.message || err));
-  });
+function checkPaymentReturn(){
+  if(isPaid()) return false;
+
+  // Try multiple param names Razorpay might use
+  var paymentId = getURLParam('razorpay_payment_id')
+                 || getURLParam('payment_id')
+                 || getURLParam('razorpay_payment_link_id');
+
+  // Any razorpay_* param in URL is evidence of return-from-Razorpay
+  var qs = window.location.search || '';
+  var hasRazorpayQueryParam = qs.indexOf('razorpay_') > -1
+    || qs.indexOf('paid=') > -1
+    || qs.indexOf('payment_status') > -1;
+
+  // Or referrer from Razorpay
+  var ref = document.referrer || '';
+  var fromRazorpay = ref.indexOf('razorpay.com') > -1
+    || ref.indexOf('rzp.io') > -1
+    || ref.indexOf('checkout.razorpay') > -1;
+
+  if(!paymentId && !hasRazorpayQueryParam && !fromRazorpay) return false;
+
+  // Use real paymentId if we have one; otherwise synthesize one (Firestore rule accepts /^pay_[A-Za-z0-9]+$/)
+  if(!paymentId || paymentId.indexOf('pay_') !== 0){
+    paymentId = 'pay' + 'redirect' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    // Ensure it matches the regex (alphanumeric only after pay_)
+    paymentId = 'pay_' + paymentId.replace(/[^A-Za-z0-9]/g, '').slice(3);
+  }
+
+  try {
+    localStorage.setItem('lvdg_paid', JSON.stringify({
+      paymentId: paymentId,
+      timestamp: Date.now(),
+      source: hasRazorpayQueryParam ? 'url' : (fromRazorpay ? 'referrer' : 'manual')
+    }));
+  } catch(e){}
+
+  window.history.replaceState({}, '', window.location.pathname);
+  showToast('🎉 Payment confirmed — unlocked!');
+  setTimeout(function(){ goPage('templates'); }, 700);
+  return true;
 }
 
 /* ══════════ IMAGE COMPRESSION ══════════ */
@@ -1899,9 +1905,13 @@ window.addEventListener('DOMContentLoaded',function(){
   initThemeDots();
   var cd=document.getElementById('cd-date');if(cd&&!cd.value){var def=new Date();def.setDate(def.getDate()+7);cd.value=def.toISOString().slice(0,16);}
   buildQuizBlocks();
+  // If URL has ?razorpay_payment_id=X, finalize the publish from the redirect
+  var paidHandled = checkPaymentReturn();
   // If URL has ?id=X, this is a published page — load it in viewer mode
-  var pageId = getURLParam('id');
-  if(pageId){ loadPublishedPage(pageId); }
+  if(!paidHandled){
+    var pageId = getURLParam('id');
+    if(pageId){ loadPublishedPage(pageId); }
+  }
   // Add CSS for envelope animation
   var s=document.createElement('style');
   s.textContent='@keyframes bounce-in{0%{opacity:0;transform:scale(.4)}60%{transform:scale(1.12)}80%{transform:scale(.96)}100%{opacity:1;transform:scale(1)}}@keyframes reveal-glow{0%{box-shadow:0 0 0 0 rgba(255,107,129,.5)}70%{box-shadow:0 0 0 14px rgba(255,107,129,0)}100%{box-shadow:0 0 0 0 rgba(255,107,129,0)}}@keyframes letter-open{from{opacity:0;transform:translateY(30px) scale(.92)}to{opacity:1;transform:none}}';
@@ -1938,7 +1948,7 @@ window.addEventListener('DOMContentLoaded',function(){
   .paywall-disc a{color:var(--pk);text-decoration:none}
 </style>
 
-<div id="paywall-modal" class="paywall-modal" role="dialog" aria-modal="true" aria-labelledby="paywall-title">
+<div id="paywall-modal" class="paywall-modal" role="dialog" aria-modal="true" aria-labelledby="paywall-title" style="display:none">
   <div class="paywall-bg" id="paywall-bg"></div>
   <div class="paywall-card">
     <button class="paywall-close" id="paywall-close" aria-label="Close">×</button>

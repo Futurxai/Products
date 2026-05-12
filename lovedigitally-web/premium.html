@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Love Digitally Premium — ₹9/month</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--pk:#FF6B81;--pk2:#E8446A;--lv2:#7C3AED;--dark:#1E0F20;--mid:#6B4C6E;--cream:#FFF8F9;--blush:#FFE4E9;--lilac:#EDE9FF}
+  body{font-family:'DM Sans',system-ui,sans-serif;background:linear-gradient(155deg,#FFF0F3 0%,#EDE9FF 55%,#FFF8F9 100%);color:var(--dark);line-height:1.7;font-weight:300;min-height:100vh}
+  .nav{background:rgba(255,255,255,.95);backdrop-filter:blur(12px);padding:14px 5%;border-bottom:1px solid var(--blush);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+  .logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--pk),#B8A9F5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+  .back{font-size:13px;color:var(--mid);text-decoration:none;font-weight:500}
+  .back:hover{color:var(--pk)}
+  .container{max-width:520px;margin:0 auto;padding:48px 24px 60px}
+  .badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:30px;background:var(--blush);color:var(--pk2);font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:14px}
+  h1{font-family:'Playfair Display',serif;font-size:42px;font-weight:700;line-height:1.1;color:var(--dark);margin-bottom:8px;letter-spacing:-.5px}
+  h1 em{font-style:italic;background:linear-gradient(135deg,var(--pk),#B8A9F5);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .lede{font-size:15px;color:var(--mid);margin-bottom:32px}
+  .price-card{background:#fff;border:1px solid var(--blush);border-radius:18px;padding:28px;box-shadow:0 8px 32px rgba(255,107,129,.08);margin-bottom:24px}
+  .price{font-family:'Playfair Display',serif;font-size:54px;font-weight:700;color:var(--dark);letter-spacing:-1px}
+  .price .currency{font-size:24px;color:var(--pk);vertical-align:super;margin-right:2px}
+  .price-sub{font-size:13px;color:var(--mid);margin-bottom:18px;font-weight:500}
+  ul.features{list-style:none;margin-bottom:0}
+  ul.features li{padding:9px 0;border-top:1px solid var(--blush);display:flex;align-items:flex-start;gap:11px;font-size:14px;color:var(--dark);font-weight:400}
+  ul.features li:first-child{border-top:none;padding-top:14px}
+  ul.features li::before{content:"✓";color:var(--pk);font-weight:700;flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--blush);display:inline-flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px}
+  .form-card{background:#fff;border:1px solid var(--blush);border-radius:18px;padding:24px;box-shadow:0 8px 32px rgba(255,107,129,.08)}
+  label{display:block;font-size:11px;font-weight:700;color:var(--lv2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;margin-top:14px}
+  label:first-child{margin-top:0}
+  input{width:100%;padding:13px 16px;border:1.5px solid var(--blush);border-radius:11px;font-family:inherit;font-size:15px;color:var(--dark);background:#FFFAFB;transition:border-color .2s}
+  input:focus{outline:none;border-color:var(--pk)}
+  .err{color:#DC2626;font-size:12px;margin-top:6px;display:none}
+  .err.show{display:block}
+  .btn{width:100%;padding:16px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--pk),var(--pk2));color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:18px;box-shadow:0 8px 24px rgba(232,68,106,.32);transition:all .2s}
+  .btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 32px rgba(232,68,106,.42)}
+  .btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+  .disc{font-size:11px;color:var(--mid);text-align:center;margin-top:14px;line-height:1.6}
+  .disc a{color:var(--pk);text-decoration:none}
+  .disc a:hover{text-decoration:underline}
+  .secured{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:18px;font-size:11px;color:var(--mid);font-weight:500}
+  .footer{text-align:center;margin-top:40px;font-size:12px;color:var(--mid)}
+  .footer a{color:var(--mid);text-decoration:none;margin:0 8px}
+  .footer a:hover{color:var(--pk)}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="logo">Love Digitally ❤️</a>
+  <a href="/" class="back">← Back</a>
+</nav>
+<main class="container">
+  <div class="badge">✨ Premium</div>
+  <h1>Express love <em>without limits.</em></h1>
+  <p class="lede">Unlock unlimited creations, premium templates, and tools that make every moment unforgettable.</p>
+
+  <div class="price-card">
+    <div class="price"><span class="currency">₹</span>9<span style="font-size:18px;color:var(--mid);font-weight:400;letter-spacing:0"> · early supporter</span></div>
+    <div class="price-sub">One-time · Inclusive of GST · Recurring billing launches after KYC</div>
+    <ul class="features">
+      <li>Unlimited creations — love letters, proposals, countdowns and more</li>
+      <li>Premium templates exclusive to subscribers</li>
+      <li>Schedule send — auto-deliver at midnight on the special date</li>
+      <li>Open notifications — know the moment your partner views the link</li>
+      <li>Clean white-labeled share links — no FuturX branding</li>
+    </ul>
+  </div>
+
+  <form class="form-card" id="subscribe-form" onsubmit="event.preventDefault();subscribe()">
+    <label for="email">Email</label>
+    <input type="email" id="email" required placeholder="you@example.com" autocomplete="email">
+
+    <label for="phone">Mobile Number</label>
+    <input type="tel" id="phone" required placeholder="+91 98765 43210" autocomplete="tel" pattern="[+0-9 ]{10,15}">
+
+    <div class="err" id="err"></div>
+
+    <button class="btn" type="submit" id="btn">Pay ₹9 to unlock</button>
+
+    <div class="secured">🔒 Secured by Razorpay</div>
+    <p class="disc">By subscribing, you agree to our <a href="/legal/terms.html">Terms</a>, <a href="/legal/refund.html">Refund Policy</a> and <a href="/legal/privacy.html">Privacy Policy</a>. You can cancel anytime by emailing us.</p>
+  </form>
+</main>
+
+<footer class="footer">
+  <a href="/legal/terms.html">Terms</a>·
+  <a href="/legal/privacy.html">Privacy</a>·
+  <a href="/legal/refund.html">Refunds</a>·
+  <a href="/legal/contact.html">Contact</a>
+</footer>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+function showErr(msg) {
+  const e = $('err');
+  e.textContent = msg;
+  e.classList.add('show');
+}
+function clearErr() {
+  $('err').classList.remove('show');
+}
+
+async function subscribe() {
+  clearErr();
+  const email = $('email').value.trim();
+  const phone = $('phone').value.trim();
+  if (!email || !phone) { showErr('Please enter your email and phone.'); return; }
+
+  const btn = $('btn');
+  btn.disabled = true;
+  btn.textContent = 'Setting up...';
+
+  try {
+    const res = await fetch('/api/order/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, phone }),
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text || 'Could not create order');
+    }
+    const { orderId, keyId, amount } = await res.json();
+
+    const rzp = new Razorpay({
+      key: keyId,
+      order_id: orderId,
+      amount,
+      currency: 'INR',
+      name: 'Love Digitally',
+      description: 'Premium · Early Supporter',
+      image: '/images/logo.png',
+      prefill: { email, contact: phone },
+      theme: { color: '#FF6B81' },
+      method: {
+        upi: true,
+        card: true,
+        netbanking: true,
+        wallet: true,
+        paylater: true,
+      },
+      config: {
+        display: {
+          preferences: { show_default_blocks: true },
+        },
+      },
+      handler: async (response) => {
+        try {
+          await fetch('/api/order/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId: response.razorpay_order_id,
+              paymentId: response.razorpay_payment_id,
+              signature: response.razorpay_signature,
+            }),
+          });
+        } catch (e) {
+          // Best-effort verify; server already has the order record
+        }
+        window.location.href = '/premium/success?p=' + encodeURIComponent(response.razorpay_payment_id);
+      },
+      modal: {
+        ondismiss: () => {
+          btn.disabled = false;
+          btn.textContent = 'Pay ₹9 to unlock';
+        },
+      },
+    });
+    rzp.on('payment.failed', (resp) => {
+      showErr('Payment failed: ' + (resp.error?.description || 'please try again.'));
+      btn.disabled = false;
+      btn.textContent = 'Pay ₹9 to unlock';
+    });
+    rzp.open();
+  } catch (err) {
+    showErr(err.message || 'Something went wrong. Please try again.');
+    btn.disabled = false;
+    btn.textContent = 'Pay ₹9 to unlock';
+  }
+}
+</script>
+</body>
+</html>
