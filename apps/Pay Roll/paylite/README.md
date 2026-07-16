@@ -46,3 +46,22 @@ npm run android:open   # opens the project in Android Studio
 
 Re-run `npm run android:sync` after any change to `src/` or
 `capacitor.config.ts` so the native project picks up the latest web build.
+
+## Branding (icons & splash screen)
+
+`assets/icon.png`, `assets/icon-foreground.png`, `assets/icon-background.png`,
+and `assets/splash.png` are the master brand assets (dark navy `#0A0C12` +
+gold `#F2A93B` mark), sized per the
+[`@capacitor/assets`](https://github.com/ionic-team/capacitor-assets)
+convention. Regenerate every density from them with:
+
+```bash
+npx @capacitor/assets generate --android
+```
+
+That tool depends on `sharp`, whose native binary download was blocked by
+this sandbox's network policy, so the checked-in `android/app/src/main/res`
+icon/splash PNGs were instead rendered directly per-density (same source
+design, exact same target dimensions the tool would produce) — regenerate
+them properly with the command above once you're on a machine where
+`@capacitor/assets` can install.
