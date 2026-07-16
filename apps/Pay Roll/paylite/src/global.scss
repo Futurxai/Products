@@ -1,0 +1,98 @@
+/*
+ * App Global CSS
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/* Force dark mode regardless of system preference — this app ships one theme */
+@import "@ionic/angular/css/palettes/dark.always.css";
+
+.mono {
+  font-family: ui-monospace, 'SFMono-Regular', 'JetBrains Mono', Menlo, monospace;
+}
+
+.fx-hint {
+  color: var(--fx-muted);
+  font-size: 12px;
+  margin: -6px 0 16px;
+}
+
+.fx-err {
+  color: var(--fx-danger);
+  font-size: 13px;
+  margin: -6px 0 14px;
+}
+
+.fx-section {
+  font-size: 13px;
+  color: var(--fx-muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin: 20px 0 10px;
+  padding: 0 4px;
+}
+
+.fx-empty {
+  text-align: center;
+  color: var(--fx-muted);
+  font-size: 13px;
+  padding: 30px 10px;
+}
+
+.fx-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--fx-surface-alt);
+  color: var(--fx-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.fx-num-big {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.fx-num-sm {
+  font-size: 13px;
+  color: var(--fx-muted);
+}
+
+ion-content {
+  --background: var(--fx-bg);
+}
+
+ion-card {
+  --background: var(--fx-surface);
+  border: 1px solid var(--fx-border);
+  border-radius: 14px;
+  box-shadow: none;
+}
+
+ion-item {
+  --background: transparent;
+  --border-color: var(--fx-border);
+}
+
+ion-list {
+  background: transparent;
+}

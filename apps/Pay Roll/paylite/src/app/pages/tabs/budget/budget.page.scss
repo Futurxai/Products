@@ -1,0 +1,28 @@
+.fx-field {
+  --background: var(--fx-surface-alt);
+  --border-radius: 10px;
+  margin-bottom: 16px;
+  border-radius: 10px;
+}
+
+.fx-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &:first-child {
+    margin-bottom: 12px;
+  }
+}
+
+.fx-value {
+  font-weight: 700;
+}
+
+.fx-positive {
+  color: var(--fx-success);
+}
+
+.fx-negative {
+  color: var(--fx-danger);
+}
