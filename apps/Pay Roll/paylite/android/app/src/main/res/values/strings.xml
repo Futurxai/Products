@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Futurx Payroll &amp; Leave</string>
+    <string name="title_activity_main">Futurx Payroll &amp; Leave</string>
+    <string name="package_name">com.futurx.paylite</string>
+    <string name="custom_url_scheme">com.futurx.paylite</string>
+</resources>
