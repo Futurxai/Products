@@ -1,0 +1,47 @@
+<ion-content class="ion-padding">
+  <div class="fx-login">
+    <p class="fx-hint fx-role-label">{{ roleLabel }}</p>
+    <h1>{{ isCreatingAccount ? 'Create account' : 'Log in' }}</h1>
+
+    <ion-item lines="none" class="fx-field">
+      <ion-input label="User ID" labelPlacement="stacked" placeholder="e.g. balaji" [(ngModel)]="userId"></ion-input>
+    </ion-item>
+
+    <ion-item lines="none" class="fx-field">
+      <ion-input label="Password" labelPlacement="stacked" type="password" placeholder="password" [(ngModel)]="password"></ion-input>
+    </ion-item>
+
+    <ng-container *ngIf="isCreatingAccount">
+      <ion-item lines="none" class="fx-field">
+        <ion-input label="Full name" labelPlacement="stacked" placeholder="Your name" [(ngModel)]="fullName"></ion-input>
+      </ion-item>
+
+      <ng-container *ngIf="role === 'employee'">
+        <ng-container *ngIf="managers.length === 0; else managerSelect">
+          <p class="fx-hint">No managers yet — ask a manager to create their account first.</p>
+        </ng-container>
+        <ng-template #managerSelect>
+          <ion-item lines="none" class="fx-field">
+            <ion-select label="Manager" labelPlacement="stacked" placeholder="Select your manager" [(ngModel)]="managerId">
+              <ion-select-option *ngFor="let mgr of managers" [value]="mgr.id">{{ mgr.full_name }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ng-template>
+      </ng-container>
+    </ng-container>
+
+    <p class="fx-err" *ngIf="error">{{ error }}</p>
+
+    <ion-button expand="block" color="primary" (click)="submit()">
+      {{ isCreatingAccount ? 'Create account' : 'Log in' }}
+    </ion-button>
+
+    <p class="fx-forgot-link" *ngIf="!isCreatingAccount" (click)="goForgotPassword()">Forgot password?</p>
+
+    <ion-button expand="block" fill="outline" color="light" (click)="toggleMode()">
+      {{ isCreatingAccount ? 'Already have an account? Log in' : 'First time? Create account' }}
+    </ion-button>
+
+    <ion-button expand="block" fill="clear" color="medium" (click)="goBack()">← Back</ion-button>
+  </div>
+</ion-content>

@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Attendance</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-content>
+      <div class="fx-today-row">
+        <span class="fx-today-label">Today — {{ state.todayIso }}</span>
+      </div>
+      <ion-badge *ngIf="todayRecord; else markBtn" [color]="todayRecord.status === 'present' ? 'success' : 'medium'">
+        {{ todayRecord.status }}
+      </ion-badge>
+      <ng-template #markBtn>
+        <ion-button expand="block" color="primary" (click)="markPresent()">Mark present</ion-button>
+      </ng-template>
+    </ion-card-content>
+  </ion-card>
+
+  <h2 class="fx-section">This month</h2>
+  <ion-card>
+    <ion-list lines="full" *ngIf="monthRecords.length; else emptyMonth">
+      <ion-item *ngFor="let r of monthRecords">
+        <ion-label>{{ r.date }}</ion-label>
+        <ion-badge slot="end" [color]="r.status === 'present' ? 'success' : 'medium'">{{ r.status }}</ion-badge>
+      </ion-item>
+    </ion-list>
+    <ng-template #emptyMonth>
+      <div class="fx-empty">No records yet this month.</div>
+    </ng-template>
+  </ion-card>
+</ion-content>

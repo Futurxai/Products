@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Budget</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-item lines="none" class="fx-field">
+    <ion-input label="Allocated budget (₹) — {{ monthLabel }}" labelPlacement="stacked" type="number" [(ngModel)]="allocatedAmount"></ion-input>
+  </ion-item>
+  <ion-button expand="block" color="primary" (click)="save()">Save allocation</ion-button>
+
+  <h2 class="fx-section">Summary</h2>
+  <ion-card>
+    <ion-card-content>
+      <div class="fx-row">
+        <span class="fx-num-sm">Total computed payout</span>
+        <span class="mono fx-value">₹{{ totalPayout | number:'1.2-2' }}</span>
+      </div>
+      <div class="fx-row">
+        <span class="fx-num-sm">Variance</span>
+        <span class="mono fx-value" [class.fx-positive]="variance >= 0" [class.fx-negative]="variance < 0">
+          ₹{{ variance | number:'1.2-2' }}
+        </span>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

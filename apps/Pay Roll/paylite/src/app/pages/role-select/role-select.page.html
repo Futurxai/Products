@@ -1,0 +1,11 @@
+<ion-content class="ion-padding">
+  <div class="fx-role-select">
+    <h1>Futurx Payroll</h1>
+    <p class="fx-hint">Who's logging in?</p>
+
+    <ion-button expand="block" color="primary" (click)="pickRole('manager')">Manager</ion-button>
+    <ion-button expand="block" fill="outline" color="light" (click)="pickRole('employee')">Team member</ion-button>
+
+    <p class="fx-reset-link" (click)="resetDemoData()">Reset demo data</p>
+  </div>
+</ion-content>
