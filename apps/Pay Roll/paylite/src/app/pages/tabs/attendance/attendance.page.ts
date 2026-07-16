@@ -28,7 +28,22 @@ export class AttendancePage {
   }
 
   markPresent(): void {
-    this.state.markPresentToday();
+    this.state.markAttendanceToday('present');
     this.refresh();
+  }
+
+  markAbsent(): void {
+    this.state.markAttendanceToday('absent');
+    this.refresh();
+  }
+
+  checkOut(): void {
+    this.state.checkOutToday();
+    this.refresh();
+  }
+
+  formatTime(iso: string | null): string {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
   }
 }

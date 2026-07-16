@@ -5,14 +5,45 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-item lines="none" class="fx-field">
-    <ion-input label="Allocated budget (₹) — {{ monthLabel }}" labelPlacement="stacked" type="number" [(ngModel)]="allocatedAmount"></ion-input>
-  </ion-item>
-  <ion-button expand="block" color="primary" (click)="save()">Save allocation</ion-button>
+  <p class="fx-hint">{{ monthLabel }} budget categories</p>
+
+  <ion-card>
+    <ion-list lines="full" *ngIf="categories.length; else emptyCategories">
+      <ion-item *ngFor="let c of categories">
+        <ion-label>{{ c.name }}</ion-label>
+        <span slot="end" class="mono fx-cat-amount">₹{{ c.amount | number:'1.0-2' }}</span>
+        <ion-button slot="end" fill="clear" color="danger" (click)="removeCategory(c.id)">
+          <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>
+    <ng-template #emptyCategories>
+      <div class="fx-empty">No budget categories yet — add one below.</div>
+    </ng-template>
+  </ion-card>
+
+  <div class="fx-add-row">
+    <ion-item lines="none" class="fx-field fx-field-name">
+      <ion-input label="Category" labelPlacement="stacked" placeholder="e.g. Salary, Vehicle, Water" [(ngModel)]="newName"></ion-input>
+    </ion-item>
+    <ion-item lines="none" class="fx-field fx-field-amount">
+      <ion-input label="Amount (₹)" labelPlacement="stacked" type="number" [(ngModel)]="newAmount"></ion-input>
+    </ion-item>
+  </div>
+  <p class="fx-err" *ngIf="error">{{ error }}</p>
+  <ion-button expand="block" color="primary" (click)="addCategory()">Add category</ion-button>
 
   <h2 class="fx-section">Summary</h2>
   <ion-card>
     <ion-card-content>
+      <div class="fx-row" *ngIf="topCategory">
+        <span class="fx-num-sm">Top expense</span>
+        <span class="mono fx-value">{{ topCategory.name }} — ₹{{ topCategory.amount | number:'1.0-2' }}</span>
+      </div>
+      <div class="fx-row">
+        <span class="fx-num-sm">Total budgeted</span>
+        <span class="mono fx-value">₹{{ allocatedTotal | number:'1.2-2' }}</span>
+      </div>
       <div class="fx-row">
         <span class="fx-num-sm">Total computed payout</span>
         <span class="mono fx-value">₹{{ totalPayout | number:'1.2-2' }}</span>

@@ -16,6 +16,8 @@ export interface AttendanceRecord {
   employee_id: string;
   date: string;
   status: AttendanceStatus;
+  check_in_time: string | null;
+  check_out_time: string | null;
 }
 
 export type LeaveStatus = 'pending' | 'approved' | 'rejected';
@@ -30,9 +32,15 @@ export interface LeaveRequest {
   created_at: string;
 }
 
+export interface BudgetCategory {
+  id: string;
+  name: string;
+  amount: number;
+}
+
 export interface BudgetEntry {
   month: string;
-  allocated_amount: number;
+  categories: BudgetCategory[];
 }
 
 export interface PayrollItem extends Employee {

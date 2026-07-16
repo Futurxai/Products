@@ -5,3 +5,28 @@
 .fx-today-label {
   font-weight: 600;
 }
+
+.fx-mark-row {
+  display: flex;
+  gap: 10px;
+
+  ion-button {
+    flex: 1;
+    margin: 0;
+  }
+}
+
+.fx-times {
+  margin-top: 12px;
+}
+
+.fx-time-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.fx-checkout-btn {
+  margin-top: 12px;
+}
