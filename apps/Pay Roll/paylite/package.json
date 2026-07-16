@@ -11,7 +11,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "android:sync": "ng build && npx cap sync android",
-    "android:open": "npx cap open android"
+    "android:open": "npx cap open android",
+    "deploy": "ng build && npx firebase-tools deploy --only hosting"
   },
   "private": true,
   "dependencies": {

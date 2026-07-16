@@ -65,3 +65,25 @@ icon/splash PNGs were instead rendered directly per-density (same source
 design, exact same target dimensions the tool would produce) — regenerate
 them properly with the command above once you're on a machine where
 `@capacitor/assets` can install.
+
+## Web hosting (Firebase)
+
+`firebase.json` and `.firebaserc` are set up the same way as the other apps
+in this repo (`paycore`, `eatwell-mobile`, `lovedigitally-web`): serve the
+`www/` production build as a single-page app.
+
+`.firebaserc` currently points at a placeholder project id, `paylite-app`,
+which **does not exist yet** — nobody has created it, and no deploy has been
+run from this sandbox (no Firebase credentials are available here). To go
+live:
+
+```bash
+npm run build                       # produces www/
+npx firebase-tools login            # one-time, opens a browser for auth
+npx firebase-tools projects:create paylite-app   # or swap in an existing project id
+                                     # in .firebaserc if you already have one
+npm run deploy                      # ng build + firebase deploy --only hosting
+```
+
+After the first deploy, the app will be live at `https://paylite-app.web.app`
+(or whatever project id you actually used — update `.firebaserc` to match).
