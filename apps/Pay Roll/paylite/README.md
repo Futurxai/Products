@@ -27,3 +27,22 @@ npm install
 npm start        # ng serve, http://localhost:4200
 npm run build     # production build to www/
 ```
+
+## Android build
+
+The `android/` folder is a Capacitor-managed native project (appId
+`com.futurx.paylite`), added with `npx cap add android`. It needs the Android
+SDK and a network path to `dl.google.com` to build — neither is available in
+this sandbox, so the native build has only been verified structurally here
+(Gradle project configuration resolves; dependency download was not
+reachable). On a machine with Android Studio / the SDK installed:
+
+```bash
+npm run android:sync   # ng build, then copy web assets + sync native config
+npm run android:open   # opens the project in Android Studio
+# or, from android/:
+./gradlew assembleDebug
+```
+
+Re-run `npm run android:sync` after any change to `src/` or
+`capacitor.config.ts` so the native project picks up the latest web build.
