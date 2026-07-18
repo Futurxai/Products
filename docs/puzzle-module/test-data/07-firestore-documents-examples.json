@@ -1,0 +1,107 @@
+{
+  "_description": "Worked example of how exp_001 (completed) and exp_002 (in_progress) map onto actual Firestore collections, per the Module Contract's security boundary (§8): correct answers, clue text, and the full-resolution reveal image live ONLY in the *_private collection, which Firestore rules make unreadable by any client — it is read exclusively by Cloud Functions using the Admin SDK. Clients only ever read puzzle_experiences (public projection) and their own puzzle_progress document. Collection names are namespaced with a puzzle_ prefix per the Contract's future-extensibility convention (§9), so a future host platform can add quiz_*, timeline_*, etc. without collision.",
+
+  "collections": {
+
+    "puzzle_creators/cre_001": {
+      "_readWrite": "creator can read/write only where creatorId == request.auth.uid",
+      "displayName": "Vikram Rao",
+      "email": "vikram.rao@example.com",
+      "createdAt": "2026-01-04T09:12:00+05:30",
+      "experienceIds": ["exp_001"]
+    },
+
+    "puzzle_experiences/exp_001": {
+      "_readWrite": "publicly readable by anyone holding a valid resolved token for this experience; writable only by the owning creator",
+      "creatorId": "cre_001",
+      "occasion": "Anniversary",
+      "emotion": "Nostalgia",
+      "recipientDisplayName": "Ananya",
+      "status": "completed",
+      "welcomeNote": "Hey Annie, three years ago today I promised to make every day feel like this one. Before I say anything else, I need you to prove you remember us as well as I do. Nine pieces, nine memories. Ready?",
+      "lockedPatternImagePath": "puzzle-module/_shared/patterns/frame-outline.svg",
+      "questionPrompts": [
+        "Where did we go on our very first date?",
+        "What did I spill on you the first time we met?",
+        "What's the name of the restaurant where I proposed?",
+        "What song played during our first dance at the wedding?",
+        "What nickname did I give you in our first month of dating?",
+        "Which city did we honeymoon in?",
+        "What's our favorite weekend breakfast spot?",
+        "What do we call each other on bad days?",
+        "What's the one thing I promised you on our wedding day?"
+      ],
+      "createdAt": "2026-01-04T09:20:00+05:30",
+      "publishedAt": "2026-01-05T19:00:00+05:30",
+      "completedAt": "2026-01-06T21:14:00+05:30",
+      "_note": "Note what is NOT here: correctAnswer, acceptedVariants, clues, the real revealImage path, completionMessage, and partnerHelpChallenge all live in the private doc below. questionPrompts is safe to expose because a prompt alone reveals nothing."
+    },
+
+    "puzzle_experiences_private/exp_001": {
+      "_readWrite": "no client access whatsoever — Firestore rule is allow read, write: if false; only Cloud Functions (Admin SDK) touch this document",
+      "shareTokenHash": "sha256:9f2a1c...redacted",
+      "revealImagePath": "puzzle-module/cre_001/exp_001/reveal-image.svg",
+      "completionMessage": "You remembered every single one — of course you did. Happy anniversary, my love. Here's to the fourth year, and every one after it.",
+      "partnerHelpChallenge": "Stuck? Ask Vikram directly — but he's only answering if you bring him a cup of filter coffee first. ☕",
+      "questions": [
+        { "questionId": "q1", "correctAnswer": "Cubbon Park", "acceptedVariants": ["Cubbon Park, Bangalore", "Cubbon Park Bengaluru"], "clues": ["It's a big green space in the city we met in.", "We shared street-side cotton candy there.", "It has a famous bandstand where we sat and talked for two hours."] },
+        { "questionId": "q2", "correctAnswer": "Coffee", "acceptedVariants": ["Hot coffee"], "clues": ["It was hot, and I apologized way too much.", "It came in a paper cup from the campus canteen.", "You still tease me about my clumsy hands."] }
+      ],
+      "_note": "Only q1-q2 shown here for brevity — the full document contains all 9, matching 03-puzzle-experiences.json."
+    },
+
+    "puzzle_progress/exp_001": {
+      "_readWrite": "created and updated only by the recipient session resolved from this experience's token; no read/write access for other tokens or unauthenticated requests without the matching token",
+      "status": "completed",
+      "startedAt": "2026-01-05T19:32:00+05:30",
+      "completedAt": "2026-01-06T21:14:00+05:30",
+      "pieces": {
+        "q1": { "status": "unlocked", "earnedVia": "direct", "pointsAwarded": 100 },
+        "q2": { "status": "unlocked", "earnedVia": "direct", "pointsAwarded": 100 }
+      },
+      "totalScore": 800,
+      "starRating": 3,
+      "_note": "Full 9-piece map matches 04-progress-examples.json — truncated here for brevity."
+    },
+
+    "puzzle_experiences/exp_002": {
+      "creatorId": "cre_002",
+      "occasion": "Birthday",
+      "emotion": "Excitement",
+      "recipientDisplayName": "Priya",
+      "status": "in_progress",
+      "welcomeNote": "Happy birthday, Priya! Before your cake, you've got homework — nine questions about us. Let's see how much attention you've actually been paying. 😉",
+      "lockedPatternImagePath": "puzzle-module/_shared/patterns/frame-outline.svg",
+      "createdAt": "2026-02-11T18:50:00+05:30",
+      "publishedAt": "2026-02-12T08:00:00+05:30"
+    },
+
+    "puzzle_progress/exp_002": {
+      "status": "in_progress",
+      "startedAt": "2026-02-12T08:40:00+05:30",
+      "lastUpdatedAt": "2026-02-12T09:05:00+05:30",
+      "pieces": {
+        "q1": { "status": "unlocked", "earnedVia": "direct", "pointsAwarded": 100 },
+        "q5": { "status": "unlocked", "earnedVia": "partner_help", "pointsAwarded": 10 }
+      },
+      "totalScoreSoFar": 335,
+      "_note": "Full map matches 04-progress-examples.json."
+    },
+
+    "puzzle_events/evt_0009": {
+      "_readWrite": "write-only from Cloud Functions; read access restricted to the owning creator (their own experiences) for the Insights screen",
+      "eventName": "question.answered_correct",
+      "experienceId": "exp_001",
+      "moduleType": "puzzle",
+      "actorRole": "recipient",
+      "timestamp": "2026-01-05T19:33:45+05:30",
+      "payload": { "questionIndex": "q1", "cluesUsed": 0 }
+    }
+  },
+
+  "tokenResolution": {
+    "_description": "How a share link resolves to an experience without exposing the Firestore document ID relationship directly (Contract §8: token must never be derivable from the document ID).",
+    "shareUrl": "https://puzzle.lovedigitally.app/e/pzl_7f1c9ad2b6e34a08",
+    "resolutionFlow": "Client calls the resolveShareToken Cloud Function with the token from the URL. The function looks up shareTokenHash in puzzle_experiences_private (server-side only), confirms a match, and returns the public puzzle_experiences/{experienceId} projection plus a short-lived session reference the client uses for subsequent calls. The raw Firestore document ID (exp_001) is never derivable from the token pzl_7f1c9ad2b6e34a08 by design — they are unrelated random values."
+  }
+}

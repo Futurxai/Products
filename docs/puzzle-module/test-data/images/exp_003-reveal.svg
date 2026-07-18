@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8e2a4b"/>
+      <stop offset="100%" stop-color="#3e1329"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="300" rx="20" fill="url(#g)"/>
+  <g transform="translate(150,120)"><circle r="26" fill="none" stroke="#fff" stroke-width="6"/><polygon points="0,-40 -12,-24 12,-24" fill="#ffffff"/></g>
+  <text x="150" y="235" font-family="Georgia, serif" font-size="20" fill="#ffffff" text-anchor="middle" font-weight="bold">Meera, will you...?</text>
+  <text x="150" y="258" font-family="Verdana, sans-serif" font-size="12" fill="#ffffffcc" text-anchor="middle">Rohan is waiting for an answer</text>
+</svg>

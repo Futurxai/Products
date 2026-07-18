@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f6ac48"/>
+      <stop offset="100%" stop-color="#e0673a"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="300" rx="20" fill="url(#g)"/>
+  <g transform="translate(110,95)"><rect x="0" y="40" width="80" height="45" rx="6" fill="#ffffff" opacity="0.9"/><rect x="0" y="25" width="80" height="18" rx="4" fill="#ffffffcc"/><rect x="36" y="0" width="8" height="28" fill="#fff"/><circle cx="40" cy="-4" r="6" fill="#ffe680"/></g>
+  <text x="150" y="235" font-family="Georgia, serif" font-size="20" fill="#ffffff" text-anchor="middle" font-weight="bold">Happy Birthday, Priya</text>
+  <text x="150" y="258" font-family="Verdana, sans-serif" font-size="12" fill="#ffffffcc" text-anchor="middle">From Arjun, with love</text>
+</svg>

@@ -1,0 +1,117 @@
+{
+  "_description": "Creator accounts (Firebase Auth users). Password fields are illustrative only — real accounts would never store plaintext. Use these for seeding an Auth emulator / mock login screens.",
+  "creators": [
+    {
+      "creatorId": "cre_001",
+      "displayName": "Vikram Rao",
+      "email": "vikram.rao@example.com",
+      "password": "DevTest@123",
+      "phone": "+91-98450-11223",
+      "avatarUrl": "https://i.pravatar.cc/150?img=12",
+      "signupMethod": "email",
+      "createdAt": "2026-01-04T09:12:00+05:30",
+      "experienceIds": ["exp_001"],
+      "notes": "Also appears as creator of exp_010's recipient (Ananya Rao) — realistic 'pay it forward' chain."
+    },
+    {
+      "creatorId": "cre_002",
+      "displayName": "Arjun Mehta",
+      "email": "arjun.mehta@example.com",
+      "password": "DevTest@123",
+      "phone": "+91-99000-22334",
+      "avatarUrl": "https://i.pravatar.cc/150?img=33",
+      "signupMethod": "email",
+      "createdAt": "2026-02-11T18:40:00+05:30",
+      "experienceIds": ["exp_002"]
+    },
+    {
+      "creatorId": "cre_003",
+      "displayName": "Rohan Kapoor",
+      "email": "rohan.kapoor@example.com",
+      "password": "DevTest@123",
+      "phone": "+91-98110-44556",
+      "avatarUrl": "https://i.pravatar.cc/150?img=51",
+      "signupMethod": "google",
+      "createdAt": "2026-03-02T07:05:00+05:30",
+      "experienceIds": ["exp_003"]
+    },
+    {
+      "creatorId": "cre_004",
+      "displayName": "Kabir Singh",
+      "email": "kabir.singh@example.com",
+      "password": "DevTest@123",
+      "phone": "+91-97170-66778",
+      "avatarUrl": "https://i.pravatar.cc/150?img=14",
+      "signupMethod": "email",
+      "createdAt": "2026-04-18T14:22:00+05:30",
+      "experienceIds": ["exp_004"]
+    },
+    {
+      "creatorId": "cre_005",
+      "displayName": "Neha Gupta",
+      "email": "neha.gupta@example.com",
+      "password": "DevTest@123",
+      "phone": "+91-98220-88990",
+      "avatarUrl": "https://i.pravatar.cc/150?img=45",
+      "signupMethod": "email",
+      "createdAt": "2026-01-28T11:15:00+05:30",
+      "experienceIds": ["exp_005"]
+    },
+    {
+      "creatorId": "cre_006",
+      "displayName": "Rahul Nair",
+      "email": "rahul.nair@example.com",
+      "password": "DevTest@123",
+      "phone": "+91-99400-11002",
+      "avatarUrl": "https://i.pravatar.cc/150?img=59",
+      "signupMethod": "email",
+      "createdAt": "2026-05-06T20:00:00+05:30",
+      "experienceIds": ["exp_006"]
+    },
+    {
+      "creatorId": "cre_007",
+      "displayName": "Sneha Reddy",
+      "email": "sneha.reddy@example.com",
+      "password": "DevTest@123",
+      "phone": "+91-90000-33445",
+      "avatarUrl": "https://i.pravatar.cc/150?img=25",
+      "signupMethod": "email",
+      "createdAt": "2026-06-01T09:30:00+05:30",
+      "experienceIds": ["exp_007"]
+    },
+    {
+      "creatorId": "cre_008",
+      "displayName": "Karan Malhotra",
+      "email": "karan.malhotra@example.com",
+      "password": "DevTest@123",
+      "phone": "+91-98900-55667",
+      "avatarUrl": "https://i.pravatar.cc/150?img=8",
+      "signupMethod": "email",
+      "createdAt": "2026-02-20T22:10:00+05:30",
+      "experienceIds": ["exp_008"]
+    },
+    {
+      "creatorId": "cre_009",
+      "displayName": "Meera Joshi",
+      "email": "meera.joshi@example.com",
+      "password": "DevTest@123",
+      "phone": "+91-97690-77889",
+      "avatarUrl": "https://i.pravatar.cc/150?img=48",
+      "signupMethod": "email",
+      "createdAt": "2025-11-14T08:00:00+05:30",
+      "experienceIds": ["exp_009"]
+    },
+    {
+      "creatorId": "cre_001b",
+      "displayName": "Ananya Rao",
+      "email": "ananya.rao@example.com",
+      "password": "DevTest@123",
+      "phone": "+91-98450-99887",
+      "avatarUrl": "https://i.pravatar.cc/150?img=32",
+      "signupMethod": "email",
+      "createdAt": "2026-06-20T10:45:00+05:30",
+      "experienceIds": ["exp_010"],
+      "notes": "Same person as the recipient of exp_001 (Vikram's wife). Received a puzzle, now creating one for her friend Zoya — separate creatorId because she is a distinct Auth account signing up on her own; recipientDisplayName in exp_001 references her by name only, not this account."
+    }
+  ]
+}

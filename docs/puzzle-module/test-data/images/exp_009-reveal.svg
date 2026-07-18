@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#c98a52"/>
+      <stop offset="100%" stop-color="#7a4a2b"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="300" rx="20" fill="url(#g)"/>
+  <g transform="translate(150,120)"><polygon points="0,-35 40,-2 40,35 -40,35 -40,-2" fill="#ffffff" opacity="0.9"/><rect x="-10" y="8" width="20" height="27" fill="#c98a52"/></g>
+  <text x="150" y="235" font-family="Georgia, serif" font-size="20" fill="#ffffff" text-anchor="middle" font-weight="bold">Meera &amp; Papa</text>
+  <text x="150" y="258" font-family="Verdana, sans-serif" font-size="12" fill="#ffffffcc" text-anchor="middle">Every piece of my childhood</text>
+</svg>

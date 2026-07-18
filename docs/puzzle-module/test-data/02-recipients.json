@@ -1,0 +1,15 @@
+{
+  "_description": "Recipients never have accounts (Business Rule: no recipient auth). This file exists purely as dev/QA reference data so UI mocks can show a realistic name/avatar without querying anything — in production these fields live only inline on the experience document (recipientDisplayName), not as a standalone profile collection.",
+  "recipients": [
+    { "recipientRef": "rcp_001", "displayName": "Ananya Rao",   "relationshipToCreator": "wife",         "usedInExperience": "exp_001", "avatarUrl": "https://i.pravatar.cc/150?img=32" },
+    { "recipientRef": "rcp_002", "displayName": "Priya Sharma", "relationshipToCreator": "girlfriend",   "usedInExperience": "exp_002", "avatarUrl": "https://i.pravatar.cc/150?img=47" },
+    { "recipientRef": "rcp_003", "displayName": "Meera Iyer",   "relationshipToCreator": "partner",      "usedInExperience": "exp_003", "avatarUrl": "https://i.pravatar.cc/150?img=44" },
+    { "recipientRef": "rcp_004", "displayName": "Sana Khan",    "relationshipToCreator": "fiancée",      "usedInExperience": "exp_004", "avatarUrl": "https://i.pravatar.cc/150?img=29" },
+    { "recipientRef": "rcp_005", "displayName": "Ishita Verma", "relationshipToCreator": "best friend",  "usedInExperience": "exp_005", "avatarUrl": "https://i.pravatar.cc/150?img=41" },
+    { "recipientRef": "rcp_006", "displayName": "Divya Nair",   "relationshipToCreator": "wife",         "usedInExperience": "exp_006", "avatarUrl": "https://i.pravatar.cc/150?img=36" },
+    { "recipientRef": "rcp_007", "displayName": "Aditya Reddy", "relationshipToCreator": "brother",      "usedInExperience": "exp_007", "avatarUrl": "https://i.pravatar.cc/150?img=15" },
+    { "recipientRef": "rcp_008", "displayName": "Alisha Fernandes", "relationshipToCreator": "girlfriend (long distance, London)", "usedInExperience": "exp_008", "avatarUrl": "https://i.pravatar.cc/150?img=23" },
+    { "recipientRef": "rcp_009", "displayName": "Rajesh Joshi", "relationshipToCreator": "father",       "usedInExperience": "exp_009", "avatarUrl": "https://i.pravatar.cc/150?img=52" },
+    { "recipientRef": "rcp_010", "displayName": "Zoya Ahmed",   "relationshipToCreator": "best friend",  "usedInExperience": "exp_010", "avatarUrl": "https://i.pravatar.cc/150?img=38" }
+  ]
+}

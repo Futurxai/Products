@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1f2a52"/>
+      <stop offset="100%" stop-color="#a9852f"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="300" rx="20" fill="url(#g)"/>
+  <g transform="translate(150,120)"><polygon points="0,-30 55,-5 0,20 -55,-5" fill="#ffffff" opacity="0.95"/><rect x="-6" y="-5" width="12" height="35" fill="#ffffffcc"/><circle cx="0" cy="30" r="5" fill="#ffe680"/></g>
+  <text x="150" y="235" font-family="Georgia, serif" font-size="20" fill="#ffffff" text-anchor="middle" font-weight="bold">Congrats, Aditya!</text>
+  <text x="150" y="258" font-family="Verdana, sans-serif" font-size="12" fill="#ffffffcc" text-anchor="middle">From your sister Sneha</text>
+</svg>

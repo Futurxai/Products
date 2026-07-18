@@ -1,0 +1,154 @@
+{
+  "_description": "Recipient progress documents. Per the Module Contract, a progress document exists only once a Recipient has taken a first gameplay action — draft/published-with-no-activity experiences (exp_003, exp_004, exp_007, exp_010) have NO progress document at all; 'not started' is represented by absence, not a placeholder doc. Each piece's earnedVia is one of: direct | clue | partner_help, matching the Reward System scoring tiers in the PRD.",
+
+  "progressDocuments": [
+
+    {
+      "experienceId": "exp_001",
+      "status": "completed",
+      "startedAt": "2026-01-05T19:32:00+05:30",
+      "lastUpdatedAt": "2026-01-06T21:14:00+05:30",
+      "completedAt": "2026-01-06T21:14:00+05:30",
+      "revealInteractedAt": "2026-01-06T21:15:40+05:30",
+      "pieces": {
+        "q1": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q2": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q3": { "status": "unlocked", "earnedVia": "clue", "cluesUsed": 1, "pointsAwarded": 75 },
+        "q4": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q5": { "status": "unlocked", "earnedVia": "clue", "cluesUsed": 2, "pointsAwarded": 50 },
+        "q6": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q7": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q8": { "status": "unlocked", "earnedVia": "clue", "cluesUsed": 1, "pointsAwarded": 75 },
+        "q9": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 }
+      },
+      "totalScore": 800,
+      "maxScore": 900,
+      "starRating": 3
+    },
+
+    {
+      "experienceId": "exp_002",
+      "status": "in_progress",
+      "startedAt": "2026-02-12T08:40:00+05:30",
+      "lastUpdatedAt": "2026-02-12T09:05:00+05:30",
+      "completedAt": null,
+      "pieces": {
+        "q1": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q2": { "status": "unlocked", "earnedVia": "clue", "cluesUsed": 1, "pointsAwarded": 75 },
+        "q3": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q4": { "status": "unlocked", "earnedVia": "clue", "cluesUsed": 2, "pointsAwarded": 50 },
+        "q5": { "status": "unlocked", "earnedVia": "partner_help", "cluesUsed": 3, "pointsAwarded": 10 },
+        "q6": { "status": "locked", "earnedVia": null, "cluesUsed": 0, "pointsAwarded": 0 },
+        "q7": { "status": "locked", "earnedVia": null, "cluesUsed": 0, "pointsAwarded": 0 },
+        "q8": { "status": "locked", "earnedVia": null, "cluesUsed": 0, "pointsAwarded": 0 },
+        "q9": { "status": "locked", "earnedVia": null, "cluesUsed": 0, "pointsAwarded": 0 }
+      },
+      "totalScoreSoFar": 335,
+      "maxScore": 900,
+      "piecesUnlocked": 5,
+      "piecesRemaining": 4
+    },
+
+    {
+      "experienceId": "exp_005",
+      "status": "completed",
+      "startedAt": "2026-01-29T09:20:00+05:30",
+      "lastUpdatedAt": "2026-01-29T21:40:00+05:30",
+      "completedAt": "2026-01-29T21:40:00+05:30",
+      "revealInteractedAt": "2026-01-29T21:42:10+05:30",
+      "pieces": {
+        "q1": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q2": { "status": "unlocked", "earnedVia": "clue", "cluesUsed": 1, "pointsAwarded": 75 },
+        "q3": { "status": "unlocked", "earnedVia": "clue", "cluesUsed": 2, "pointsAwarded": 50 },
+        "q4": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q5": { "status": "unlocked", "earnedVia": "partner_help", "cluesUsed": 3, "pointsAwarded": 10 },
+        "q6": { "status": "unlocked", "earnedVia": "clue", "cluesUsed": 1, "pointsAwarded": 75 },
+        "q7": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q8": { "status": "unlocked", "earnedVia": "clue", "cluesUsed": 3, "pointsAwarded": 30 },
+        "q9": { "status": "unlocked", "earnedVia": "clue", "cluesUsed": 1, "pointsAwarded": 75 }
+      },
+      "totalScore": 615,
+      "maxScore": 900,
+      "starRating": 2
+    },
+
+    {
+      "experienceId": "exp_006",
+      "status": "in_progress",
+      "startedAt": "2026-05-07T07:15:00+05:30",
+      "lastUpdatedAt": "2026-05-07T07:28:00+05:30",
+      "completedAt": null,
+      "pieces": {
+        "q1": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q2": { "status": "unlocked", "earnedVia": "clue", "cluesUsed": 1, "pointsAwarded": 75 },
+        "q3": { "status": "locked", "earnedVia": null, "cluesUsed": 0, "pointsAwarded": 0 },
+        "q4": { "status": "locked", "earnedVia": null, "cluesUsed": 0, "pointsAwarded": 0 },
+        "q5": { "status": "locked", "earnedVia": null, "cluesUsed": 0, "pointsAwarded": 0 },
+        "q6": { "status": "locked", "earnedVia": null, "cluesUsed": 0, "pointsAwarded": 0 },
+        "q7": { "status": "locked", "earnedVia": null, "cluesUsed": 0, "pointsAwarded": 0 },
+        "q8": { "status": "locked", "earnedVia": null, "cluesUsed": 0, "pointsAwarded": 0 },
+        "q9": { "status": "locked", "earnedVia": null, "cluesUsed": 0, "pointsAwarded": 0 }
+      },
+      "totalScoreSoFar": 175,
+      "maxScore": 900,
+      "piecesUnlocked": 2,
+      "piecesRemaining": 7
+    },
+
+    {
+      "experienceId": "exp_008",
+      "status": "completed",
+      "startedAt": "2026-02-21T05:50:00+05:30",
+      "lastUpdatedAt": "2026-02-21T23:05:00+05:30",
+      "completedAt": "2026-02-21T23:05:00+05:30",
+      "revealInteractedAt": "2026-02-21T23:07:00+05:30",
+      "pieces": {
+        "q1": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q2": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q3": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q4": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q5": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q6": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q7": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q8": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q9": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 }
+      },
+      "totalScore": 900,
+      "maxScore": 900,
+      "starRating": 3,
+      "notes": "Perfect run — zero clues used on any question. Useful QA fixture for the 'flawless completion' UI state and copy."
+    },
+
+    {
+      "experienceId": "exp_009",
+      "status": "completed",
+      "startedAt": "2025-11-15T07:10:00+05:30",
+      "lastUpdatedAt": "2025-11-15T20:30:00+05:30",
+      "completedAt": "2025-11-15T20:30:00+05:30",
+      "revealInteractedAt": "2025-11-15T20:32:00+05:30",
+      "pieces": {
+        "q1": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q2": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q3": { "status": "unlocked", "earnedVia": "clue", "cluesUsed": 1, "pointsAwarded": 75 },
+        "q4": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q5": { "status": "unlocked", "earnedVia": "clue", "cluesUsed": 1, "pointsAwarded": 75 },
+        "q6": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q7": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 },
+        "q8": { "status": "unlocked", "earnedVia": "partner_help", "cluesUsed": 3, "pointsAwarded": 10 },
+        "q9": { "status": "unlocked", "earnedVia": "direct", "cluesUsed": 0, "pointsAwarded": 100 }
+      },
+      "totalScore": 860,
+      "maxScore": 900,
+      "starRating": 3,
+      "archivedAt": "2026-03-01T00:00:00+05:30",
+      "notes": "Retained read-only after archive per Business Rule — data preserved, experience no longer active/editable."
+    }
+  ],
+
+  "noProgressDocument": [
+    { "experienceId": "exp_003", "reason": "Published, link not yet opened by recipient — status remains 'published'." },
+    { "experienceId": "exp_004", "reason": "Still in 'draft' — no link exists yet, so no recipient access is possible." },
+    { "experienceId": "exp_007", "reason": "Published, link not yet opened by recipient — status remains 'published'." },
+    { "experienceId": "exp_010", "reason": "Still in 'draft' — no link exists yet, so no recipient access is possible." }
+  ]
+}

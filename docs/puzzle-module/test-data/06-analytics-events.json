@@ -1,0 +1,45 @@
+{
+  "_description": "Sample analytics event log, matching the Module Contract §6 event envelope: { eventId, eventName, experienceId, moduleType, actorRole, timestamp, payload }. Covers a full creator lifecycle (exp_001), a full recipient play-through including a partner-help resolution (exp_001), and a snapshot of an in-progress session (exp_002). Use this to seed a Firestore emulator's puzzle_events collection or to mock the Insights screen.",
+
+  "events": [
+    { "eventId": "evt_0001", "eventName": "puzzle.created", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "creator", "timestamp": "2026-01-04T09:20:00+05:30", "payload": {} },
+    { "eventId": "evt_0002", "eventName": "puzzle.updated", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "creator", "timestamp": "2026-01-04T20:05:00+05:30", "payload": { "fieldsChanged": ["questions", "welcomeNote"] } },
+    { "eventId": "evt_0003", "eventName": "puzzle.published", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "creator", "timestamp": "2026-01-05T19:00:00+05:30", "payload": { "shareToken": "pzl_7f1c9ad2b6e34a08" } },
+    { "eventId": "evt_0004", "eventName": "puzzle.link_shared", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "creator", "timestamp": "2026-01-05T19:02:00+05:30", "payload": { "channel": "whatsapp" } },
+    { "eventId": "evt_0005", "eventName": "recipient.link_opened", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-01-05T19:31:00+05:30", "payload": { "device": "mobile", "userAgent": "iOS Safari" } },
+    { "eventId": "evt_0006", "eventName": "recipient.welcome_viewed", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-01-05T19:31:20+05:30", "payload": {} },
+    { "eventId": "evt_0007", "eventName": "recipient.story_viewed", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-01-05T19:32:00+05:30", "payload": {} },
+    { "eventId": "evt_0008", "eventName": "question.opened", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-01-05T19:33:10+05:30", "payload": { "questionIndex": "q1" } },
+    { "eventId": "evt_0009", "eventName": "question.answered_correct", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-01-05T19:33:45+05:30", "payload": { "questionIndex": "q1", "cluesUsed": 0 } },
+    { "eventId": "evt_0010", "eventName": "piece.unlocked", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-01-05T19:33:45+05:30", "payload": { "questionIndex": "q1", "earnedVia": "direct", "pointsAwarded": 100 } },
+    { "eventId": "evt_0011", "eventName": "question.opened", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-01-06T20:10:00+05:30", "payload": { "questionIndex": "q3" } },
+    { "eventId": "evt_0012", "eventName": "question.answered_incorrect", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-01-06T20:10:40+05:30", "payload": { "questionIndex": "q3", "attemptNumber": 1 } },
+    { "eventId": "evt_0013", "eventName": "hint.used", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-01-06T20:11:00+05:30", "payload": { "questionIndex": "q3", "clueNumber": 1 } },
+    { "eventId": "evt_0014", "eventName": "question.answered_correct", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-01-06T20:11:30+05:30", "payload": { "questionIndex": "q3", "cluesUsed": 1 } },
+    { "eventId": "evt_0015", "eventName": "piece.unlocked", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-01-06T20:11:30+05:30", "payload": { "questionIndex": "q3", "earnedVia": "clue", "pointsAwarded": 75 } },
+    { "eventId": "evt_0016", "eventName": "puzzle.progress_saved", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-01-06T20:11:31+05:30", "payload": { "piecesUnlocked": 3 } },
+    { "eventId": "evt_0017", "eventName": "puzzle.completed", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-01-06T21:14:00+05:30", "payload": { "finalScore": 800, "starRating": 3 } },
+    { "eventId": "evt_0018", "eventName": "reveal.interacted", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-01-06T21:15:40+05:30", "payload": { "interactionType": "scratch" } },
+    { "eventId": "evt_0019", "eventName": "celebration.viewed", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-01-06T21:15:55+05:30", "payload": {} },
+    { "eventId": "evt_0020", "eventName": "create_own.clicked", "experienceId": "exp_001", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-01-06T21:17:30+05:30", "payload": {} },
+
+    { "eventId": "evt_0021", "eventName": "puzzle.created", "experienceId": "exp_002", "moduleType": "puzzle", "actorRole": "creator", "timestamp": "2026-02-11T18:50:00+05:30", "payload": {} },
+    { "eventId": "evt_0022", "eventName": "puzzle.published", "experienceId": "exp_002", "moduleType": "puzzle", "actorRole": "creator", "timestamp": "2026-02-12T08:00:00+05:30", "payload": { "shareToken": "pzl_3e9b06f4d1a82c57" } },
+    { "eventId": "evt_0023", "eventName": "recipient.link_opened", "experienceId": "exp_002", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-02-12T08:39:00+05:30", "payload": { "device": "mobile", "userAgent": "Android Chrome" } },
+    { "eventId": "evt_0024", "eventName": "question.answered_correct", "experienceId": "exp_002", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-02-12T08:42:00+05:30", "payload": { "questionIndex": "q1", "cluesUsed": 0 } },
+    { "eventId": "evt_0025", "eventName": "hint.used", "experienceId": "exp_002", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-02-12T08:44:00+05:30", "payload": { "questionIndex": "q4", "clueNumber": 1 } },
+    { "eventId": "evt_0026", "eventName": "hint.used", "experienceId": "exp_002", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-02-12T08:45:10+05:30", "payload": { "questionIndex": "q4", "clueNumber": 2 } },
+    { "eventId": "evt_0027", "eventName": "question.answered_correct", "experienceId": "exp_002", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-02-12T08:45:40+05:30", "payload": { "questionIndex": "q4", "cluesUsed": 2 } },
+    { "eventId": "evt_0028", "eventName": "hint.used", "experienceId": "exp_002", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-02-12T08:52:00+05:30", "payload": { "questionIndex": "q5", "clueNumber": 3 } },
+    { "eventId": "evt_0029", "eventName": "question.answered_incorrect", "experienceId": "exp_002", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-02-12T08:52:30+05:30", "payload": { "questionIndex": "q5", "attemptNumber": 4 } },
+    { "eventId": "evt_0030", "eventName": "partner_help.requested", "experienceId": "exp_002", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-02-12T08:53:00+05:30", "payload": { "questionIndex": "q5", "channel": "whatsapp" } },
+    { "eventId": "evt_0031", "eventName": "partner_help.resolved", "experienceId": "exp_002", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-02-12T09:05:00+05:30", "payload": { "questionIndex": "q5", "method": "auto_reveal", "pointsAwarded": 10 } },
+    { "eventId": "evt_0032", "eventName": "puzzle.progress_saved", "experienceId": "exp_002", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-02-12T09:05:01+05:30", "payload": { "piecesUnlocked": 5 } },
+
+    { "eventId": "evt_0033", "eventName": "puzzle.created", "experienceId": "exp_004", "moduleType": "puzzle", "actorRole": "creator", "timestamp": "2026-04-18T14:30:00+05:30", "payload": {} },
+    { "eventId": "evt_0034", "eventName": "puzzle.updated", "experienceId": "exp_004", "moduleType": "puzzle", "actorRole": "creator", "timestamp": "2026-04-19T21:00:00+05:30", "payload": { "fieldsChanged": ["revealImage"] } },
+
+    { "eventId": "evt_0035", "eventName": "puzzle.completed", "experienceId": "exp_008", "moduleType": "puzzle", "actorRole": "recipient", "timestamp": "2026-02-21T23:05:00+05:30", "payload": { "finalScore": 900, "starRating": 3 } },
+    { "eventId": "evt_0036", "eventName": "puzzle.archived", "experienceId": "exp_009", "moduleType": "puzzle", "actorRole": "creator", "timestamp": "2026-03-01T00:00:00+05:30", "payload": { "reason": "retention_policy" } }
+  ]
+}
