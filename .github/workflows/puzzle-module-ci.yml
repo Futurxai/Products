@@ -1,0 +1,71 @@
+name: Puzzle Module CI
+
+# Scoped to apps/puzzle-module so this workflow never runs — and never
+# blocks — changes to the other apps in this monorepo (eatwell,
+# lovedigitally, Pay Roll, PG_Seat, futurx-website, lovedigitally-web).
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/puzzle-module/**"
+      - ".github/workflows/puzzle-module-ci.yml"
+  pull_request:
+    paths:
+      - "apps/puzzle-module/**"
+      - ".github/workflows/puzzle-module-ci.yml"
+
+defaults:
+  run:
+    working-directory: apps/puzzle-module
+
+jobs:
+  app:
+    name: Lint, build & test (Ionic Angular app)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: apps/puzzle-module/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests (headless Chrome)
+        run: npm test
+
+      - name: Production build
+        run: npm run build:prod
+
+  functions:
+    name: Lint, build & test (Cloud Functions)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/puzzle-module/functions
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: apps/puzzle-module/functions/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Unit tests
+        run: npm test
