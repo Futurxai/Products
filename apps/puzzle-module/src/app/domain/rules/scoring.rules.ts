@@ -33,10 +33,16 @@ export function pointsForPiece(earnedVia: EarnedVia, cluesUsed: number): number 
       return POINTS_DIRECT;
 
     case 'partner_help':
-      if (cluesUsed !== MAX_CLUES_PER_QUESTION) {
-        throw new Error(
-          `Invalid state: earnedVia='partner_help' but cluesUsed=${cluesUsed} (expected ${MAX_CLUES_PER_QUESTION} — all clues must be exhausted first).`,
-        );
+      // Flat rate regardless of cluesUsed: a question may have fewer
+      // than MAX_CLUES_PER_QUESTION authored clues (Business Rule #2),
+      // so partner-help can legitimately trigger at 0, 1, 2, or 3 —
+      // whatever that specific question's actual clue count was. Only
+      // sanity-bound it against the domain's absolute upper limit; the
+      // real "were this question's clues actually exhausted" check is
+      // `canRequestPartnerHelp`'s job, already enforced before this
+      // is ever called.
+      if (cluesUsed < 0 || cluesUsed > MAX_CLUES_PER_QUESTION) {
+        throw new Error(`Invalid state: earnedVia='partner_help' but cluesUsed=${cluesUsed} is out of range 0..${MAX_CLUES_PER_QUESTION}.`);
       }
       return POINTS_PARTNER_HELP;
 

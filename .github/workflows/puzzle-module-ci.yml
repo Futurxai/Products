@@ -1,17 +1,23 @@
 name: Puzzle Module CI
 
-# Scoped to apps/puzzle-module so this workflow never runs — and never
+# Scoped to apps/puzzle-module (plus the shared Firestore/Storage rules
+# files it deploys via symlink) so this workflow never runs — and never
 # blocks — changes to the other apps in this monorepo (eatwell,
-# lovedigitally, Pay Roll, PG_Seat, futurx-website, lovedigitally-web).
+# lovedigitally, Pay Roll, PG_Seat, futurx-website, lovedigitally-web's
+# own unrelated code).
 on:
   push:
     branches: [main]
     paths:
       - "apps/puzzle-module/**"
+      - "lovedigitally-web/firestore.rules"
+      - "lovedigitally-web/storage.rules"
       - ".github/workflows/puzzle-module-ci.yml"
   pull_request:
     paths:
       - "apps/puzzle-module/**"
+      - "lovedigitally-web/firestore.rules"
+      - "lovedigitally-web/storage.rules"
       - ".github/workflows/puzzle-module-ci.yml"
 
 defaults:
@@ -44,11 +50,8 @@ jobs:
         run: npm run build:prod
 
   functions:
-    name: Lint, build & test (Cloud Functions)
+    name: Lint, build, test & emulator-test (Cloud Functions)
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/puzzle-module/functions
     steps:
       - uses: actions/checkout@v4
 
@@ -56,16 +59,29 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
-          cache-dependency-path: apps/puzzle-module/functions/package-lock.json
 
-      - name: Install dependencies
+      # Installed at the apps/puzzle-module level (not just functions/)
+      # because test:emulator shells out to `firebase emulators:exec`,
+      # resolved from firebase-tools here, not from functions/.
+      - name: Install app dependencies (provides firebase-tools)
+        run: npm ci
+
+      - name: Install functions dependencies
+        working-directory: apps/puzzle-module/functions
         run: npm ci
 
       - name: Lint
+        working-directory: apps/puzzle-module/functions
         run: npm run lint
 
       - name: Build
+        working-directory: apps/puzzle-module/functions
         run: npm run build
 
       - name: Unit tests
+        working-directory: apps/puzzle-module/functions
         run: npm test
+
+      - name: Emulator integration tests (Firestore + Auth + Storage)
+        working-directory: apps/puzzle-module/functions
+        run: npm run test:emulator

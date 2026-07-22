@@ -30,6 +30,104 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // ============================================================
+    // Puzzle Module (apps/puzzle-module) — shares this Firebase
+    // project per the Phase 5/6 architecture decision, isolated via
+    // the puzzle_* namespace below. This is the single deployed
+    // ruleset for the project; apps/puzzle-module/firebase.json
+    // points at THIS file rather than a fork — see
+    // apps/puzzle-module/README.md for the coordination process.
+    // Maintained alongside docs/puzzle-module/ (PRD, Module Contract,
+    // architecture) and apps/puzzle-module/functions (Milestone M2).
+    // ============================================================
+
+    match /puzzle_creators/{creatorId} {
+      allow read, write: if request.auth != null && request.auth.uid == creatorId;
+    }
+
+    // Public projection — safe by construction (no answers/clues/reveal
+    // image). Globally readable: the document ID is a random Firestore
+    // auto-ID, never the recipient's share token, so read:true does not
+    // make drafts discoverable by guessing (Module Contract §8 — token
+    // must not be derivable from the doc ID; this is that guarantee's
+    // safe inverse). Direct creator writes are allowed for authoring,
+    // but lifecycle fields are exclusively Cloud-Function-controlled —
+    // a client can never flip its own experience to "published" and
+    // skip token minting.
+    match /puzzle_experiences/{experienceId} {
+      allow read: if true;
+
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.creatorId
+        && request.resource.data.status == 'draft'
+        && request.resource.data.publishedAt == null
+        && request.resource.data.completedAt == null
+        && request.resource.data.archivedAt == null;
+
+      allow update: if request.auth != null
+        && request.auth.uid == resource.data.creatorId
+        // Business Rule #10 (PRD): editing is blocked once a recipient
+        // has started — enforced here too, not just in the client UI
+        // (domain/rules/lifecycle.rules.ts `canEdit`), as defense in
+        // depth. Firestore's rules DSL can't import that TypeScript
+        // function, so the same constraint is necessarily expressed
+        // twice, once per enforcement layer — this is not the kind of
+        // duplication "keep business rules in the domain layer" is
+        // about; that's about not forking the TypeScript copy.
+        && (resource.data.status == 'draft' || !exists(/databases/$(database)/documents/puzzle_progress/$(experienceId)))
+        && !request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['status', 'publishedAt', 'completedAt', 'archivedAt', 'creatorId']);
+
+      allow delete: if false;
+    }
+
+    // Private/sensitive fields (correctAnswer, clues, revealImagePath,
+    // completionMessage, partnerHelpChallenge). The OWNING CREATOR can
+    // read/write this directly — they authored it, they're allowed to
+    // see and edit their own content while drafting; this is NOT
+    // Cloud-Functions-only (an earlier architecture draft said so, but
+    // that would make the authoring wizard impossible to implement
+    // client-side — corrected here in M2). What's actually enforced:
+    // no one who isn't the owning creator can ever read or write this,
+    // and `shareTokenHash` can only ever be set by the
+    // `publishExperience` Cloud Function (Admin SDK bypasses rules
+    // entirely), never by a direct client write.
+    match /puzzle_experiences_private/{experienceId} {
+      allow read: if request.auth != null
+        && request.auth.uid == get(/databases/$(database)/documents/puzzle_experiences/$(experienceId)).data.creatorId;
+
+      allow create: if request.auth != null
+        && request.auth.uid == get(/databases/$(database)/documents/puzzle_experiences/$(experienceId)).data.creatorId
+        && !('shareTokenHash' in request.resource.data);
+
+      allow update: if request.auth != null
+        && request.auth.uid == get(/databases/$(database)/documents/puzzle_experiences/$(experienceId)).data.creatorId
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['shareTokenHash']);
+
+      allow delete: if false;
+    }
+
+    // Recipient progress. Read is scoped to the anonymous session
+    // minted by `resolveShareToken` (a custom claim ties one session to
+    // exactly one experienceId — Phase 5/6 §1, resolving the PRD's
+    // open question on recipient identity without a login screen).
+    // Write is exclusively Cloud Functions (Admin SDK, transactional) —
+    // never direct from the client, at any point, for any field.
+    match /puzzle_progress/{experienceId} {
+      allow read: if request.auth != null && request.auth.token.experienceId == experienceId;
+      allow write: if false;
+    }
+
+    // Analytics event log — creator can read their own experience's
+    // events (Insights screen); nothing else can read, nothing writes
+    // except Cloud Functions.
+    match /puzzle_events/{eventId} {
+      allow read: if request.auth != null
+        && exists(/databases/$(database)/documents/puzzle_experiences/$(resource.data.experienceId))
+        && get(/databases/$(database)/documents/puzzle_experiences/$(resource.data.experienceId)).data.creatorId == request.auth.uid;
+      allow write: if false;
+    }
+
     // Default deny
     match /{document=**} {
       allow read, write: if false;

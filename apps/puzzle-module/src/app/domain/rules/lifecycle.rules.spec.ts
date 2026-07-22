@@ -149,16 +149,28 @@ describe('canRequestPartnerHelp', () => {
     return { status: 'locked', earnedVia: null, cluesUsed: 0, pointsAwarded: 0, ...overrides };
   }
 
-  it('is unavailable before all 3 clues are used', () => {
-    expect(canRequestPartnerHelp(piece({ cluesUsed: 2 }))).toBeFalse();
+  it('is unavailable before all of a question\'s clues are used', () => {
+    expect(canRequestPartnerHelp(piece({ cluesUsed: 2 }), 3)).toBeFalse();
   });
 
   it('becomes available once all 3 clues are used and the piece is still locked', () => {
-    expect(canRequestPartnerHelp(piece({ cluesUsed: 3 }))).toBeTrue();
+    expect(canRequestPartnerHelp(piece({ cluesUsed: 3 }), 3)).toBeTrue();
   });
 
-  it('is unavailable once the piece is already unlocked, even with 3 clues used', () => {
-    expect(canRequestPartnerHelp(piece({ cluesUsed: 3, status: 'unlocked' }))).toBeFalse();
+  it('is unavailable once the piece is already unlocked, even with all clues used', () => {
+    expect(canRequestPartnerHelp(piece({ cluesUsed: 3, status: 'unlocked' }), 3)).toBeFalse();
+  });
+
+  it('respects a question with fewer than 3 authored clues — unlocks after just those, not a fixed 3', () => {
+    expect(canRequestPartnerHelp(piece({ cluesUsed: 1 }), 1)).toBeTrue();
+    expect(canRequestPartnerHelp(piece({ cluesUsed: 0 }), 1)).toBeFalse();
+  });
+
+  it('is unavailable for a question with zero authored clues until cluesUsed also reaches zero-and-locked', () => {
+    // Edge case: 0 authored clues means partner-help is available immediately
+    // once the piece is locked and an incorrect attempt has been made —
+    // there was never a clue to use in the first place.
+    expect(canRequestPartnerHelp(piece({ cluesUsed: 0 }), 0)).toBeTrue();
   });
 });
 

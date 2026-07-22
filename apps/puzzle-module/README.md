@@ -4,7 +4,9 @@ Ionic Angular (standalone components + Signals) PWA for the Love Digitally Puzzl
 
 ## Status
 
-**Milestone M0 — Environment & Infrastructure Setup.** The app boots (`AppComponent` → router → a placeholder page) and the project structure, Firebase wiring, and CI are in place. No real features yet — those land starting M1 (domain layer) and M3/M5 (Creator/Recipient UI).
+**Milestone M2 — Firebase Infrastructure & Cloud Functions complete.** M0 (scaffold/CI), M1 (domain layer), and M2 (all 6 Cloud Functions + image-slice trigger, Clean Architecture, Firestore transactions, Zod validation, structured logging, typed domain errors, unit + emulator tests) are done and fully validated. No UI yet — that's M3 (Creator) and M5 (Recipient), which consume the `functions/` API built here through `domain/ports/puzzle-api.port.ts`.
+
+See `functions/src/` for the Cloud Functions codebase: `schemas/` (Zod), `callable/` (thin onCall wrappers), `application/` (use-cases), `infrastructure/` (Firestore/Storage/Auth adapters), `triggers/` (reveal-image slicing), `emulator-tests/` (real Firestore+Auth+Storage emulator coverage, run via `npm run test:emulator` inside `functions/`).
 
 ## Firebase project
 
@@ -16,9 +18,9 @@ This app shares the **`lovedigitally-app`** Firebase project with `/lovedigitall
 
 ### ⚠️ Rules files are shared, not duplicated
 
-`firebase.json` here points `firestore.rules` and `storage.rules` at `../../lovedigitally-web/firestore.rules` and `../../lovedigitally-web/storage.rules` — **the same physical files** `lovedigitally-web` deploys from. A Firestore project has exactly one deployed ruleset; these files are the single source of truth for both apps. This is deliberate (see Phase 5/6 architecture notes), not a mistake — never fork a separate rules file for this app.
+`firestore.rules` and `storage.rules` in this directory are **symlinks** to `../../lovedigitally-web/firestore.rules` and `../../lovedigitally-web/storage.rules` — not copies. The Firebase CLI refuses to reference a rules file outside the current project directory (verified directly against the emulator while building M2 — not an assumption), so a symlink is what lets both apps' `firebase.json` point at one physical, single-source-of-truth file without the CLI's path restriction getting in the way, and without a real risk of the two copies drifting apart (they're the same inode).
 
-**Known gap as of M0**: `../../lovedigitally-web/storage.rules` doesn't exist yet, and `firestore.rules` there doesn't yet contain the `puzzle_*` match blocks. That merge is Milestone M2's deliverable, not M0's — until then, `firebase deploy --only firestore:rules,storage` from this app will fail or deploy incomplete rules. Hosting and Functions deploys are unaffected.
+**As of M2**: the `puzzle_*` match blocks are merged into `lovedigitally-web/firestore.rules` and `lovedigitally-web/storage.rules`, and both are covered by real emulator tests (`functions/src/emulator-tests/security-rules.emulator-test.ts`) — not just written, verified. Real `firebase deploy` still needs to run from `lovedigitally-web/` (or with an explicit `--config`), since that's where the physical files live and where the Firebase CLI's project-directory check is satisfied natively.
 
 ## Local development
 
@@ -55,17 +57,37 @@ npm run build:watch
 ## Architecture at a glance
 
 ```
-src/app/
-├── domain/          framework-free models, rules, ports        (M1)
-├── infrastructure/  Firebase adapters implementing those ports  (M2)
+src/app/                                                             (the Angular app)
+├── domain/          framework-free models, rules, ports        (M1, extended in M2)
+├── infrastructure/  Firebase adapters implementing those ports  (M3, M5 — not yet built)
 ├── application/     use-cases & Signal-based facades            (M3, M5)
 ├── features/        routed Ionic pages/components                (M3–M6)
 ├── shared/          dumb, reusable UI atoms                      (M3+)
-└── core/            guards, error handling                       (M2)
+└── core/            guards, error handling                       (M3+)
+
+functions/src/                                                       (Cloud Functions — M2, complete)
+├── schemas/         Zod request validation
+├── callable/        thin onCall wrappers (validate -> usecase -> map errors -> log)
+├── application/      6 use-cases orchestrating domain rules + stores
+├── infrastructure/  Firestore/Storage/Auth adapters (transactional)
+├── triggers/         reveal-image slicing (Storage-triggered)
+└── emulator-tests/   real Firestore+Auth+Storage emulator coverage
 ```
 
 Each layer's own `README.md` explains what belongs there and why. Full detail in `docs/puzzle-module/` (architecture, Firestore schema, security rules, Cloud Function contracts) and the Phase 3 test-data package (`docs/puzzle-module/test-data/`) for realistic fixtures to develop against.
 
 ## CI
 
-`.github/workflows/puzzle-module-ci.yml` (repo root) lints, builds, and tests both this app and `functions/` on any push/PR touching `apps/puzzle-module/**`. It's scoped by path so it never runs against unrelated changes elsewhere in this monorepo.
+`.github/workflows/puzzle-module-ci.yml` (repo root) lints, builds, and tests both this app and `functions/` — including `functions/`'s real emulator test suite, not just its mocked unit tests — on any push/PR touching `apps/puzzle-module/**` or the shared `lovedigitally-web/firestore.rules` / `storage.rules`. It's scoped by path so it never runs against unrelated changes elsewhere in this monorepo.
+
+## Deploying (not yet done from this session)
+
+Every gate `firebase deploy` should require — lint, unit tests, emulator tests, production build — passes, for both the app and `functions/`, from a clean install. **Actual deployment has not been run**: it requires real Firebase project credentials (`firebase login` + write access to `lovedigitally-app`) that don't exist in this development session. When ready:
+
+```bash
+# From lovedigitally-web/ (rules physically live there):
+firebase deploy --only firestore:rules,storage --project lovedigitally-app
+
+# From apps/puzzle-module/:
+firebase deploy --only hosting:puzzle-module,functions:puzzle-module --project lovedigitally-app
+```

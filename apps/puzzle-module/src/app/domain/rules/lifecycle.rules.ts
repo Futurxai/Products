@@ -85,14 +85,21 @@ export function canUnpublish(experience: PuzzleExperience, hasProgress: boolean)
 }
 
 /**
- * "Ask Your Partner" unlocks only after all 3 clues are exhausted and
- * the piece is still unresolved (PRD Business Rule #4). Shared by the
- * Recipient UI (to show/hide the button) and the
+ * "Ask Your Partner" unlocks only after all of a question's clues are
+ * exhausted and the piece is still unresolved (PRD Business Rule #4).
+ * Shared by the Recipient UI (to show/hide the button) and the
  * `requestPartnerHelpReveal` Cloud Function (to reject a request that
  * arrives before its time) — one rule, not two copies that can drift.
+ *
+ * `availableClueCount` is the question's ACTUAL authored clue count
+ * (0–3), not `MAX_CLUES_PER_QUESTION`. A question with only 1 authored
+ * clue must unlock partner-help after that 1 clue is used, not wait
+ * for a 3rd that was never written — checking against the fixed max
+ * instead would strand a Recipient on any question with fewer than 3
+ * authored clues.
  */
-export function canRequestPartnerHelp(piece: PieceProgress): boolean {
-  return piece.status === 'locked' && piece.cluesUsed >= MAX_CLUES_PER_QUESTION;
+export function canRequestPartnerHelp(piece: PieceProgress, availableClueCount: number): boolean {
+  return piece.status === 'locked' && piece.cluesUsed >= availableClueCount;
 }
 
 /** True once every piece in the grid has been resolved, regardless of how. */

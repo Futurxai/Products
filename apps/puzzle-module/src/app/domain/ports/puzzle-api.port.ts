@@ -1,27 +1,31 @@
 import { EarnedVia } from '../models/question.model';
+import { DomainErrorCode } from '../errors/domain-errors';
 
 /**
  * The six server-side operations from
  * docs/puzzle-module/test-data/09-cloud-function-examples.md, as a
  * dependency-inverted port. `infrastructure/firebase/functions-puzzle-api.service.ts`
- * (M2) implements this by calling the actual Firebase Callable
- * Functions; `application/*` use-cases (M3/M5) depend on this
+ * (M3/M5) implements this by calling the actual Firebase Callable
+ * Functions built in M2; `application/*` use-cases depend on this
  * interface only, never on `@angular/fire/functions` directly.
  *
- * Every method mirrors the request/response shapes already specified
- * and agreed in Phase 3, rather than inventing a new contract here —
- * the test-data doc and this port must not drift apart.
+ * Every method mirrors the request/response shapes specified in Phase
+ * 3, with one deliberate refinement made while actually implementing
+ * the server side in M2: `resolveShareToken` returns a `customToken`
+ * rather than an opaque `sessionRef` string. The client signs in with
+ * it via Firebase Auth (`signInWithCustomToken`); every call after
+ * that carries the resulting ID token automatically, so
+ * `submitAnswer`/`requestClue`/`requestPartnerHelpReveal`/`getCompletionSummary`
+ * don't take a session parameter at all — the server reads
+ * `request.auth.token.experienceId` (the custom claim minted at
+ * resolve time), which can't be spoofed the way a client-supplied
+ * string could be. Phase 3's doc predates this and is left as
+ * historical record of the original design intent, not updated to
+ * match — this port is the current source of truth.
  */
 
-export type ApiError =
-  | 'TOKEN_NOT_FOUND'
-  | 'INCOMPLETE_EXPERIENCE'
-  | 'NO_CLUES_REMAINING'
-  | 'CLUES_NOT_EXHAUSTED'
-  | 'NOT_YET_COMPLETED'
-  | 'RATE_LIMITED'
-  | 'UNAUTHORIZED'
-  | 'EXPERIENCE_ALREADY_STARTED';
+/** Alias, not a second enum — `errors/domain-errors.ts` is the one canonical list of failure codes. */
+export type ApiError = DomainErrorCode;
 
 /** Common failure shape shared by every callable — one error-handling path client-side. */
 export interface ApiFailure {
@@ -42,7 +46,8 @@ export type PublishExperienceResult = PublishExperienceSuccess | ApiFailure;
 export interface ResolveShareTokenSuccess {
   readonly ok: true;
   readonly experienceId: string;
-  readonly sessionRef: string;
+  /** Passed to `signInWithCustomToken` — after that, Firebase Auth handles the session, not application code. */
+  readonly customToken: string;
   readonly publicMeta: {
     readonly occasion: string;
     readonly emotion: string;
@@ -119,8 +124,9 @@ export type CompletionSummaryResult = CompletionSummarySuccess | ApiFailure;
 export interface PuzzleApiPort {
   publishExperience(experienceId: string): Promise<PublishExperienceResult>;
   resolveShareToken(shareToken: string): Promise<ResolveShareTokenResult>;
-  submitAnswer(sessionRef: string, questionIndex: string, answer: string): Promise<SubmitAnswerResult>;
-  requestClue(sessionRef: string, questionIndex: string): Promise<RequestClueResult>;
-  requestPartnerHelpReveal(sessionRef: string, questionIndex: string): Promise<RequestPartnerHelpRevealResult>;
-  getCompletionSummary(sessionRef: string): Promise<CompletionSummaryResult>;
+  /** Implicitly scoped to the signed-in session's experience — no experienceId/sessionRef parameter, see the port-level doc comment. */
+  submitAnswer(questionIndex: string, answer: string): Promise<SubmitAnswerResult>;
+  requestClue(questionIndex: string): Promise<RequestClueResult>;
+  requestPartnerHelpReveal(questionIndex: string): Promise<RequestPartnerHelpRevealResult>;
+  getCompletionSummary(): Promise<CompletionSummaryResult>;
 }

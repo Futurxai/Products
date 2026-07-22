@@ -15,7 +15,7 @@ describe('healthCheck', () => {
 
     expect(result.ok).toBeTrue();
     expect(result.codebase).toBe('puzzle-module');
-    expect(result.milestone).toBe('M0');
+    expect(result.milestone).toBe('M2');
     expect(typeof result.timestamp).toBe('string');
   });
 });

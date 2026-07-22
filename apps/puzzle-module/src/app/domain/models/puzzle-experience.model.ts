@@ -22,7 +22,14 @@ export type ExperienceStatus = 'draft' | 'published' | 'in_progress' | 'complete
 export interface PuzzleExperience {
   readonly experienceId: string;
   readonly creatorId: string;
-  readonly shareToken: string | null;
+  /**
+   * Only the HASH is ever persisted or retrievable (Module Contract
+   * §8) — the raw token exists solely in the `publishExperience`
+   * response and the recipient's URL, never at rest. Don't add a
+   * `shareToken` field back here; there is nowhere for it to come from
+   * on a subsequent read.
+   */
+  readonly shareTokenHash: string | null;
   readonly occasion: string;
   readonly emotion: string;
   readonly recipientDisplayName: string;
@@ -49,7 +56,7 @@ export function draftExperience(params: {
   return {
     experienceId: params.experienceId,
     creatorId: params.creatorId,
-    shareToken: null,
+    shareTokenHash: null,
     occasion: params.occasion,
     emotion: 'Love', // PRD §10 Business Rule #12 default; kept selectable, not hardcoded away
     recipientDisplayName: params.recipientDisplayName,

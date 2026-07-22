@@ -5,10 +5,12 @@ Target user: Couples, friends, and family in India personalizing a digital gift 
 Key features: Creator authoring wizard, secure token-based recipient links, clue system with WhatsApp partner-help fallback, server-validated scoring, PWA-first.
 Firebase project: `lovedigitally-app` (shared with `/lovedigitally-web` — isolated via the `puzzle_*` Firestore/Storage namespace and a dedicated `puzzle-module` Hosting site + Functions codebase, not a separate project).
 Architecture: Clean Architecture — `domain/` (framework-free models & rules) → `application/` (use-cases & signal facades) → `infrastructure/` (Firebase adapters) → `features/` (Ionic Angular standalone pages). See `docs/puzzle-module/` at the repo root for the full PRD, Module Contract, and architecture spec this app is built against.
-Current phase: Milestone M0 — Environment & Infrastructure Setup.
+Current phase: Milestone M2 complete (Environment/M0, Domain/M1, Firebase Infrastructure & Cloud Functions/M2). Next: M3 (Creator UI) / M5 (Recipient UI).
 
 App-specific rules:
-- `domain/`, `application/`, `features/`, `shared/` must never import `firebase/*` or `@angular/fire/*` directly — only `infrastructure/firebase/*` may (enforced by ESLint, see `.eslintrc.json`).
-- Correct answers, clue text, and the full-resolution reveal image are never sent to the client before earned — always validated server-side via Cloud Functions, never trust the client (Module Contract §8).
-- The Recipient never sees a login screen — Firebase Anonymous Auth is minted silently by `resolveShareToken`, scoped to one experience via a custom claim.
-- `firestore.rules` and `storage.rules` are NOT owned by this app — they live in `../../lovedigitally-web/` and are shared across both apps in the same Firebase project. Never deploy rules from here without confirming the shared file is up to date; see the README for the coordination process.
+- `domain/`, `application/`, `features/`, `shared/` (Angular app) must never import `firebase/*` or `@angular/fire/*` directly — only `infrastructure/firebase/*` may (enforced by ESLint, see `.eslintrc.json`). The `functions/` codebase has its own equivalent boundary: only `functions/src/infrastructure/*` touches `firebase-admin`.
+- Correct answers, clue text, and the full-resolution reveal image are never sent to the client before earned — always validated server-side via Cloud Functions, never trust the client (Module Contract §8). This is enforced, not just documented: image slices only exist as separate Storage objects served via short-lived signed URLs minted after a piece is confirmed earned.
+- The Recipient never sees a login screen — Firebase Anonymous Auth is minted silently by `resolveShareToken`, scoped to one experience via a custom claim (`request.auth.token.experienceId`), verified by both application code and Firestore Rules.
+- `firestore.rules` and `storage.rules` in this directory are symlinks into `../../lovedigitally-web/` — the Firebase CLI cannot reference rules outside the deploying directory, so a symlink (not a copy) is how both apps share one physical ruleset. Never replace them with real files.
+- `functions/src/domain/` is a generated copy (`npm run sync-domain`, gitignored) of `src/app/domain/` — the canonical domain layer is hand-edited in exactly one place.
+- Cloud Function business-rule failures resolve as `{ ok: false, error, message, details }` (matching `PuzzleApiPort`'s `ApiFailure`), not as rejected promises — only genuine bugs/infra failures reject. See `functions/src/callable/define-callable.ts`.

@@ -12,8 +12,10 @@ describe('pointsForPiece', () => {
     expect(pointsForPiece('clue', 3)).toBe(30);
   });
 
-  it('awards 10 for a partner-help reveal', () => {
+  it('awards a flat 10 for a partner-help reveal, regardless of how many clues that question actually had', () => {
     expect(pointsForPiece('partner_help', 3)).toBe(10);
+    expect(pointsForPiece('partner_help', 1)).toBe(10); // a question authored with only 1 clue
+    expect(pointsForPiece('partner_help', 0)).toBe(10); // a question authored with zero clues
   });
 
   it('rejects a direct answer recorded with clues used — inconsistent state', () => {
@@ -25,8 +27,9 @@ describe('pointsForPiece', () => {
     expect(() => pointsForPiece('clue', 4)).toThrowError(/expected 1, 2, or 3/);
   });
 
-  it('rejects partner-help recorded before all 3 clues were exhausted', () => {
-    expect(() => pointsForPiece('partner_help', 2)).toThrowError(/all clues must be exhausted first/);
+  it('rejects a partner-help cluesUsed value outside the domain-wide 0..3 range', () => {
+    expect(() => pointsForPiece('partner_help', -1)).toThrowError(/out of range/);
+    expect(() => pointsForPiece('partner_help', 4)).toThrowError(/out of range/);
   });
 });
 
