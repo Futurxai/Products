@@ -8,4 +8,4 @@ The innermost Clean Architecture layer. **No Angular imports, no Firebase import
 
 Enforced by the `no-restricted-imports` ESLint rule in `.eslintrc.json` — importing `firebase/*` or `@angular/fire/*` anywhere under this folder is a lint error, not just a convention.
 
-Added starting Milestone M1.
+Populated in Milestone M1. Every file in `rules/` has a matching `.spec.ts` — these are pure functions with no I/O, so there's no excuse for untested branches.
