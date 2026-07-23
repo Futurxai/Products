@@ -4,17 +4,24 @@ Ionic Angular (standalone components + Signals) PWA for the Love Digitally Puzzl
 
 ## Status
 
-**Milestone M3, Feature 1 — Creator Authentication complete.** M0 (scaffold/CI), M1 (domain layer), M2 (all 6 Cloud Functions + image-slice trigger), and M3/Feature 1 (Login, Sign Up, Forgot Password — email/password + Google, route guards, a first design-system slice) are done and fully validated. Still to come in M3: Creator Dashboard (Feature 2), Puzzle Creation Wizard (Feature 3), Preview (Feature 4), Publish (Feature 5) — then M5 for the Recipient side.
+**Milestone M3, Feature 2 — Creator Dashboard complete.** M0 (scaffold/CI), M1 (domain layer), M2 (all 6 Cloud Functions + image-slice trigger), M3/Feature 1 (Authentication), and M3/Feature 2 (Dashboard) are done and fully validated. Still to come in M3: Puzzle Creation Wizard (Feature 3), Preview (Feature 4), Publish (Feature 5) — then M5 for the Recipient side.
 
 See `functions/src/` for the Cloud Functions codebase: `schemas/` (Zod), `callable/` (thin onCall wrappers), `application/` (use-cases), `infrastructure/` (Firestore/Storage/Auth adapters), `triggers/` (reveal-image slicing), `emulator-tests/` (real Firestore+Auth+Storage emulator coverage, run via `npm run test:emulator` inside `functions/`).
 
 ### Creator Authentication (M3, Feature 1)
 
-- **Pages** (`src/app/features/creator/auth/`): `login/`, `signup/`, `forgot-password/`, sharing a feature-local `ui/auth-shell.component.ts` layout. A temporary `features/creator/dashboard-placeholder/` page (guarded, shows the signed-in Creator + sign-out) stands in for the real Dashboard until Feature 2.
+- **Pages** (`src/app/features/creator/auth/`): `login/`, `signup/`, `forgot-password/`, sharing a feature-local `ui/auth-shell.component.ts` layout.
 - **Design system** (`src/app/shared/`): `button/`, `input/` (a `ControlValueAccessor` wrapping `ion-input`), `card/`, `toast/` (signal-based queue + host, mounted once in `AppComponent`), `loader/` — thin, opinionated wrappers over Ionic primitives rather than hand-rolled controls. The rest of the Phase 4 component set is added incrementally as later features need it, not built ahead of a consumer.
 - **Auth architecture**: `AuthPort` (Firebase Auth identity) and `CreatorRepositoryPort` (the `puzzle_creators` Firestore profile) are deliberately separate ports — Auth owns the session, Firestore owns app-specific profile fields. `AuthUseCase.resolveProfile()` provisions a Creator's Firestore doc on first sight (fresh sign-up, or a first-time Google sign-in) and self-heals it on every session restore if it's ever missing. `AuthFacade` is the Signal store pages and `creatorAuthGuard`/`guestGuard` actually consume — it waits for `authReady()` before either guard makes a redirect decision, so a page refresh mid-session-restore never flashes a false redirect to `/auth/login`.
 - Every Firebase Auth error is mapped to a typed `AuthError` subclass (`domain/errors/auth-errors.ts`) with an already-UI-ready message — pages never see a raw `FirebaseError`.
 - The production bundle budget (`angular.json`) was raised from 750kb/950kb to 900kb/1.1mb warning/error — the increase reflects real, necessary weight (Firebase Auth/Firestore's modular functions are now actually *called*, not just provided; more Ionic form components), not unreviewed bloat; still enforced, just recalibrated.
+
+### Creator Dashboard (M3, Feature 2)
+
+- **Page** (`src/app/features/creator/dashboard/dashboard.page.ts`): replaces the Feature 1 placeholder. Welcome header with a profile-menu popover (sign out), an Analytics Summary card (total/draft/published/completed counts), and Draft/Published/Completed sections rendering `ui/experience-card.component.ts` items. Loading/error/empty states are all real, driven by `CreatorDashboardFacade`.
+- **"Create New Puzzle" and puzzle cards are deliberately inert beyond a toast** — the Puzzle Creation Wizard (Feature 3) is what gives them somewhere to go. Wiring navigation to a route that doesn't exist yet would be worse than being honest that it's next.
+- **`FirestoreExperienceRepository`** splits/merges every `PuzzleExperience` across `puzzle_experiences` (public) and `puzzle_experiences_private` (owner-only) — the exact same schema `functions/src/infrastructure/firestore-experience.store.ts` (M2) already reads/writes via the Admin SDK. `update()` only ever touches Wizard-editable fields; status transitions stay Cloud-Function-only. The `listByCreator` query (`where(creatorId==).orderBy(createdAt desc)`) was verified directly against the real Firestore emulator before being relied on, rather than assumed — no extra composite index turned out to be needed beyond Firestore's automatic indexing for this shape.
+- **Dashboard grouping/summary** (`domain/rules/dashboard.rules.ts`) is framework-free and unit-tested on its own — `published` and `in_progress` are grouped together (both read as "live" to a Creator), `archived` is excluded entirely (no archive view yet).
 
 ## Firebase project
 

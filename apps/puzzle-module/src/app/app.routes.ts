@@ -6,11 +6,11 @@ import { guestGuard } from './core/guards/guest.guard';
 /**
  * Root route table.
  *
- * `/auth/*` (`guestGuard`) and `/creator` (`creatorAuthGuard`, still a
- * temporary placeholder page — the real Dashboard is Feature 2 of M3)
- * are the only routes so far. Still to come:
- *   - M3/M4 grow `/creator` into the real dashboard, wizard, preview,
- *     and publish routes, all under `creatorAuthGuard`.
+ * `/auth/*` (`guestGuard`) and `/creator` (`creatorAuthGuard`, the real
+ * Dashboard as of M3 Feature 2) are the only routes so far. Still to
+ * come:
+ *   - M3 Features 3-5 grow `/creator` into the Wizard, Preview, and
+ *     Publish routes, all under `creatorAuthGuard`.
  *   - M5/M6 add the single recipient route `/e/:shareToken`, resolved
  *     by `recipientLinkResolver` — deliberately just ONE route with
  *     modals/overlays layered on top of it, per the Phase 4 Navigation
@@ -41,10 +41,7 @@ export const routes: Routes = [
   {
     path: 'creator',
     canActivate: [creatorAuthGuard],
-    loadComponent: () =>
-      import('./features/creator/dashboard-placeholder/dashboard-placeholder.page').then(
-        (m) => m.DashboardPlaceholderPage,
-      ),
+    loadComponent: () => import('./features/creator/dashboard/dashboard.page').then((m) => m.DashboardPage),
   },
   {
     path: '',

@@ -1,0 +1,15 @@
+.app-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.app-avatar--initials {
+  background: var(--ld-periwinkle, #7c7fe0);
+  color: #fff;
+  font-weight: 700;
+  text-transform: uppercase;
+}

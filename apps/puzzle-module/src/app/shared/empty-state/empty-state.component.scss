@@ -1,0 +1,25 @@
+.app-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--app-space-2);
+  padding: var(--app-space-8) var(--app-space-4);
+  color: var(--ld-mist, #6b6178);
+}
+
+.app-empty-state__title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--ion-text-color);
+}
+
+.app-empty-state__subtitle {
+  margin: 0;
+  max-width: 24rem;
+}
+
+.app-empty-state__action {
+  margin-top: var(--app-space-4);
+}
