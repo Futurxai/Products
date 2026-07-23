@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { PuzzleWizardFacade } from '@application/creator/puzzle-wizard.facade';
 import { validateQuestion } from '@domain/rules/lifecycle.rules';
@@ -11,11 +12,10 @@ import { ToastService } from '@shared/toast/toast.service';
  * Step 6 — a read-only summary of everything entered, plus step
  * navigation (via the Stepper, already in `WizardPage`) and unsaved
  * change protection (the guard + `beforeunload` listener, both also on
- * `WizardPage`). "Preview experience" and "Publish" are both
- * deliberately inert beyond a toast — the immersive Preview (Feature 4)
- * and the actual publish flow (Feature 5) aren't built yet; wiring
- * either button to a route or Cloud Function that doesn't exist would
- * be worse than being honest about what's next.
+ * `WizardPage`). "Preview experience" opens the real Puzzle Preview
+ * (M3 Feature 4), flushing any pending autosave first so Preview never
+ * reads stale data. "Publish" stays deliberately inert beyond a toast
+ * — the actual publish flow (Feature 5) isn't built yet.
  */
 @Component({
   selector: 'app-review-step',
@@ -27,6 +27,7 @@ import { ToastService } from '@shared/toast/toast.service';
 })
 export class ReviewStepComponent {
   protected readonly wizardFacade = inject(PuzzleWizardFacade);
+  private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
 
   protected readonly readyQuestionCount = computed(() => {
@@ -34,8 +35,13 @@ export class ReviewStepComponent {
     return draft ? draft.questions.filter((question) => validateQuestion(question).ok).length : 0;
   });
 
-  protected previewExperience(): void {
-    this.toast.show('The Preview experience arrives in the next feature.', 'info');
+  protected async previewExperience(): Promise<void> {
+    const draft = this.wizardFacade.draft();
+    if (!draft) {
+      return;
+    }
+    await this.wizardFacade.flushNow();
+    await this.router.navigate(['/creator/preview', draft.experienceId]);
   }
 
   protected publish(): void {

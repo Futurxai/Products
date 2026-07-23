@@ -1,0 +1,51 @@
+<app-modal [isOpen]="isOpen()" [dismissible]="false" [label]="previewFacade.activeQuestion()?.prompt ?? 'Question'" (closed)="onClosed()">
+  @if (previewFacade.activeQuestion(); as question) {
+    <div class="question-modal">
+      @if (isSolved()) {
+        <div class="question-modal__solved">
+          <app-badge tone="success">Piece unlocked</app-badge>
+          <h2>{{ previewFacade.lastFeedback()?.message }}</h2>
+          <p class="question-modal__points">+{{ previewFacade.activePiece()?.pointsAwarded }} points</p>
+          <app-button (click)="onContinue()">Continue</app-button>
+        </div>
+      } @else {
+        <h2 class="question-modal__prompt">{{ question.prompt }}</h2>
+
+        <form (ngSubmit)="onSubmit()">
+          <app-input
+            [formControl]="answerControl"
+            label="Your answer"
+            [errorMessage]="wrongAnswer() ? 'Not quite — try again, or use a clue below.' : null"
+          ></app-input>
+          <app-button type="submit" expand="block">Submit answer</app-button>
+        </form>
+
+        @if (previewFacade.activeQuestionClues().length > 0) {
+          <div class="question-modal__clues">
+            <h3>Clues</h3>
+            <ul>
+              @for (clue of previewFacade.activeQuestionClues(); track $index) {
+                <li>{{ clue }}</li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (previewFacade.canRequestClueForActive()) {
+          <app-button variant="secondary" expand="block" (click)="onRequestClue()">Get a clue</app-button>
+        }
+
+        @if (previewFacade.canRequestPartnerHelpForActive()) {
+          <div class="question-modal__partner-help">
+            <h3>Ask Your Partner</h3>
+            <p>{{ previewFacade.experience()?.partnerHelpChallenge }}</p>
+            <div class="question-modal__partner-help-actions">
+              <a [href]="whatsappShareUrl()" target="_blank" rel="noopener" class="question-modal__whatsapp-link">Share via WhatsApp</a>
+              <app-button variant="secondary" (click)="onRequestPartnerHelp()">Reveal Piece</app-button>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+</app-modal>

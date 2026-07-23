@@ -13,7 +13,6 @@ Small, dumb, reusable presentation components with no knowledge of the domain. I
 - `textarea/` — `TextareaComponent` (`app-textarea`), the multi-line counterpart to `InputComponent` — same `ControlValueAccessor`/label/error/hint shape, wrapping `ion-textarea` instead of `ion-input`.
 - `stepper/` — `StepperComponent` (`app-stepper`), a generic step indicator — takes `{id, label}` steps and a completed-id set, not a `WizardStepId`; mapping the Wizard's domain steps onto it is a `features/` concern.
 - `progress-bar/` — `ProgressBarComponent` (`app-progress-bar`), wraps `ion-progress-bar` with a `value`/`max` pair instead of Ionic's raw 0–1 fraction.
-
-`modal`/`dialog` are still not built — the Wizard's one confirmation ("leave without saving?") uses a native `window.confirm` instead (see `core/guards/wizard-unsaved-changes.guard.ts`), so there's still no real consumer forcing that design work yet.
+- `modal/` — `ModalComponent` (`app-modal`, M3 Feature 4), a generic overlay wrapping `ion-modal` — `isOpen`/`dismissible`/`label` inputs, a `closed` output, projected content for header/body/footer. Its first real consumer is the Puzzle Preview's Question modal. The Wizard's one confirmation ("leave without saving?") still uses a native `window.confirm` (see `core/guards/wizard-unsaved-changes.guard.ts`) rather than this — that one's a single yes/no prompt with nothing to project, so the extra overlay machinery wasn't worth it there.
 
 Added incrementally as `features/` components need them, starting Milestone M3.

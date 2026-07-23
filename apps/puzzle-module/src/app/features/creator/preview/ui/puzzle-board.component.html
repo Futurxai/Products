@@ -1,0 +1,24 @@
+<div class="puzzle-board">
+  <div class="puzzle-board__grid" role="group" aria-label="Puzzle board">
+    @for (questionId of questionIds; track questionId; let i = $index) {
+      @if (isUnlocked(questionId)) {
+        <div class="puzzle-board__tile puzzle-board__tile--unlocked" [style]="tileStyle(i)" [attr.aria-label]="'Piece ' + (i + 1) + ' unlocked'"></div>
+      } @else {
+        <button
+          type="button"
+          class="puzzle-board__tile puzzle-board__tile--locked"
+          (click)="onTileClick(questionId)"
+          [attr.aria-label]="'Piece ' + (i + 1) + ', locked. Open question.'"
+        >
+          <span class="puzzle-board__lock" aria-hidden="true">🔒</span>
+        </button>
+      }
+    }
+  </div>
+
+  <app-progress-bar
+    [value]="previewFacade.score().piecesUnlocked"
+    [max]="9"
+    [label]="previewFacade.score().piecesUnlocked + ' of 9 pieces unlocked'"
+  ></app-progress-bar>
+</div>

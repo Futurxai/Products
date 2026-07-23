@@ -1,7 +1,7 @@
 import { ExperienceStorePort } from '../domain/ports/experience-store.port';
 import { ProgressStorePort } from '../domain/ports/progress-store.port';
 import { StorageService } from '../infrastructure/storage.service';
-import { computeScore } from '../domain/rules/scoring.rules';
+import { computeScore, starLabelFor } from '../domain/rules/scoring.rules';
 import { EarnedVia } from '../domain/models/question.model';
 import { ExperienceNotFoundError, NotYetCompletedError } from '../domain/errors/domain-errors';
 import { ScopedLogger } from '../config/logger';
@@ -27,12 +27,6 @@ export interface GetCompletionSummaryOutput {
   perQuestionBreakdown: ReadonlyArray<{ questionId: string; earnedVia: EarnedVia; pointsAwarded: number }>;
 }
 
-const STAR_LABELS: Readonly<Record<1 | 2 | 3, string>> = {
-  3: 'You know them by heart',
-  2: 'You know them well',
-  1: "You made it — that's what counts",
-};
-
 export async function getCompletionSummary(
   deps: GetCompletionSummaryDeps,
   input: GetCompletionSummaryInput,
@@ -57,7 +51,7 @@ export async function getCompletionSummary(
     finalScore: score.totalScore,
     maxScore: score.maxScore,
     starRating: score.starRating,
-    starLabel: STAR_LABELS[score.starRating],
+    starLabel: starLabelFor(score.starRating),
     completionMessage: experience.completionMessage,
     finalRevealImageUrl,
     perQuestionBreakdown: score.breakdown.map((entry) => ({

@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { Router, provideRouter } from '@angular/router';
 
 import { PuzzleWizardFacade } from '@application/creator/puzzle-wizard.facade';
 import { PuzzleExperience, draftExperience } from '@domain/models/puzzle-experience.model';
@@ -12,6 +13,8 @@ describe('ReviewStepComponent', () => {
   let fixture: ComponentFixture<ReviewStepComponent>;
   let component: ReviewStepComponent;
   let toast: ToastService;
+  let router: Router;
+  let flushNow: jasmine.Spy;
 
   function configure(overrides: Partial<PuzzleExperience> = {}): void {
     TestBed.resetTestingModule();
@@ -21,17 +24,20 @@ describe('ReviewStepComponent', () => {
       welcomeNote: 'Hi Ananya!',
       ...overrides,
     });
+    flushNow = jasmine.createSpy('flushNow').and.resolveTo();
 
     TestBed.configureTestingModule({
       imports: [ReviewStepComponent],
-      providers: [{ provide: PuzzleWizardFacade, useValue: { draft } }],
+      providers: [provideRouter([]), { provide: PuzzleWizardFacade, useValue: { draft, flushNow } }],
     });
 
     fixture = TestBed.createComponent(ReviewStepComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
     toast = TestBed.inject(ToastService);
+    router = TestBed.inject(Router);
     spyOn(toast, 'show');
+    spyOn(router, 'navigate').and.resolveTo(true);
   }
 
   beforeEach(() => configure());
@@ -64,9 +70,10 @@ describe('ReviewStepComponent', () => {
     expect(component['readyQuestionCount']()).toBe(1);
   });
 
-  it('previewExperience shows an informational toast instead of navigating anywhere', () => {
-    component['previewExperience']();
-    expect(toast.show).toHaveBeenCalledWith('The Preview experience arrives in the next feature.', 'info');
+  it('previewExperience flushes pending autosave then navigates to the Preview route', async () => {
+    await component['previewExperience']();
+    expect(flushNow).toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledWith(['/creator/preview', 'exp_1']);
   });
 
   it('publish shows an informational toast instead of publishing anything', () => {

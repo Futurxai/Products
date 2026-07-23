@@ -61,6 +61,10 @@ class FakeStorageUploadPort implements StorageUploadPort {
       throw new Error('upload failed');
     }
   }
+
+  async getRevealImageOriginalBlob(): Promise<Blob | null> {
+    return null;
+  }
 }
 
 describe('PuzzleWizardFacade', () => {

@@ -1,5 +1,5 @@
 import { PieceProgress } from '../models/progress.model';
-import { computeScore, pointsForPiece, starRatingFor } from './scoring.rules';
+import { computeScore, pointsForPiece, starLabelFor, starRatingFor } from './scoring.rules';
 
 describe('pointsForPiece', () => {
   it('awards 100 for a direct correct answer', () => {
@@ -51,6 +51,15 @@ describe('starRatingFor', () => {
     expect(starRatingFor(499)).toBe(1); // highest possible 1-star score
     expect(starRatingFor(90)).toBe(1); // worst case: all 9 pieces via partner-help
     expect(starRatingFor(0)).toBe(1);
+  });
+});
+
+describe('starLabelFor', () => {
+  // Copy lifted directly from docs/puzzle-module/test-data/05-score-reward-examples.json.
+  it('returns the matching completion-screen label for each star rating', () => {
+    expect(starLabelFor(3)).toBe('You know them by heart');
+    expect(starLabelFor(2)).toBe('You know them well');
+    expect(starLabelFor(1)).toBe("You made it — that's what counts");
   });
 });
 

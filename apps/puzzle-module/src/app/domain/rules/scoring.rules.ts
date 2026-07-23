@@ -65,6 +65,25 @@ export function starRatingFor(totalScore: number): 1 | 2 | 3 {
 }
 
 /**
+ * The completion-screen copy for each star rating (PRD §13, Reward
+ * System / Phase 3 test-data `05-score-reward-examples.json`). Kept
+ * here, not inline in `getCompletionSummary` (the Cloud Function that
+ * happens to need it, M2) — same reasoning as `feedback.rules.ts`'s
+ * message bank: this is business-rule copy, not an infrastructure
+ * detail, so it belongs in the one place both the Cloud Function and
+ * the client Preview (M3 Feature 4) read it from.
+ */
+const STAR_LABELS: Readonly<Record<1 | 2 | 3, string>> = {
+  3: 'You know them by heart',
+  2: 'You know them well',
+  1: "You made it — that's what counts",
+};
+
+export function starLabelFor(stars: 1 | 2 | 3): string {
+  return STAR_LABELS[stars];
+}
+
+/**
  * Aggregates a Recipient's current piece state into a full score
  * summary — the correctness meter reads this, and it's the same shape
  * `getCompletionSummary` (Phase 3 Cloud Function contract) returns once

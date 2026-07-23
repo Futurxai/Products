@@ -19,4 +19,18 @@ export interface StorageUploadPort {
    * separately).
    */
   uploadRevealImage(creatorId: string, experienceId: string, file: File): Promise<void>;
+
+  /**
+   * Fetches the creator's own `reveal-image-original.*` back as a
+   * `Blob` — the same object `uploadRevealImage` just wrote, read back
+   * for the Puzzle Preview board (M3 Feature 4). Storage Rules only
+   * ever grant the creator read access to this exact object, never the
+   * server-generated `reveal-image.jpg` or its 9 sliced pieces (those
+   * stay Cloud-Function-only, same boundary noted on
+   * `ImageUploadStepComponent`) — which is exactly why Preview slices
+   * its board client-side from this original rather than reusing the
+   * Recipient's signed-URL piece pipeline. Resolves `null` if nothing
+   * has been uploaded yet.
+   */
+  getRevealImageOriginalBlob(creatorId: string, experienceId: string): Promise<Blob | null>;
 }
