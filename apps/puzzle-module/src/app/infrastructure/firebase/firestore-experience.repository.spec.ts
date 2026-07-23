@@ -87,5 +87,13 @@ describe('firestore-experience.repository mapping', () => {
       const fields = toPrivateUpdateFields({ completionMessage: 'Great job!', shareTokenHash: 'sneaky' });
       expect(fields).toEqual({ completionMessage: 'Great job!' });
     });
+
+    it('never includes revealImagePath — only the onRevealImageUploaded Cloud Function trigger may set it', () => {
+      const fields = toPrivateUpdateFields({
+        completionMessage: 'Great job!',
+        revealImagePath: 'puzzle_storage/cre_001/exp_1/reveal-image.jpg',
+      });
+      expect(fields).toEqual({ completionMessage: 'Great job!' });
+    });
   });
 });

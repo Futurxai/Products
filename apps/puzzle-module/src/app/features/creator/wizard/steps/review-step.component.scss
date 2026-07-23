@@ -1,0 +1,58 @@
+.review-step h2 {
+  margin: 0 0 var(--app-space-1);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.review-step__subtitle {
+  margin: 0 0 var(--app-space-6);
+  color: var(--ld-mist, #6b6178);
+}
+
+.review-step__section {
+  margin-bottom: var(--app-space-4);
+
+  h3 {
+    margin: 0 0 var(--app-space-2);
+    font-size: 0.9375rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.review-step__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--app-space-2);
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.review-step__note {
+  color: var(--ld-mist, #6b6178);
+  font-size: 0.9375rem;
+  margin-top: var(--app-space-1);
+}
+
+.review-step__question-list {
+  margin: 0;
+  padding-left: var(--app-space-4);
+  font-size: 0.875rem;
+
+  li {
+    margin-bottom: var(--app-space-1);
+  }
+}
+
+.review-step__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--app-space-3);
+  margin-top: var(--app-space-6);
+}

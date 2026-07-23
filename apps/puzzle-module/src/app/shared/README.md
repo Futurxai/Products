@@ -10,7 +10,10 @@ Small, dumb, reusable presentation components with no knowledge of the domain. I
 - `badge/` — `BadgeComponent` (`app-badge`), a status pill. Generic on purpose — takes a `tone` + projected text, not e.g. an `ExperienceStatus`; mapping a domain status to a tone/label is a `features/` concern.
 - `avatar/` — `AvatarComponent` (`app-avatar`), a profile picture with an initials fallback. Takes `name`/`imageUrl`, not a `Creator`.
 - `empty-state/` — `EmptyStateComponent` (`app-empty-state`), a "nothing here yet" block with a projected call-to-action.
+- `textarea/` — `TextareaComponent` (`app-textarea`), the multi-line counterpart to `InputComponent` — same `ControlValueAccessor`/label/error/hint shape, wrapping `ion-textarea` instead of `ion-input`.
+- `stepper/` — `StepperComponent` (`app-stepper`), a generic step indicator — takes `{id, label}` steps and a completed-id set, not a `WizardStepId`; mapping the Wizard's domain steps onto it is a `features/` concern.
+- `progress-bar/` — `ProgressBarComponent` (`app-progress-bar`), wraps `ion-progress-bar` with a `value`/`max` pair instead of Ionic's raw 0–1 fraction.
 
-The rest of the Phase 4 component set (`text-area`, `modal`, `dialog`, `stepper`, `progress-bar`) is added incrementally as the feature that actually needs it lands (Wizard → stepper/modal/progress-bar, …) rather than built speculatively ahead of any consumer.
+`modal`/`dialog` are still not built — the Wizard's one confirmation ("leave without saving?") uses a native `window.confirm` instead (see `core/guards/wizard-unsaved-changes.guard.ts`), so there's still no real consumer forcing that design work yet.
 
 Added incrementally as `features/` components need them, starting Milestone M3.

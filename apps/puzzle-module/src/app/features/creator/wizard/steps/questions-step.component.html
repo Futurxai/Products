@@ -1,0 +1,16 @@
+<div class="questions-step">
+  <h2>Add your 9 questions</h2>
+  <p class="questions-step__subtitle">Nine memory-based questions, each with an answer and up to 3 optional clues.</p>
+
+  <app-progress-bar
+    [value]="readyCount()"
+    [max]="totalQuestions"
+    [label]="readyCount() + ' of ' + totalQuestions + ' questions ready'"
+  ></app-progress-bar>
+
+  <div class="questions-step__list">
+    @for (id of questionIds; track id; let i = $index) {
+      <app-question-editor [questionId]="id" [index]="i + 1"></app-question-editor>
+    }
+  </div>
+</div>

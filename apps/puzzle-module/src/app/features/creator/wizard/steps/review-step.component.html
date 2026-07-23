@@ -1,0 +1,51 @@
+<div class="review-step">
+  <h2>Review your puzzle</h2>
+  <p class="review-step__subtitle">Check everything below, then preview the experience or publish when you're ready.</p>
+
+  @if (wizardFacade.draft(); as draft) {
+    <app-card class="review-step__section">
+      <h3>Occasion &amp; Emotion</h3>
+      <p>{{ draft.occasion || 'Not set' }} · {{ draft.emotion || 'Not set' }}</p>
+    </app-card>
+
+    <app-card class="review-step__section">
+      <h3>Photo</h3>
+      <p>
+        @if (draft.revealImagePath) {
+          Uploaded &#10003;
+        } @else {
+          Not yet uploaded
+        }
+      </p>
+    </app-card>
+
+    <app-card class="review-step__section">
+      <h3>Recipient</h3>
+      <p>{{ draft.recipientDisplayName || 'Not set' }}</p>
+      <p class="review-step__note">{{ draft.welcomeNote || 'No welcome message yet.' }}</p>
+    </app-card>
+
+    <app-card class="review-step__section">
+      <div class="review-step__section-header">
+        <h3>Questions</h3>
+        <app-badge [tone]="readyQuestionCount() === 9 ? 'success' : 'neutral'">{{ readyQuestionCount() }} / 9 ready</app-badge>
+      </div>
+      <ul class="review-step__question-list">
+        @for (question of draft.questions; track question.questionId) {
+          <li>{{ question.questionId }}: {{ question.prompt || '(no prompt yet)' }}</li>
+        }
+      </ul>
+    </app-card>
+
+    <app-card class="review-step__section">
+      <h3>Completion</h3>
+      <p class="review-step__note">{{ draft.partnerHelpChallenge || 'No partner-help message yet.' }}</p>
+      <p class="review-step__note">{{ draft.completionMessage || 'No completion message yet.' }}</p>
+    </app-card>
+
+    <div class="review-step__actions">
+      <app-button variant="secondary" (click)="previewExperience()">Preview experience</app-button>
+      <app-button (click)="publish()">Publish</app-button>
+    </div>
+  }
+</div>

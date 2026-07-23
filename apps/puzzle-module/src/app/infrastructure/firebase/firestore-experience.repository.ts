@@ -179,7 +179,16 @@ export function toPrivateDocForCreate(experience: PuzzleExperience): Omit<Privat
 }
 
 const PUBLIC_UPDATE_KEYS = ['occasion', 'emotion', 'recipientDisplayName', 'welcomeNote', 'lockedPatternImagePath'] as const;
-const PRIVATE_UPDATE_KEYS = ['completionMessage', 'partnerHelpChallenge', 'revealImagePath', 'questions'] as const;
+/**
+ * `revealImagePath` is deliberately excluded — the M3 Wizard surfaced
+ * that it must never be client-settable. It's written exactly once,
+ * by the `onRevealImageUploaded` Cloud Function trigger (M2, Admin
+ * SDK) after it finishes slicing the creator's uploaded original; a
+ * client `update()` call is never the source of truth for it. The
+ * Wizard confirms an upload succeeded by re-reading the experience via
+ * `getById`, not by writing this field itself.
+ */
+const PRIVATE_UPDATE_KEYS = ['completionMessage', 'partnerHelpChallenge', 'questions'] as const;
 
 export function toPublicUpdateFields(changes: Partial<PuzzleExperience>): Record<string, unknown> {
   const fields: Record<string, unknown> = {};

@@ -2,15 +2,18 @@ import { Routes } from '@angular/router';
 
 import { creatorAuthGuard } from './core/guards/creator-auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
+import { wizardUnsavedChangesGuard } from './core/guards/wizard-unsaved-changes.guard';
 
 /**
  * Root route table.
  *
- * `/auth/*` (`guestGuard`) and `/creator` (`creatorAuthGuard`, the real
- * Dashboard as of M3 Feature 2) are the only routes so far. Still to
- * come:
- *   - M3 Features 3-5 grow `/creator` into the Wizard, Preview, and
- *     Publish routes, all under `creatorAuthGuard`.
+ * `/auth/*` (`guestGuard`), `/creator` (`creatorAuthGuard`, the
+ * Dashboard as of M3 Feature 2), and `/creator/wizard/:experienceId`
+ * (`creatorAuthGuard` + `wizardUnsavedChangesGuard`, the Puzzle
+ * Creation Wizard as of M3 Feature 3) are the only routes so far.
+ * Still to come:
+ *   - M3 Features 4-5 add the Preview and Publish routes, also under
+ *     `creatorAuthGuard`.
  *   - M5/M6 add the single recipient route `/e/:shareToken`, resolved
  *     by `recipientLinkResolver` — deliberately just ONE route with
  *     modals/overlays layered on top of it, per the Phase 4 Navigation
@@ -42,6 +45,12 @@ export const routes: Routes = [
     path: 'creator',
     canActivate: [creatorAuthGuard],
     loadComponent: () => import('./features/creator/dashboard/dashboard.page').then((m) => m.DashboardPage),
+  },
+  {
+    path: 'creator/wizard/:experienceId',
+    canActivate: [creatorAuthGuard],
+    canDeactivate: [wizardUnsavedChangesGuard],
+    loadComponent: () => import('./features/creator/wizard/wizard.page').then((m) => m.WizardPage),
   },
   {
     path: '',

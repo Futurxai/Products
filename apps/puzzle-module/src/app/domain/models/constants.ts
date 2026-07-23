@@ -41,3 +41,33 @@ export const STAR_THRESHOLDS: ReadonlyArray<{ minScore: number; stars: 1 | 2 | 3
   { minScore: 500, stars: 2 },
   { minScore: 0, stars: 1 },
 ];
+
+/** Selectable occasions (Wizard Step 1) — drawn from docs/puzzle-module/test-data/03-puzzle-experiences.json, the canonical realistic set. */
+export const OCCASIONS: readonly string[] = [
+  'Anniversary',
+  'Baby',
+  'Birthday',
+  'Family',
+  'Friendship',
+  'Graduation',
+  'Long Distance',
+  'Proposal',
+  'Wedding',
+];
+
+/** Selectable emotions (Wizard Step 1) — same source as `OCCASIONS`. */
+export const EMOTIONS: readonly string[] = ['Celebration', 'Excitement', 'Fun', 'Love', 'Nostalgia', 'Suspense'];
+
+/**
+ * Reveal-image upload constraints (Wizard Step 2) — deliberately the
+ * SAME limits `lovedigitally-web/storage.rules` enforces server-side
+ * (`request.resource.size < 10 * 1024 * 1024`,
+ * `contentType.matches('image/(jpeg|png|webp)')`). Client-side
+ * validation here is a UX nicety that fails fast with a friendly
+ * message; the Storage Rules check is what actually matters for
+ * security and is not derived from this constant (Firestore/Storage
+ * Rules can't import TypeScript) — the two are kept in sync by hand,
+ * same as the `canEdit` duplication noted in `lovedigitally-web/firestore.rules`.
+ */
+export const MAX_IMAGE_UPLOAD_BYTES = 10 * 1024 * 1024;
+export const ACCEPTED_IMAGE_MIME_TYPES: readonly string[] = ['image/jpeg', 'image/png', 'image/webp'];

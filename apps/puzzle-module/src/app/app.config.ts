@@ -13,9 +13,11 @@ import { routes } from './app.routes';
 
 import { AUTH_PORT, CREATOR_REPOSITORY_PORT } from './application/creator/auth.tokens';
 import { EXPERIENCE_REPOSITORY_PORT } from './application/creator/experience.tokens';
+import { STORAGE_UPLOAD_PORT } from './application/creator/wizard.tokens';
 import { FirebaseAuthService } from './infrastructure/firebase/auth.service';
 import { FirestoreCreatorRepository } from './infrastructure/firebase/firestore-creator.repository';
 import { FirestoreExperienceRepository } from './infrastructure/firebase/firestore-experience.repository';
+import { FirebaseStorageUploadService } from './infrastructure/firebase/storage-upload.service';
 
 /**
  * Root application providers.
@@ -79,5 +81,6 @@ export const appConfig: ApplicationConfig = {
     { provide: AUTH_PORT, useClass: FirebaseAuthService },
     { provide: CREATOR_REPOSITORY_PORT, useClass: FirestoreCreatorRepository },
     { provide: EXPERIENCE_REPOSITORY_PORT, useClass: FirestoreExperienceRepository },
+    { provide: STORAGE_UPLOAD_PORT, useClass: FirebaseStorageUploadService },
   ],
 };

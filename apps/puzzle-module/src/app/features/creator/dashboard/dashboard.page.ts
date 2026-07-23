@@ -9,16 +9,16 @@ import { ButtonComponent } from '@shared/button/button.component';
 import { CardComponent } from '@shared/card/card.component';
 import { EmptyStateComponent } from '@shared/empty-state/empty-state.component';
 import { LoaderComponent } from '@shared/loader/loader.component';
-import { ToastService } from '@shared/toast/toast.service';
 
 import { ExperienceCardComponent } from './ui/experience-card.component';
 
 /**
  * The real Creator Dashboard, replacing the temporary placeholder from
- * Feature 1. "Create New Puzzle" and the puzzle cards are deliberately
- * inert beyond a toast — the Puzzle Creation Wizard (Feature 3) is what
- * gives them somewhere to go; wiring navigation to a route that doesn't
- * exist yet would be worse than being honest that it's next.
+ * Feature 1. "Create New Puzzle" now opens the Wizard (Feature 3) at
+ * the `new` sentinel route, which mints a real draft and replaces the
+ * URL. Draft cards are clickable to resume; published/completed cards
+ * stay inert — there's no Preview/detail destination for them yet
+ * (Features 4-5).
  */
 @Component({
   selector: 'app-dashboard-page',
@@ -46,14 +46,13 @@ export class DashboardPage implements OnInit {
   protected readonly authFacade = inject(AuthFacade);
   protected readonly dashboardFacade = inject(CreatorDashboardFacade);
   private readonly router = inject(Router);
-  private readonly toast = inject(ToastService);
 
   ngOnInit(): void {
     void this.dashboardFacade.load();
   }
 
-  protected createNewPuzzle(): void {
-    this.toast.show('The Puzzle Creation Wizard arrives in the next feature.', 'info');
+  protected async createNewPuzzle(): Promise<void> {
+    await this.router.navigate(['/creator/wizard', 'new']);
   }
 
   protected async retry(): Promise<void> {

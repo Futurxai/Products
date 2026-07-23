@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router, provideRouter } from '@angular/router';
 
 import { PuzzleExperience, draftExperience } from '@domain/models/puzzle-experience.model';
 
@@ -24,11 +25,15 @@ function baseExperience(overrides: Partial<PuzzleExperience>): PuzzleExperience 
 
 describe('ExperienceCardComponent', () => {
   let fixture: ComponentFixture<HostComponent>;
+  let router: Router;
 
   function render(experience: PuzzleExperience): void {
-    TestBed.configureTestingModule({ imports: [HostComponent] });
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({ imports: [HostComponent], providers: [provideRouter([])] });
     fixture = TestBed.createComponent(HostComponent);
     fixture.componentInstance.experience = experience;
+    router = TestBed.inject(Router);
+    spyOn(router, 'navigate').and.resolveTo(true);
     fixture.detectChanges();
   }
 
@@ -69,5 +74,20 @@ describe('ExperienceCardComponent', () => {
   it('shows "In Progress" for an in_progress experience', () => {
     render(baseExperience({ status: 'in_progress', publishedAt: new Date('2026-02-15T00:00:00Z') }));
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('In Progress');
+  });
+
+  it('renders a clickable trigger for a draft that navigates into the wizard to resume', () => {
+    render(baseExperience({ status: 'draft', experienceId: 'exp_1' }));
+
+    const trigger: HTMLButtonElement | null = fixture.nativeElement.querySelector('.experience-card__trigger');
+    expect(trigger).not.toBeNull();
+
+    trigger!.click();
+    expect(router.navigate).toHaveBeenCalledWith(['/creator/wizard', 'exp_1']);
+  });
+
+  it('does not render a clickable trigger for a published experience', () => {
+    render(baseExperience({ status: 'published', publishedAt: new Date('2026-02-15T00:00:00Z') }));
+    expect(fixture.nativeElement.querySelector('.experience-card__trigger')).toBeNull();
   });
 });

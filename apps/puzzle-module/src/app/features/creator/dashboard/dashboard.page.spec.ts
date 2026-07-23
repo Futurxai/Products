@@ -7,7 +7,6 @@ import { CreatorDashboardFacade } from '@application/creator/creator-dashboard.f
 import { Creator } from '@domain/models/creator.model';
 import { DashboardGroups, DashboardSummary } from '@domain/rules/dashboard.rules';
 import { PuzzleExperience, draftExperience } from '@domain/models/puzzle-experience.model';
-import { ToastService } from '@shared/toast/toast.service';
 
 import { DashboardPage } from './dashboard.page';
 
@@ -36,7 +35,6 @@ describe('DashboardPage', () => {
   let groups: ReturnType<typeof signal<DashboardGroups>>;
   let summary: ReturnType<typeof signal<DashboardSummary>>;
   let router: Router;
-  let toast: ToastService;
 
   beforeEach(() => {
     load = jasmine.createSpy('load').and.resolveTo();
@@ -63,9 +61,8 @@ describe('DashboardPage', () => {
     fixture = TestBed.createComponent(DashboardPage);
     page = fixture.componentInstance;
     router = TestBed.inject(Router);
-    toast = TestBed.inject(ToastService);
     spyOn(router, 'navigateByUrl').and.resolveTo(true);
-    spyOn(toast, 'show');
+    spyOn(router, 'navigate').and.resolveTo(true);
   });
 
   it('calls dashboardFacade.load() on init', () => {
@@ -119,10 +116,10 @@ describe('DashboardPage', () => {
     expect(fixture.nativeElement.querySelectorAll('app-experience-card').length).toBe(1);
   });
 
-  it('createNewPuzzle() shows an informational toast instead of navigating anywhere', () => {
+  it('createNewPuzzle() navigates to the wizard "new" route', async () => {
     fixture.detectChanges();
-    page['createNewPuzzle']();
-    expect(toast.show).toHaveBeenCalledWith('The Puzzle Creation Wizard arrives in the next feature.', 'info');
+    await page['createNewPuzzle']();
+    expect(router.navigate).toHaveBeenCalledWith(['/creator/wizard', 'new']);
   });
 
   it('logOut() signs out and redirects to /auth/login', async () => {

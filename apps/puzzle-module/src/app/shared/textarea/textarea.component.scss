@@ -1,0 +1,42 @@
+.app-textarea {
+  display: block;
+  margin-block-end: var(--app-space-4);
+}
+
+.app-textarea__label {
+  display: block;
+  margin-block-end: var(--app-space-2);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.app-textarea__required {
+  color: var(--ion-color-danger);
+  margin-inline-start: var(--app-space-1);
+}
+
+.app-textarea__control {
+  --border-radius: var(--app-radius-m);
+  --padding-start: var(--app-space-4);
+  --padding-end: var(--app-space-4);
+  --padding-top: var(--app-space-3);
+  --padding-bottom: var(--app-space-3);
+}
+
+.app-textarea--invalid .app-textarea__control {
+  --border-color: var(--ion-color-danger);
+  --highlight-color-focused: var(--ion-color-danger);
+}
+
+.app-textarea__message {
+  margin: var(--app-space-2) 0 0;
+  font-size: 0.8125rem;
+}
+
+.app-textarea__message--error {
+  color: var(--ion-color-danger);
+}
+
+.app-textarea__message--hint {
+  color: var(--ld-mist, #6b6178);
+}

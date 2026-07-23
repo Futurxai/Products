@@ -1,0 +1,23 @@
+<div class="recipient-details-step">
+  <h2>Who is this puzzle for?</h2>
+  <p class="recipient-details-step__subtitle">Their name and a personal welcome message shown before the first question.</p>
+
+  <form [formGroup]="form">
+    <app-input
+      formControlName="recipientDisplayName"
+      label="Recipient's name"
+      placeholder="e.g. Ananya"
+      [required]="true"
+      [errorMessage]="recipientNameError"
+    ></app-input>
+
+    <app-textarea
+      formControlName="welcomeNote"
+      label="Welcome message"
+      placeholder="Set the scene before the first question…"
+      [required]="true"
+      [rows]="5"
+      [errorMessage]="welcomeNoteError"
+    ></app-textarea>
+  </form>
+</div>
