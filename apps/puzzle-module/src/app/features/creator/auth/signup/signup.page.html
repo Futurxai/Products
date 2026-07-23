@@ -1,0 +1,62 @@
+<ion-content class="signup-page">
+  <app-auth-shell title="Create your account" subtitle="Start building a personalized puzzle gift">
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <app-input
+        formControlName="displayName"
+        label="Your name"
+        type="text"
+        placeholder="Vikram Rao"
+        autocomplete="name"
+        [required]="true"
+        [errorMessage]="displayNameError"
+      ></app-input>
+
+      <app-input
+        formControlName="email"
+        label="Email"
+        type="email"
+        placeholder="you@example.com"
+        autocomplete="email"
+        [required]="true"
+        [errorMessage]="emailError"
+      ></app-input>
+
+      <app-input
+        formControlName="password"
+        label="Password"
+        type="password"
+        placeholder="Create a password"
+        autocomplete="new-password"
+        [required]="true"
+        hint="At least 8 characters, with a letter and a number."
+        [errorMessage]="passwordError"
+      ></app-input>
+
+      <app-input
+        formControlName="confirmPassword"
+        label="Confirm password"
+        type="password"
+        placeholder="Re-enter your password"
+        autocomplete="new-password"
+        [required]="true"
+        [errorMessage]="confirmPasswordError"
+      ></app-input>
+
+      @if (errorMessage()) {
+        <p class="signup-page__error" role="alert">{{ errorMessage() }}</p>
+      }
+
+      <app-button type="submit" expand="block" [loading]="loading()">Create account</app-button>
+    </form>
+
+    <div class="signup-page__divider" role="separator" aria-label="or">
+      <span>or</span>
+    </div>
+
+    <app-button variant="secondary" expand="block" [loading]="loading()" (click)="continueWithGoogle()">
+      Continue with Google
+    </app-button>
+
+    <p class="signup-page__footer-link">Already have an account? <a routerLink="/auth/login">Sign in</a></p>
+  </app-auth-shell>
+</ion-content>

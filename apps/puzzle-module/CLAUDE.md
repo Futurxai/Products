@@ -5,7 +5,7 @@ Target user: Couples, friends, and family in India personalizing a digital gift 
 Key features: Creator authoring wizard, secure token-based recipient links, clue system with WhatsApp partner-help fallback, server-validated scoring, PWA-first.
 Firebase project: `lovedigitally-app` (shared with `/lovedigitally-web` — isolated via the `puzzle_*` Firestore/Storage namespace and a dedicated `puzzle-module` Hosting site + Functions codebase, not a separate project).
 Architecture: Clean Architecture — `domain/` (framework-free models & rules) → `application/` (use-cases & signal facades) → `infrastructure/` (Firebase adapters) → `features/` (Ionic Angular standalone pages). See `docs/puzzle-module/` at the repo root for the full PRD, Module Contract, and architecture spec this app is built against.
-Current phase: Milestone M2 complete (Environment/M0, Domain/M1, Firebase Infrastructure & Cloud Functions/M2). Next: M3 (Creator UI) / M5 (Recipient UI).
+Current phase: M0–M2 complete; M3 (Creator UI) in progress — Feature 1 (Authentication: Login/Sign Up/Forgot Password, route guards, first design-system slice) done. Next: M3 Feature 2 (Creator Dashboard), then Wizard/Preview/Publish, then M5 (Recipient UI).
 
 App-specific rules:
 - `domain/`, `application/`, `features/`, `shared/` (Angular app) must never import `firebase/*` or `@angular/fire/*` directly — only `infrastructure/firebase/*` may (enforced by ESLint, see `.eslintrc.json`). The `functions/` codebase has its own equivalent boundary: only `functions/src/infrastructure/*` touches `firebase-admin`.

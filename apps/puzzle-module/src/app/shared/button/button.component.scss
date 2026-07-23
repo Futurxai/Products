@@ -1,0 +1,12 @@
+.app-button {
+  --border-radius: var(--app-radius-m);
+  text-transform: none;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.app-button__spinner {
+  width: 1.1em;
+  height: 1.1em;
+  margin-inline-end: var(--app-space-2);
+}

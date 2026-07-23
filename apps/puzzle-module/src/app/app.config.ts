@@ -11,6 +11,10 @@ import { getFunctions, provideFunctions, connectFunctionsEmulator } from '@angul
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 
+import { AUTH_PORT, CREATOR_REPOSITORY_PORT } from './application/creator/auth.tokens';
+import { FirebaseAuthService } from './infrastructure/firebase/auth.service';
+import { FirestoreCreatorRepository } from './infrastructure/firebase/firestore-creator.repository';
+
 /**
  * Root application providers.
  *
@@ -69,5 +73,8 @@ export const appConfig: ApplicationConfig = {
       }
       return fns;
     }),
+
+    { provide: AUTH_PORT, useClass: FirebaseAuthService },
+    { provide: CREATOR_REPOSITORY_PORT, useClass: FirestoreCreatorRepository },
   ],
 };

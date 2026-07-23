@@ -4,9 +4,17 @@ Ionic Angular (standalone components + Signals) PWA for the Love Digitally Puzzl
 
 ## Status
 
-**Milestone M2 — Firebase Infrastructure & Cloud Functions complete.** M0 (scaffold/CI), M1 (domain layer), and M2 (all 6 Cloud Functions + image-slice trigger, Clean Architecture, Firestore transactions, Zod validation, structured logging, typed domain errors, unit + emulator tests) are done and fully validated. No UI yet — that's M3 (Creator) and M5 (Recipient), which consume the `functions/` API built here through `domain/ports/puzzle-api.port.ts`.
+**Milestone M3, Feature 1 — Creator Authentication complete.** M0 (scaffold/CI), M1 (domain layer), M2 (all 6 Cloud Functions + image-slice trigger), and M3/Feature 1 (Login, Sign Up, Forgot Password — email/password + Google, route guards, a first design-system slice) are done and fully validated. Still to come in M3: Creator Dashboard (Feature 2), Puzzle Creation Wizard (Feature 3), Preview (Feature 4), Publish (Feature 5) — then M5 for the Recipient side.
 
 See `functions/src/` for the Cloud Functions codebase: `schemas/` (Zod), `callable/` (thin onCall wrappers), `application/` (use-cases), `infrastructure/` (Firestore/Storage/Auth adapters), `triggers/` (reveal-image slicing), `emulator-tests/` (real Firestore+Auth+Storage emulator coverage, run via `npm run test:emulator` inside `functions/`).
+
+### Creator Authentication (M3, Feature 1)
+
+- **Pages** (`src/app/features/creator/auth/`): `login/`, `signup/`, `forgot-password/`, sharing a feature-local `ui/auth-shell.component.ts` layout. A temporary `features/creator/dashboard-placeholder/` page (guarded, shows the signed-in Creator + sign-out) stands in for the real Dashboard until Feature 2.
+- **Design system** (`src/app/shared/`): `button/`, `input/` (a `ControlValueAccessor` wrapping `ion-input`), `card/`, `toast/` (signal-based queue + host, mounted once in `AppComponent`), `loader/` — thin, opinionated wrappers over Ionic primitives rather than hand-rolled controls. The rest of the Phase 4 component set is added incrementally as later features need it, not built ahead of a consumer.
+- **Auth architecture**: `AuthPort` (Firebase Auth identity) and `CreatorRepositoryPort` (the `puzzle_creators` Firestore profile) are deliberately separate ports — Auth owns the session, Firestore owns app-specific profile fields. `AuthUseCase.resolveProfile()` provisions a Creator's Firestore doc on first sight (fresh sign-up, or a first-time Google sign-in) and self-heals it on every session restore if it's ever missing. `AuthFacade` is the Signal store pages and `creatorAuthGuard`/`guestGuard` actually consume — it waits for `authReady()` before either guard makes a redirect decision, so a page refresh mid-session-restore never flashes a false redirect to `/auth/login`.
+- Every Firebase Auth error is mapped to a typed `AuthError` subclass (`domain/errors/auth-errors.ts`) with an already-UI-ready message — pages never see a raw `FirebaseError`.
+- The production bundle budget (`angular.json`) was raised from 750kb/950kb to 900kb/1.1mb warning/error — the increase reflects real, necessary weight (Firebase Auth/Firestore's modular functions are now actually *called*, not just provided; more Ionic form components), not unreviewed bloat; still enforced, just recalibrated.
 
 ## Firebase project
 

@@ -1,0 +1,45 @@
+<ion-content class="login-page">
+  <app-auth-shell title="Welcome back" subtitle="Sign in to manage your puzzle experiences">
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <app-input
+        formControlName="email"
+        label="Email"
+        type="email"
+        placeholder="you@example.com"
+        autocomplete="email"
+        [required]="true"
+        [errorMessage]="emailError"
+      ></app-input>
+
+      <app-input
+        formControlName="password"
+        label="Password"
+        type="password"
+        placeholder="Your password"
+        autocomplete="current-password"
+        [required]="true"
+        [errorMessage]="passwordError"
+      ></app-input>
+
+      <div class="login-page__forgot">
+        <a routerLink="/auth/forgot-password">Forgot password?</a>
+      </div>
+
+      @if (errorMessage()) {
+        <p class="login-page__error" role="alert">{{ errorMessage() }}</p>
+      }
+
+      <app-button type="submit" expand="block" [loading]="loading()">Sign in</app-button>
+    </form>
+
+    <div class="login-page__divider" role="separator" aria-label="or">
+      <span>or</span>
+    </div>
+
+    <app-button variant="secondary" expand="block" [loading]="loading()" (click)="continueWithGoogle()">
+      Continue with Google
+    </app-button>
+
+    <p class="login-page__footer-link">New to Love Digitally? <a routerLink="/auth/signup">Create an account</a></p>
+  </app-auth-shell>
+</ion-content>
