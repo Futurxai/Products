@@ -1,0 +1,9 @@
+.app-qr-code {
+  display: block;
+  border-radius: var(--app-radius-m, 8px);
+}
+
+.app-qr-code__error {
+  color: var(--ld-mist, #6b6178);
+  font-size: 0.875rem;
+}

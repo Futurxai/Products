@@ -1,0 +1,41 @@
+<div class="share-panel">
+  <div class="share-panel__success">
+    <span class="share-panel__success-icon" aria-hidden="true">✓</span>
+    <h2>Your puzzle is live!</h2>
+    <p>Share the link below with your recipient.</p>
+  </div>
+
+  <app-card class="share-panel__link-card">
+    <p class="share-panel__link" data-testid="share-url">{{ shareUrl() }}</p>
+    <div class="share-panel__link-actions">
+      <app-button (click)="copyLink()">Copy Link</app-button>
+      @if (canNativeShare) {
+        <app-button variant="secondary" (click)="nativeShare()">Share…</app-button>
+      }
+    </div>
+  </app-card>
+
+  <app-card class="share-panel__qr-card">
+    <h3>Scan to open</h3>
+    <app-qr-code [data]="shareUrl()" [size]="180"></app-qr-code>
+  </app-card>
+
+  <app-card class="share-panel__whatsapp-card">
+    <a [href]="whatsappShareUrl()" target="_blank" rel="noopener" class="share-panel__whatsapp-link">
+      <app-button expand="block">Share via WhatsApp</app-button>
+    </a>
+  </app-card>
+
+  <app-card class="share-panel__stats-card">
+    <div class="share-panel__stats-header">
+      <h3>Share Stats</h3>
+      <app-badge tone="neutral">Coming soon</app-badge>
+    </div>
+    <p class="share-panel__stats-note">Views and completions will appear here once sharing analytics are available.</p>
+  </app-card>
+
+  <div class="share-panel__footer-actions">
+    <app-button variant="secondary" (click)="previewAsRecipient()">Preview as Recipient</app-button>
+    <app-button variant="ghost" (click)="goToDashboard()">Go to Dashboard</app-button>
+  </div>
+</div>

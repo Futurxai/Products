@@ -10,10 +10,10 @@ import { wizardUnsavedChangesGuard } from './core/guards/wizard-unsaved-changes.
  * `/auth/*` (`guestGuard`), `/creator` (`creatorAuthGuard`, the
  * Dashboard as of M3 Feature 2), `/creator/wizard/:experienceId`
  * (`creatorAuthGuard` + `wizardUnsavedChangesGuard`, the Puzzle
- * Creation Wizard as of M3 Feature 3), and `/creator/preview/:experienceId`
- * (`creatorAuthGuard`, the Puzzle Preview as of M3 Feature 4) are the
- * only routes so far. Still to come:
- *   - M3 Feature 5 adds the Publish route, also under `creatorAuthGuard`.
+ * Creation Wizard as of M3 Feature 3), `/creator/preview/:experienceId`
+ * (`creatorAuthGuard`, the Puzzle Preview as of M3 Feature 4), and
+ * `/creator/publish/:experienceId` (`creatorAuthGuard`, Publish & Share
+ * as of M3 Feature 5) are the only routes so far. Still to come:
  *   - M5/M6 add the single recipient route `/e/:shareToken`, resolved
  *     by `recipientLinkResolver` — deliberately just ONE route with
  *     modals/overlays layered on top of it, per the Phase 4 Navigation
@@ -56,6 +56,11 @@ export const routes: Routes = [
     path: 'creator/preview/:experienceId',
     canActivate: [creatorAuthGuard],
     loadComponent: () => import('./features/creator/preview/preview.page').then((m) => m.PreviewPage),
+  },
+  {
+    path: 'creator/publish/:experienceId',
+    canActivate: [creatorAuthGuard],
+    loadComponent: () => import('./features/creator/publish/publish.page').then((m) => m.PublishPage),
   },
   {
     path: '',

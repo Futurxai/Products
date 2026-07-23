@@ -33,6 +33,7 @@
     "@capacitor/status-bar": "^6.0.1",
     "@ionic/angular": "^8.2.6",
     "firebase": "^10.14.1",
+    "qrcode": "^1.5.4",
     "rxjs": "~7.8.1",
     "tslib": "^2.6.3",
     "zone.js": "~0.14.10"
@@ -50,6 +51,7 @@
     "@firebase/rules-unit-testing": "^3.0.4",
     "@ionic/cli": "^7.2.0",
     "@types/jasmine": "^5.1.4",
+    "@types/qrcode": "^1.5.6",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "eslint": "^8.57.0",

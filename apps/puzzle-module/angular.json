@@ -24,7 +24,8 @@
             "inlineStyleLanguage": "scss",
             "assets": ["src/assets"],
             "styles": ["src/theme/variables.scss", "src/global.scss"],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": ["qrcode"]
           },
           "configurations": {
             "production": {

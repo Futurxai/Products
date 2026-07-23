@@ -19,6 +19,14 @@ export interface PublishExperienceInput {
 export interface PublishExperienceOutput {
   shareToken: string;
   shareUrl: string;
+  /**
+   * Always `'published'` — this call only ever resolves after
+   * `markPublished` succeeds. Included so the response matches
+   * `domain/ports/puzzle-api.port.ts`'s `PublishExperienceSuccess`
+   * shape exactly (M3 Feature 5 found this field missing here while
+   * wiring the client adapter against that already-declared contract).
+   */
+  status: 'published';
 }
 
 /**
@@ -66,5 +74,6 @@ export async function publishExperience(
   return {
     shareToken: rawToken,
     shareUrl: `${SHARE_BASE_URL}/${rawToken}`,
+    status: 'published',
   };
 }

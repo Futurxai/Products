@@ -5,14 +5,12 @@ import { Router, provideRouter } from '@angular/router';
 import { PuzzleWizardFacade } from '@application/creator/puzzle-wizard.facade';
 import { PuzzleExperience, draftExperience } from '@domain/models/puzzle-experience.model';
 import { emptyQuestion } from '@domain/models/question.model';
-import { ToastService } from '@shared/toast/toast.service';
 
 import { ReviewStepComponent } from './review-step.component';
 
 describe('ReviewStepComponent', () => {
   let fixture: ComponentFixture<ReviewStepComponent>;
   let component: ReviewStepComponent;
-  let toast: ToastService;
   let router: Router;
   let flushNow: jasmine.Spy;
 
@@ -34,9 +32,7 @@ describe('ReviewStepComponent', () => {
     fixture = TestBed.createComponent(ReviewStepComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    toast = TestBed.inject(ToastService);
     router = TestBed.inject(Router);
-    spyOn(toast, 'show');
     spyOn(router, 'navigate').and.resolveTo(true);
   }
 
@@ -76,8 +72,9 @@ describe('ReviewStepComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith(['/creator/preview', 'exp_1']);
   });
 
-  it('publish shows an informational toast instead of publishing anything', () => {
-    component['publish']();
-    expect(toast.show).toHaveBeenCalledWith('Publishing arrives in a later feature.', 'info');
+  it('publish flushes pending autosave then navigates to the Publish route', async () => {
+    await component['publish']();
+    expect(flushNow).toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledWith(['/creator/publish', 'exp_1']);
   });
 });
