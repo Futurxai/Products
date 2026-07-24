@@ -29,3 +29,18 @@ export function emptyQuestion(questionId: string): QuestionDefinition {
     clues: [],
   };
 }
+
+/**
+ * What a Recipient may ever see of a question before earning its
+ * piece — deliberately a narrower type than `QuestionDefinition`, not
+ * the same interface with fields left unused. `correctAnswer`,
+ * `acceptedVariants`, and `clues` have no way to end up here even by
+ * accident, which is the point: the Module Contract §8 boundary
+ * ("never sent to the client before earned") is expressed at the type
+ * level, not just by convention. See `rules/recipient-view.rules.ts`
+ * for the one place a `QuestionDefinition` is narrowed into this.
+ */
+export interface RecipientQuestionView {
+  readonly questionId: string;
+  readonly prompt: string;
+}

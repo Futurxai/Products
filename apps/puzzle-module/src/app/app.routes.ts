@@ -11,14 +11,15 @@ import { wizardUnsavedChangesGuard } from './core/guards/wizard-unsaved-changes.
  * Dashboard as of M3 Feature 2), `/creator/wizard/:experienceId`
  * (`creatorAuthGuard` + `wizardUnsavedChangesGuard`, the Puzzle
  * Creation Wizard as of M3 Feature 3), `/creator/preview/:experienceId`
- * (`creatorAuthGuard`, the Puzzle Preview as of M3 Feature 4), and
+ * (`creatorAuthGuard`, the Puzzle Preview as of M3 Feature 4),
  * `/creator/publish/:experienceId` (`creatorAuthGuard`, Publish & Share
- * as of M3 Feature 5) are the only routes so far. Still to come:
- *   - M5/M6 add the single recipient route `/e/:shareToken`, resolved
- *     by `recipientLinkResolver` — deliberately just ONE route with
- *     modals/overlays layered on top of it, per the Phase 4 Navigation
- *     spec: no child routes for question/clue/partner-help/completion,
- *     so there is no URL to skip ahead with.
+ * as of M3 Feature 5), and `/e/:shareToken` (no guard — `resolveShareToken`
+ * itself IS the auth check, the link is the credential; the Recipient
+ * experience as of M4) are the only routes. `/e/:shareToken` is
+ * deliberately just the one route with everything past it (Welcome,
+ * Board, Question, Completion) handled as internal state inside
+ * `ExperiencePage`, per the Phase 4 Navigation spec — no child routes,
+ * so there is no URL to skip ahead with.
  */
 export const routes: Routes = [
   {
@@ -61,6 +62,10 @@ export const routes: Routes = [
     path: 'creator/publish/:experienceId',
     canActivate: [creatorAuthGuard],
     loadComponent: () => import('./features/creator/publish/publish.page').then((m) => m.PublishPage),
+  },
+  {
+    path: 'e/:shareToken',
+    loadComponent: () => import('./features/recipient/experience.page').then((m) => m.ExperiencePage),
   },
   {
     path: '',

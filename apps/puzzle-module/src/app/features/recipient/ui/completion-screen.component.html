@@ -1,0 +1,22 @@
+<div class="completion-screen">
+  @if (sessionFacade.loadingCompletion()) {
+    <app-loader label="Revealing your photo..."></app-loader>
+  } @else {
+    @if (sessionFacade.completionSummary(); as summary) {
+      <img [src]="summary.finalRevealImageUrl" alt="The fully revealed photo" class="completion-screen__reveal-image" />
+
+      <p class="completion-screen__stars" aria-hidden="true">{{ starDisplay() }}</p>
+      <h1 class="completion-screen__star-label">{{ summary.starLabel }}</h1>
+      <p class="completion-screen__score">{{ summary.finalScore }} / {{ summary.maxScore }} points</p>
+
+      <app-card class="completion-screen__message">
+        <p>{{ summary.completionMessage }}</p>
+      </app-card>
+    } @else {
+      @if (sessionFacade.completionError(); as error) {
+        <p class="completion-screen__error" role="alert">{{ error }}</p>
+        <app-button variant="secondary" (click)="retry()">Try again</app-button>
+      }
+    }
+  }
+</div>

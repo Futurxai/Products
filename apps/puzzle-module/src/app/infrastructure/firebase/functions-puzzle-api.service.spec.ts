@@ -44,7 +44,22 @@ describe('FirebaseFunctionsPuzzleApiService', () => {
 
   describe('resolveShareToken', () => {
     it('passes the request through and returns the result as-is', async () => {
-      const success = { ok: true as const, experienceId: 'exp_1', customToken: 'tok', publicMeta: { occasion: 'Anniversary', emotion: 'Love', recipientDisplayName: 'Ananya', welcomeNote: 'Hi', status: 'published', lockedPatternImageUrl: 'https://x/pattern.svg' } };
+      const success = {
+        ok: true as const,
+        experienceId: 'exp_1',
+        customToken: 'tok',
+        publicMeta: {
+          occasion: 'Anniversary',
+          emotion: 'Love',
+          recipientDisplayName: 'Ananya',
+          welcomeNote: 'Hi',
+          status: 'published',
+          lockedPatternImageUrl: 'https://x/pattern.svg',
+          questions: [{ questionId: 'q1', prompt: 'Where did we meet?' }],
+          partnerHelpChallenge: 'Ask them nicely',
+        },
+        unlockedPieceImages: { q1: 'https://x/slice-q1.jpg' },
+      };
       const callFunction = jasmine.createSpy('callFunction').and.resolveTo(success);
       stubCallFunction(callFunction);
 

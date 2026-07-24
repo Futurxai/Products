@@ -12,6 +12,7 @@ export const resolveShareTokenCallable = definePublicCallable({
     return resolveShareToken(
       {
         experienceStore: deps.experienceStore,
+        progressStore: deps.progressStore,
         tokenService: deps.tokenService,
         authService: deps.authService,
         storageService: deps.storageService,

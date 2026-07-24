@@ -1,4 +1,4 @@
-import { EarnedVia } from '../models/question.model';
+import { EarnedVia, RecipientQuestionView } from '../models/question.model';
 import { DomainErrorCode } from '../errors/domain-errors';
 
 /**
@@ -55,7 +55,27 @@ export interface ResolveShareTokenSuccess {
     readonly welcomeNote: string;
     readonly status: string;
     readonly lockedPatternImageUrl: string;
+    /**
+     * Prompt-only projection of the 9 questions (M3/M4 addition —
+     * `puzzle_experiences_private` is owner-only in Firestore Rules, so
+     * this callable is the Recipient's only path to the question text
+     * at all). Never `correctAnswer`/`acceptedVariants`/`clues` — see
+     * `RecipientQuestionView`.
+     */
+    readonly questions: readonly RecipientQuestionView[];
+    /** The Creator-authored "Ask Your Partner" fallback message (M3/M4 addition) — shown once a question's clues are exhausted, before `requestPartnerHelpReveal` is ever called. */
+    readonly partnerHelpChallenge: string;
   };
+  /**
+   * Signed image URLs for pieces already unlocked before this resolve
+   * call, keyed by `questionId` — empty on a first visit. `pieceImageUrl`
+   * is otherwise only ever handed back once, inside the
+   * `submitAnswer`/`requestPartnerHelpReveal` response that unlocked
+   * it; without this, reopening a share link mid-game would show
+   * correctly-unlocked tiles with nothing to render. See
+   * `functions/src/application/resolve-share-token.usecase.ts`.
+   */
+  readonly unlockedPieceImages: Readonly<Record<string, string>>;
 }
 export type ResolveShareTokenResult = ResolveShareTokenSuccess | ApiFailure;
 

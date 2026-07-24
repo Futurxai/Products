@@ -138,6 +138,11 @@ describe('Puzzle Module gameplay flow (Firestore + Auth emulators)', () => {
     expect(result.experienceId).toBe(EXPERIENCE_ID);
     expect(result.customToken).toBeTruthy();
     expect(result.publicMeta.occasion).toBe('Anniversary');
+    expect(result.publicMeta.partnerHelpChallenge).toBe('Buy me ice cream');
+    expect(result.publicMeta.questions.length).toBe(9);
+    expect(result.publicMeta.questions[0]).toEqual({ questionId: 'q1', prompt: 'Prompt for q1' });
+    expect(JSON.stringify(result.publicMeta.questions)).not.toContain('answer-1');
+    expect(result.unlockedPieceImages).toEqual({});
 
     // Confirm the Auth emulator actually created the user with the claim
     // set — not just that the use-case returned a plausible-looking value.
@@ -167,6 +172,13 @@ describe('Puzzle Module gameplay flow (Firestore + Auth emulators)', () => {
     const progressAfter = await getFirestore().collection('puzzle_progress').doc(experienceId).get();
     expect(progressAfter.exists).toBeTrue();
     expect(progressAfter.data()?.['pieces']?.['q1']?.['status']).toBe('unlocked');
+  });
+
+  it('resolveShareToken re-signs an image URL for a piece already unlocked from a prior visit', async () => {
+    const result = await resolveShareToken({ data: { shareToken } });
+
+    expect(Object.keys(result.unlockedPieceImages)).toEqual(['q1']);
+    expect(result.unlockedPieceImages['q1']).toContain('reveal-image-slice-q1.jpg');
   });
 
   it('reveals a real clue from the seeded content and lets a clue-assisted answer through at reduced points', async () => {

@@ -1,12 +1,16 @@
 import { ExperienceStorePort } from '../domain/ports/experience-store.port';
+import { ProgressStorePort } from '../domain/ports/progress-store.port';
 import { TokenService } from '../infrastructure/token.service';
 import { AuthService } from '../infrastructure/auth.service';
 import { StorageService } from '../infrastructure/storage.service';
 import { TokenNotFoundError } from '../domain/errors/domain-errors';
+import { RecipientQuestionView } from '../domain/models/question.model';
+import { toRecipientQuestionView } from '../domain/rules/recipient-view.rules';
 import { ScopedLogger } from '../config/logger';
 
 export interface ResolveShareTokenDeps {
   experienceStore: ExperienceStorePort;
+  progressStore: ProgressStorePort;
   tokenService: TokenService;
   authService: AuthService;
   storageService: StorageService;
@@ -27,7 +31,23 @@ export interface ResolveShareTokenOutput {
     welcomeNote: string;
     status: string;
     lockedPatternImageUrl: string;
+    questions: readonly RecipientQuestionView[];
+    partnerHelpChallenge: string;
   };
+  /**
+   * Signed image URLs for pieces already unlocked in a PRE-EXISTING
+   * `puzzle_progress` document, keyed by `questionId` — empty if the
+   * Recipient has no progress yet (first visit). Without this, a
+   * Recipient who closes the tab mid-game and reopens their link would
+   * see correctly-unlocked tiles (from `ProgressRepositoryPort.watch()`)
+   * with no image to show, because `pieceImageUrl` is otherwise only
+   * ever handed back once, in the `submitAnswer`/`requestPartnerHelpReveal`
+   * response that unlocked it — nothing else re-mints it. Re-signing
+   * here (same deterministic Storage path, `StorageService.getPieceSignedUrl`)
+   * is what makes cross-device/reload resume actually work, matching
+   * `ProgressRepositoryPort`'s own doc comment about why `watch()` exists.
+   */
+  unlockedPieceImages: Readonly<Record<string, string>>;
 }
 
 /**
@@ -61,6 +81,9 @@ export async function resolveShareToken(
 
   const { customToken } = await deps.authService.createExperienceSession(experienceId);
 
+  const existingProgress = await deps.progressStore.getProgress(experienceId);
+  const unlockedPieceImages = await resolveUnlockedPieceImages(deps, experience.creatorId, experienceId, existingProgress);
+
   deps.logger.info('Share token resolved', { experienceId });
 
   return {
@@ -73,6 +96,34 @@ export async function resolveShareToken(
       welcomeNote: experience.welcomeNote,
       status: experience.status,
       lockedPatternImageUrl: deps.storageService.getPublicUrl(experience.lockedPatternImagePath),
+      questions: experience.questions.map(toRecipientQuestionView),
+      partnerHelpChallenge: experience.partnerHelpChallenge,
     },
+    unlockedPieceImages,
   };
+}
+
+async function resolveUnlockedPieceImages(
+  deps: ResolveShareTokenDeps,
+  creatorId: string,
+  experienceId: string,
+  progress: Awaited<ReturnType<ProgressStorePort['getProgress']>>,
+): Promise<Record<string, string>> {
+  if (!progress) {
+    return {};
+  }
+
+  const unlockedQuestionIds = Object.entries(progress.pieces)
+    .filter(([, piece]) => piece.status === 'unlocked')
+    .map(([questionId]) => questionId);
+
+  const entries = await Promise.all(
+    unlockedQuestionIds.map(
+      async (questionId): Promise<[string, string]> => [
+        questionId,
+        await deps.storageService.getPieceSignedUrl(creatorId, experienceId, questionId),
+      ],
+    ),
+  );
+  return Object.fromEntries(entries);
 }

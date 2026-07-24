@@ -3,6 +3,7 @@ import {
   createFakeAuthService,
   createFakeExperienceStore,
   createFakeLogger,
+  createFakeProgressStore,
   createFakeStorageService,
   createFakeTokenService,
 } from './testing/fakes';
@@ -29,6 +30,7 @@ describe('resolveShareToken use-case', () => {
         experienceStore: createFakeExperienceStore({
           exp_test: seedExperience({ status: 'published', shareTokenHash }),
         }),
+        progressStore: createFakeProgressStore(),
         tokenService,
         authService: createFakeAuthService(),
         storageService: createFakeStorageService(),
@@ -47,9 +49,38 @@ describe('resolveShareToken use-case', () => {
     expect(result.publicMeta.occasion).toBe('Anniversary');
     expect(result.publicMeta.welcomeNote).toBe('Welcome!');
     expect(result.publicMeta.lockedPatternImageUrl).toContain('frame-outline.svg');
+    expect(result.publicMeta.partnerHelpChallenge).toBe('Buy me ice cream');
   });
 
-  it('never exposes questions, answers, or the reveal image path in publicMeta', async () => {
+  it('returns an empty unlockedPieceImages map on a first visit (no progress document yet)', async () => {
+    const { rawToken, deps } = buildDeps();
+
+    const result = await resolveShareToken(deps, { shareToken: rawToken });
+
+    expect(result.unlockedPieceImages).toEqual({});
+  });
+
+  it('re-signs image URLs for pieces already unlocked in an existing progress document', async () => {
+    const { rawToken, deps } = buildDeps();
+    await deps.progressStore.initializeIfAbsent('exp_test');
+    await deps.progressStore.resolvePiece({ experienceId: 'exp_test', questionId: 'q2', earnedVia: 'direct', cluesUsed: 0, pointsAwarded: 100 });
+
+    const result = await resolveShareToken(deps, { shareToken: rawToken });
+
+    expect(Object.keys(result.unlockedPieceImages)).toEqual(['q2']);
+    expect(result.unlockedPieceImages['q2']).toContain('slice-q2.jpg');
+  });
+
+  it('includes a prompt-only projection of all 9 questions', async () => {
+    const { rawToken, deps } = buildDeps();
+
+    const result = await resolveShareToken(deps, { shareToken: rawToken });
+
+    expect(result.publicMeta.questions.length).toBe(9);
+    expect(result.publicMeta.questions[0]).toEqual({ questionId: 'q1', prompt: 'Prompt for q1' });
+  });
+
+  it('never exposes correct answers, clues, or the reveal image path in publicMeta', async () => {
     const { rawToken, deps } = buildDeps();
 
     const result = await resolveShareToken(deps, { shareToken: rawToken });

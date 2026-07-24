@@ -1,0 +1,99 @@
+.completion-screen {
+  text-align: center;
+  padding: var(--app-space-6) var(--app-space-4);
+  max-width: 26rem;
+  margin: 0 auto;
+}
+
+.completion-screen__reveal-image {
+  width: 100%;
+  max-width: 20rem;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: var(--app-radius-l);
+  margin: 0 auto var(--app-space-4);
+  box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.35);
+  animation: completion-reveal-in 720ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.completion-screen__stars {
+  font-size: 2rem;
+  color: #f5b942;
+  margin: 0;
+  letter-spacing: 0.35rem;
+  opacity: 0;
+  animation: completion-stars-in 480ms cubic-bezier(0.34, 1.56, 0.64, 1) 480ms both;
+}
+
+.completion-screen__star-label {
+  margin: var(--app-space-2) 0 var(--app-space-1);
+  font-size: 1.5rem;
+  opacity: 0;
+  animation: completion-fade-up 480ms cubic-bezier(0.16, 1, 0.3, 1) 640ms both;
+}
+
+.completion-screen__score {
+  color: var(--ld-mist, #6b6178);
+  margin: 0 0 var(--app-space-4);
+  opacity: 0;
+  animation: completion-fade-up 480ms cubic-bezier(0.16, 1, 0.3, 1) 740ms both;
+}
+
+.completion-screen__message {
+  margin-bottom: var(--app-space-6);
+  text-align: left;
+  opacity: 0;
+  animation: completion-fade-up 480ms cubic-bezier(0.16, 1, 0.3, 1) 840ms both;
+}
+
+.completion-screen__error {
+  color: var(--ld-danger, #c2453d);
+  margin: 0 0 var(--app-space-4);
+}
+
+@keyframes completion-reveal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9) rotate(-2deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes completion-stars-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes completion-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .completion-screen__reveal-image,
+  .completion-screen__stars,
+  .completion-screen__star-label,
+  .completion-screen__score,
+  .completion-screen__message {
+    animation: none;
+    opacity: 1;
+  }
+}
