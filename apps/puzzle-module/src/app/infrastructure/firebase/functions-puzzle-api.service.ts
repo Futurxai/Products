@@ -6,6 +6,7 @@ import {
   CompletionSummaryResult,
   PublishExperienceResult,
   PuzzleApiPort,
+  RecipientLoggableEventName,
   RequestClueResult,
   RequestPartnerHelpRevealResult,
   ResolveShareTokenResult,
@@ -120,6 +121,10 @@ export class FirebaseFunctionsPuzzleApiService implements PuzzleApiPort {
       piecesUnlocked: data.piecesUnlocked,
       piecesRemaining: data.piecesRemaining,
     };
+  }
+
+  async logRecipientEvent(eventName: RecipientLoggableEventName): Promise<void> {
+    await this.callFunction<{ eventName: RecipientLoggableEventName }, Record<string, never>>('logRecipientEvent', { eventName });
   }
 
   async getCompletionSummary(): Promise<CompletionSummaryResult> {

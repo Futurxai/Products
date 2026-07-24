@@ -1,5 +1,6 @@
 import { ExperienceStorePort } from '../domain/ports/experience-store.port';
 import { ProgressStorePort } from '../domain/ports/progress-store.port';
+import { EventLogStorePort } from '../domain/ports/event-log-store.port';
 import { TokenService } from '../infrastructure/token.service';
 import { AuthService } from '../infrastructure/auth.service';
 import { StorageService } from '../infrastructure/storage.service';
@@ -7,10 +8,12 @@ import { TokenNotFoundError } from '../domain/errors/domain-errors';
 import { RecipientQuestionView } from '../domain/models/question.model';
 import { toRecipientQuestionView } from '../domain/rules/recipient-view.rules';
 import { ScopedLogger } from '../config/logger';
+import { logEventSafely } from './analytics';
 
 export interface ResolveShareTokenDeps {
   experienceStore: ExperienceStorePort;
   progressStore: ProgressStorePort;
+  eventLogStore: EventLogStorePort;
   tokenService: TokenService;
   authService: AuthService;
   storageService: StorageService;
@@ -85,6 +88,15 @@ export async function resolveShareToken(
   const unlockedPieceImages = await resolveUnlockedPieceImages(deps, experience.creatorId, experienceId, existingProgress);
 
   deps.logger.info('Share token resolved', { experienceId });
+
+  // Covers both "Puzzle Opened" and "Share Link Opened" — the existing
+  // event model has one name for this moment, not two (see
+  // `domain/models/analytics-event.model.ts`).
+  await logEventSafely(deps.eventLogStore, deps.logger, {
+    eventName: 'recipient.link_opened',
+    experienceId,
+    actorRole: 'recipient',
+  });
 
   return {
     experienceId,

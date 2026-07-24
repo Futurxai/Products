@@ -2,6 +2,17 @@ import { EarnedVia, RecipientQuestionView } from '../models/question.model';
 import { DomainErrorCode } from '../errors/domain-errors';
 
 /**
+ * The two client-observable moments with no corresponding server call to
+ * hang off of (`resolveShareToken`/`submitAnswer`/etc. already log every
+ * other event themselves — see `functions/src/application/analytics.ts`).
+ * Deliberately a closed set, not `AnalyticsEventName` in full: the
+ * `logRecipientEvent` callable's Zod schema (`functions/src/schemas/log-recipient-event.schema.ts`)
+ * only allowlists these two, so a Recipient client can never claim a
+ * consequential event name like `puzzle.completed`.
+ */
+export type RecipientLoggableEventName = 'recipient.welcome_viewed' | 'celebration.viewed';
+
+/**
  * The six server-side operations from
  * docs/puzzle-module/test-data/09-cloud-function-examples.md, as a
  * dependency-inverted port. `infrastructure/firebase/functions-puzzle-api.service.ts`
@@ -149,4 +160,12 @@ export interface PuzzleApiPort {
   requestClue(questionIndex: string): Promise<RequestClueResult>;
   requestPartnerHelpReveal(questionIndex: string): Promise<RequestPartnerHelpRevealResult>;
   getCompletionSummary(): Promise<CompletionSummaryResult>;
+  /**
+   * Analytics is best-effort from the client's point of view: the
+   * underlying Cloud Function never surfaces a logging failure as a
+   * business rejection (see `logEventSafely`), so this resolves once
+   * the call completes and only ever rejects on a genuine infra failure
+   * (offline, etc) — callers fire-and-forget it and swallow that.
+   */
+  logRecipientEvent(eventName: RecipientLoggableEventName): Promise<void>;
 }

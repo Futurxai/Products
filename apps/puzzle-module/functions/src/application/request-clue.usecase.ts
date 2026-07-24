@@ -1,11 +1,14 @@
 import { ExperienceStorePort } from '../domain/ports/experience-store.port';
 import { ProgressStorePort } from '../domain/ports/progress-store.port';
+import { EventLogStorePort } from '../domain/ports/event-log-store.port';
 import { ExperienceNotFoundError, NoCluesRemainingError, QuestionNotFoundError } from '../domain/errors/domain-errors';
 import { ScopedLogger } from '../config/logger';
+import { logEventSafely } from './analytics';
 
 export interface RequestClueDeps {
   experienceStore: ExperienceStorePort;
   progressStore: ProgressStorePort;
+  eventLogStore: EventLogStorePort;
   logger: ScopedLogger;
 }
 
@@ -49,6 +52,13 @@ export async function requestClue(deps: RequestClueDeps, input: RequestClueInput
   }
 
   deps.logger.info('Clue revealed', { experienceId: input.experienceId, questionId: input.questionId, clueNumber });
+
+  await logEventSafely(deps.eventLogStore, deps.logger, {
+    eventName: 'hint.used',
+    experienceId: input.experienceId,
+    actorRole: 'recipient',
+    payload: { questionId: input.questionId, clueNumber },
+  });
 
   return {
     questionId: input.questionId,

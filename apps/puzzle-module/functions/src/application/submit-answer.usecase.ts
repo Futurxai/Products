@@ -1,5 +1,6 @@
 import { ExperienceStorePort } from '../domain/ports/experience-store.port';
 import { ProgressStorePort } from '../domain/ports/progress-store.port';
+import { EventLogStorePort } from '../domain/ports/event-log-store.port';
 import { StorageService } from '../infrastructure/storage.service';
 import { isAnswerCorrect } from '../domain/rules/answer-matching.rules';
 import { pointsForPiece, computeScore } from '../domain/rules/scoring.rules';
@@ -9,10 +10,12 @@ import { EarnedVia } from '../domain/models/question.model';
 import { AlreadyUnlockedError, ExperienceNotFoundError, QuestionNotFoundError, RateLimitedError } from '../domain/errors/domain-errors';
 import { MAX_ANSWER_ATTEMPTS_PER_QUESTION } from '../config/app-config';
 import { ScopedLogger } from '../config/logger';
+import { logEventSafely, maybeLogPuzzleCompleted } from './analytics';
 
 export interface SubmitAnswerDeps {
   experienceStore: ExperienceStorePort;
   progressStore: ProgressStorePort;
+  eventLogStore: EventLogStorePort;
   storageService: StorageService;
   logger: ScopedLogger;
 }
@@ -89,6 +92,12 @@ export async function submitAnswer(deps: SubmitAnswerDeps, input: SubmitAnswerIn
       questionId: input.questionId,
       attemptNumber,
     });
+    await logEventSafely(deps.eventLogStore, deps.logger, {
+      eventName: 'question.answered_incorrect',
+      experienceId: input.experienceId,
+      actorRole: 'recipient',
+      payload: { questionId: input.questionId, attemptNumber },
+    });
     return {
       correct: false,
       questionId: input.questionId,
@@ -124,6 +133,20 @@ export async function submitAnswer(deps: SubmitAnswerDeps, input: SubmitAnswerIn
     earnedVia,
     pointsAwarded,
   });
+
+  await logEventSafely(deps.eventLogStore, deps.logger, {
+    eventName: 'question.answered_correct',
+    experienceId: input.experienceId,
+    actorRole: 'recipient',
+    payload: { questionId: input.questionId, cluesUsed: pieceBefore.cluesUsed },
+  });
+  await logEventSafely(deps.eventLogStore, deps.logger, {
+    eventName: 'piece.unlocked',
+    experienceId: input.experienceId,
+    actorRole: 'recipient',
+    payload: { questionId: input.questionId, earnedVia, pointsAwarded },
+  });
+  await maybeLogPuzzleCompleted(deps.eventLogStore, deps.logger, input.experienceId, updatedProgress);
 
   return {
     correct: true,

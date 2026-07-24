@@ -1,5 +1,5 @@
 import { requestPartnerHelpReveal } from './request-partner-help-reveal.usecase';
-import { createFakeExperienceStore, createFakeLogger, createFakeProgressStore, createFakeStorageService } from './testing/fakes';
+import { createFakeEventLogStore, createFakeExperienceStore, createFakeLogger, createFakeProgressStore, createFakeStorageService } from './testing/fakes';
 import { seedExperience } from './testing/seed-experience';
 import { CluesNotExhaustedError } from '../domain/errors/domain-errors';
 
@@ -8,6 +8,7 @@ describe('requestPartnerHelpReveal use-case', () => {
     return {
       experienceStore: createFakeExperienceStore({ exp_test: seedExperience({ status: 'published' }) }),
       progressStore: createFakeProgressStore(),
+      eventLogStore: createFakeEventLogStore(),
       storageService: createFakeStorageService(),
       logger: createFakeLogger(),
     };
@@ -36,6 +37,10 @@ describe('requestPartnerHelpReveal use-case', () => {
     expect(result.pointsAwarded).toBe(10);
     expect(result.feedbackTier).toBe('teasing_inside_jokes');
     expect(deps.progressStore.docs['exp_test'].pieces['q1'].status).toBe('unlocked');
+    expect(deps.eventLogStore.events).toEqual([
+      { eventName: 'partner_help.resolved', experienceId: 'exp_test', moduleType: 'puzzle', actorRole: 'recipient', payload: { questionId: 'q1', pointsAwarded: 10 } },
+      { eventName: 'piece.unlocked', experienceId: 'exp_test', moduleType: 'puzzle', actorRole: 'recipient', payload: { questionId: 'q1', earnedVia: 'partner_help', pointsAwarded: 10 } },
+    ]);
   });
 
   it('respects a question with fewer than 3 authored clues — unlocks after just those', async () => {
@@ -46,6 +51,7 @@ describe('requestPartnerHelpReveal use-case', () => {
     const deps = {
       experienceStore: createFakeExperienceStore({ exp_test: experience }),
       progressStore: createFakeProgressStore(),
+      eventLogStore: createFakeEventLogStore(),
       storageService: createFakeStorageService(),
       logger: createFakeLogger(),
     };

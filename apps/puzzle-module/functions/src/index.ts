@@ -24,5 +24,6 @@ export { submitAnswerCallable as submitAnswer } from './callable/submit-answer.c
 export { requestClueCallable as requestClue } from './callable/request-clue.callable';
 export { requestPartnerHelpRevealCallable as requestPartnerHelpReveal } from './callable/request-partner-help-reveal.callable';
 export { getCompletionSummaryCallable as getCompletionSummary } from './callable/get-completion-summary.callable';
+export { logRecipientEventCallable as logRecipientEvent } from './callable/log-recipient-event.callable';
 
 export { onRevealImageUploaded } from './triggers/on-reveal-image-uploaded.trigger';

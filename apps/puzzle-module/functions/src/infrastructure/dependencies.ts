@@ -3,6 +3,7 @@ import { getAuth } from 'firebase-admin/auth';
 import { getStorage } from 'firebase-admin/storage';
 import { createExperienceStore } from './firestore-experience.store';
 import { createProgressStore } from './firestore-progress.store';
+import { createEventLogStore } from './firestore-event-log.store';
 import { createStorageService } from './storage.service';
 import { createAuthService } from './auth.service';
 import { createTokenService } from './token.service';
@@ -27,6 +28,7 @@ export function buildDependencies() {
   return {
     experienceStore: createExperienceStore(db),
     progressStore: createProgressStore(db),
+    eventLogStore: createEventLogStore(db),
     storageService: createStorageService(bucket),
     authService: createAuthService(auth),
     tokenService: createTokenService(),

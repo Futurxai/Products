@@ -13,6 +13,7 @@ export const requestClueCallable = defineRecipientCallable({
       {
         experienceStore: deps.experienceStore,
         progressStore: deps.progressStore,
+        eventLogStore: deps.eventLogStore,
         logger: createLogger({ functionName: 'requestClue', experienceId, questionId: input.questionIndex }),
       },
       { experienceId, questionId: input.questionIndex },

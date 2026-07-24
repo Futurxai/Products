@@ -187,6 +187,23 @@ describe('FirebaseFunctionsPuzzleApiService', () => {
     });
   });
 
+  describe('logRecipientEvent', () => {
+    it('calls the logRecipientEvent function with the given event name', async () => {
+      const callFunction = jasmine.createSpy('callFunction').and.resolveTo({});
+      stubCallFunction(callFunction);
+
+      await service.logRecipientEvent('recipient.welcome_viewed');
+
+      expect(callFunction).toHaveBeenCalledWith('logRecipientEvent', { eventName: 'recipient.welcome_viewed' });
+    });
+
+    it('lets a genuine infra/network failure propagate as a rejected promise', async () => {
+      stubCallFunction(jasmine.createSpy('callFunction').and.rejectWith(new Error('functions/unavailable')));
+
+      await expectAsync(service.logRecipientEvent('celebration.viewed')).toBeRejectedWithError('functions/unavailable');
+    });
+  });
+
   describe('getCompletionSummary', () => {
     it('maps a success response, renaming questionId to questionIndex in the breakdown', async () => {
       stubCallFunction(

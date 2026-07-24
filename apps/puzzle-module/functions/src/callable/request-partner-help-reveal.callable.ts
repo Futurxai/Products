@@ -13,6 +13,7 @@ export const requestPartnerHelpRevealCallable = defineRecipientCallable({
       {
         experienceStore: deps.experienceStore,
         progressStore: deps.progressStore,
+        eventLogStore: deps.eventLogStore,
         storageService: deps.storageService,
         logger: createLogger({ functionName: 'requestPartnerHelpReveal', experienceId, questionId: input.questionIndex }),
       },

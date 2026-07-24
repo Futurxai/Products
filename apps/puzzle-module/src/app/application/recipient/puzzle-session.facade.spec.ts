@@ -7,6 +7,7 @@ import {
   CompletionSummaryResult,
   PublishExperienceResult,
   PuzzleApiPort,
+  RecipientLoggableEventName,
   RequestClueResult,
   RequestPartnerHelpRevealResult,
   ResolveShareTokenResult,
@@ -77,6 +78,16 @@ class FakePuzzleApiPort implements PuzzleApiPort {
   async getCompletionSummary(): Promise<CompletionSummaryResult> {
     this.getCompletionSummaryCalls += 1;
     return typeof this.getCompletionSummaryResult === 'function' ? this.getCompletionSummaryResult() : this.getCompletionSummaryResult;
+  }
+
+  logRecipientEventCalls: RecipientLoggableEventName[] = [];
+  logRecipientEventShouldFail = false;
+
+  async logRecipientEvent(eventName: RecipientLoggableEventName): Promise<void> {
+    this.logRecipientEventCalls.push(eventName);
+    if (this.logRecipientEventShouldFail) {
+      throw new Error('functions/unavailable');
+    }
   }
 }
 
@@ -153,6 +164,17 @@ describe('PuzzleSessionFacade', () => {
     expect(facade.publicMeta()).toEqual(SUCCESS.publicMeta);
     expect(recipientSession.signedInWith).toBe('tok_abc');
     expect(facade.errorMessage()).toBeNull();
+    expect(puzzleApi.logRecipientEventCalls).toEqual(['recipient.welcome_viewed']);
+  });
+
+  it('resolveLink still reaches ready even if the fire-and-forget welcome_viewed analytics call itself rejects', async () => {
+    puzzleApi.logRecipientEventShouldFail = true;
+    const facade = createFacade();
+
+    await facade.resolveLink('pzl_abc');
+    await Promise.resolve();
+
+    expect(facade.linkStatus()).toBe('ready');
   });
 
   it('starts watching progress after a successful resolve, and updates the progress signal live', async () => {
@@ -568,6 +590,7 @@ describe('PuzzleSessionFacade', () => {
       expect(facade.isComplete()).toBeTrue();
       expect(puzzleApi.getCompletionSummaryCalls).toBe(1);
       expect(facade.completionSummary()).toEqual(COMPLETION_SUCCESS);
+      expect(puzzleApi.logRecipientEventCalls).toEqual(['recipient.welcome_viewed', 'celebration.viewed']);
 
       // A second, redundant progress emission (e.g. lastUpdatedAt churn) must not re-fetch.
       progressRepository.subjects.get('exp_1')!.next(allUnlockedProgress());
@@ -586,6 +609,7 @@ describe('PuzzleSessionFacade', () => {
 
       expect(facade.completionError()).toBe('2 pieces remaining.');
       expect(facade.completionSummary()).toBeNull();
+      expect(puzzleApi.logRecipientEventCalls).toEqual(['recipient.welcome_viewed']);
     });
 
     it('loadCompletionSummary surfaces a generic message on a genuine infra failure', async () => {

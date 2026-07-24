@@ -1,6 +1,7 @@
 import { resolveShareToken } from './resolve-share-token.usecase';
 import {
   createFakeAuthService,
+  createFakeEventLogStore,
   createFakeExperienceStore,
   createFakeLogger,
   createFakeProgressStore,
@@ -31,6 +32,7 @@ describe('resolveShareToken use-case', () => {
           exp_test: seedExperience({ status: 'published', shareTokenHash }),
         }),
         progressStore: createFakeProgressStore(),
+        eventLogStore: createFakeEventLogStore(),
         tokenService,
         authService: createFakeAuthService(),
         storageService: createFakeStorageService(),
@@ -89,6 +91,16 @@ describe('resolveShareToken use-case', () => {
     expect(serialized).not.toContain('answer-q1');
     expect(serialized).not.toContain('clue1-q1');
     expect(serialized).not.toContain('reveal-image.jpg');
+  });
+
+  it('logs a recipient.link_opened analytics event, covering both "Puzzle Opened" and "Share Link Opened"', async () => {
+    const { rawToken, deps } = buildDeps();
+
+    await resolveShareToken(deps, { shareToken: rawToken });
+
+    expect(deps.eventLogStore.events).toEqual([
+      { eventName: 'recipient.link_opened', experienceId: 'exp_test', moduleType: 'puzzle', actorRole: 'recipient', payload: {} },
+    ]);
   });
 
   it('rejects an unrecognized token', async () => {

@@ -1,5 +1,5 @@
 import { submitAnswer } from './submit-answer.usecase';
-import { createFakeExperienceStore, createFakeLogger, createFakeProgressStore, createFakeStorageService } from './testing/fakes';
+import { createFakeEventLogStore, createFakeExperienceStore, createFakeLogger, createFakeProgressStore, createFakeStorageService } from './testing/fakes';
 import { seedExperience } from './testing/seed-experience';
 import {
   AlreadyUnlockedError,
@@ -13,6 +13,7 @@ describe('submitAnswer use-case', () => {
     return {
       experienceStore: createFakeExperienceStore({ exp_test: seedExperience({ status: 'published' }) }),
       progressStore: createFakeProgressStore(),
+      eventLogStore: createFakeEventLogStore(),
       storageService: createFakeStorageService(),
       logger: createFakeLogger(),
     };
@@ -32,6 +33,10 @@ describe('submitAnswer use-case', () => {
       expect(result.piecesRemaining).toBe(8);
       expect(result.pieceImageUrl).toContain('slice-q1.jpg');
     }
+    expect(deps.eventLogStore.events).toEqual([
+      { eventName: 'question.answered_correct', experienceId: 'exp_test', moduleType: 'puzzle', actorRole: 'recipient', payload: { questionId: 'q1', cluesUsed: 0 } },
+      { eventName: 'piece.unlocked', experienceId: 'exp_test', moduleType: 'puzzle', actorRole: 'recipient', payload: { questionId: 'q1', earnedVia: 'direct', pointsAwarded: 100 } },
+    ]);
   });
 
   it('accepts a case-insensitive, whitespace-trimmed match', async () => {
@@ -59,6 +64,9 @@ describe('submitAnswer use-case', () => {
       expect(result.partnerHelpAvailable).toBeFalse();
     }
     expect(deps.progressStore.docs['exp_test'].pieces['q1'].status).toBe('locked');
+    expect(deps.eventLogStore.events).toEqual([
+      { eventName: 'question.answered_incorrect', experienceId: 'exp_test', moduleType: 'puzzle', actorRole: 'recipient', payload: { questionId: 'q1', attemptNumber: 1 } },
+    ]);
   });
 
   it('awards reduced points when clues were used before the correct answer', async () => {
@@ -89,6 +97,12 @@ describe('submitAnswer use-case', () => {
 
     expect(deps.progressStore.docs['exp_test'].status).toBe('completed');
     expect(deps.progressStore.docs['exp_test'].completedAt).not.toBeNull();
+
+    const completedEvents = deps.eventLogStore.events.filter((e) => e.eventName === 'puzzle.completed');
+    expect(completedEvents.length).toBe(1);
+    expect(completedEvents[0].payload['finalScore']).toBe(900);
+    expect(completedEvents[0].payload['starRating']).toBe(3);
+    expect(typeof completedEvents[0].payload['timeToCompleteMs']).toBe('number');
   });
 
   it('rejects resubmitting an already-unlocked piece', async () => {

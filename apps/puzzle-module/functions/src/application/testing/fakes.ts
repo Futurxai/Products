@@ -1,7 +1,9 @@
 import { ExperienceStorePort } from '../../domain/ports/experience-store.port';
 import { ProgressStorePort } from '../../domain/ports/progress-store.port';
+import { EventLogStorePort } from '../../domain/ports/event-log-store.port';
 import { PuzzleExperience } from '../../domain/models/puzzle-experience.model';
 import { PieceProgress, Progress, lockedPiece } from '../../domain/models/progress.model';
+import { AnalyticsEvent } from '../../domain/models/analytics-event.model';
 import { QUESTION_IDS } from '../../domain/models/constants';
 import { AlreadyUnlockedError, NoCluesRemainingError } from '../../domain/errors/domain-errors';
 import { isExperienceComplete } from '../../domain/rules/lifecycle.rules';
@@ -111,6 +113,16 @@ export function createFakeProgressStore(): ProgressStorePort & { docs: Record<st
       };
       docs[experienceId] = updated;
       return updated;
+    },
+  };
+}
+
+export function createFakeEventLogStore(): EventLogStorePort & { events: Array<Omit<AnalyticsEvent, 'eventId' | 'timestamp'>> } {
+  const events: Array<Omit<AnalyticsEvent, 'eventId' | 'timestamp'>> = [];
+  return {
+    events,
+    async logEvent({ eventName, experienceId, actorRole, payload }) {
+      events.push({ eventName, experienceId, moduleType: 'puzzle', actorRole, payload: payload ?? {} });
     },
   };
 }

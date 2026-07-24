@@ -1,5 +1,5 @@
 import { getCompletionSummary } from './get-completion-summary.usecase';
-import { createFakeExperienceStore, createFakeLogger, createFakeProgressStore, createFakeStorageService } from './testing/fakes';
+import { createFakeEventLogStore, createFakeExperienceStore, createFakeLogger, createFakeProgressStore, createFakeStorageService } from './testing/fakes';
 import { seedExperience } from './testing/seed-experience';
 import { submitAnswer } from './submit-answer.usecase';
 import { ExperienceNotFoundError, NotYetCompletedError } from '../domain/errors/domain-errors';
@@ -28,7 +28,13 @@ describe('getCompletionSummary use-case', () => {
     const deps = buildDeps();
     for (const questionId of QUESTION_IDS) {
       await submitAnswer(
-        { experienceStore: deps.experienceStore, progressStore: deps.progressStore, storageService: deps.storageService, logger: deps.logger },
+        {
+          experienceStore: deps.experienceStore,
+          progressStore: deps.progressStore,
+          eventLogStore: createFakeEventLogStore(),
+          storageService: deps.storageService,
+          logger: deps.logger,
+        },
         { experienceId: 'exp_test', questionId, answer: `answer-${questionId}` },
       );
     }

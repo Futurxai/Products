@@ -13,6 +13,7 @@ export const submitAnswerCallable = defineRecipientCallable({
       {
         experienceStore: deps.experienceStore,
         progressStore: deps.progressStore,
+        eventLogStore: deps.eventLogStore,
         storageService: deps.storageService,
         logger: createLogger({ functionName: 'submitAnswer', experienceId, questionId: input.questionIndex }),
       },

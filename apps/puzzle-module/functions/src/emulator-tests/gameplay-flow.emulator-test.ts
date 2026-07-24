@@ -46,6 +46,8 @@ const { requestClueCallable } = require('../callable/request-clue.callable');
 const { requestPartnerHelpRevealCallable } = require('../callable/request-partner-help-reveal.callable');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { getCompletionSummaryCallable } = require('../callable/get-completion-summary.callable');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { logRecipientEventCallable } = require('../callable/log-recipient-event.callable');
 
 const publishExperience = test.wrap(publishExperienceCallable);
 const resolveShareToken = test.wrap(resolveShareTokenCallable);
@@ -53,6 +55,13 @@ const submitAnswer = test.wrap(submitAnswerCallable);
 const requestClue = test.wrap(requestClueCallable);
 const requestPartnerHelpReveal = test.wrap(requestPartnerHelpRevealCallable);
 const getCompletionSummary = test.wrap(getCompletionSummaryCallable);
+const logRecipientEvent = test.wrap(logRecipientEventCallable);
+
+/** Real `puzzle_events` documents logged for this experience so far, matching an eventName — proves the M5 Phase 1 instrumentation actually lands in Firestore, not just in the fake store the unit tests use. */
+async function eventsFor(experienceId: string, eventName: string): Promise<FirebaseFirestore.DocumentData[]> {
+  const snap = await getFirestore().collection('puzzle_events').where('experienceId', '==', experienceId).where('eventName', '==', eventName).get();
+  return snap.docs.map((doc) => doc.data());
+}
 
 const EXPERIENCE_ID = 'emu_exp_1';
 const CREATOR_UID = 'emu_creator_1';
@@ -151,6 +160,14 @@ describe('Puzzle Module gameplay flow (Firestore + Auth emulators)', () => {
 
     experienceId = result.experienceId;
     recipientAuth = { uid: decoded.uid, token: { experienceId: decoded['experienceId'] } };
+
+    // Confirm the analytics side effect actually landed as a real Firestore
+    // document — puzzle_events is write-only from Cloud Functions, so this
+    // is the only path a client could ever have gotten it written.
+    const events = await eventsFor(experienceId, 'recipient.link_opened');
+    expect(events.length).toBe(1);
+    expect(events[0]['moduleType']).toBe('puzzle');
+    expect(events[0]['actorRole']).toBe('recipient');
   });
 
   it('rejects an unrecognized share token', async () => {
@@ -172,6 +189,16 @@ describe('Puzzle Module gameplay flow (Firestore + Auth emulators)', () => {
     const progressAfter = await getFirestore().collection('puzzle_progress').doc(experienceId).get();
     expect(progressAfter.exists).toBeTrue();
     expect(progressAfter.data()?.['pieces']?.['q1']?.['status']).toBe('unlocked');
+
+    expect((await eventsFor(experienceId, 'question.answered_correct')).length).toBe(1);
+    expect((await eventsFor(experienceId, 'piece.unlocked')).length).toBe(1);
+  });
+
+  it('logs a real question.answered_incorrect event for a wrong attempt, without unlocking anything', async () => {
+    const result = await submitAnswer({ data: { questionIndex: 'q2', answer: 'not-even-close' }, auth: recipientAuth });
+    expect(result).toEqual(jasmine.objectContaining({ ok: true, correct: false }));
+
+    expect((await eventsFor(experienceId, 'question.answered_incorrect')).length).toBe(1);
   });
 
   it('resolveShareToken re-signs an image URL for a piece already unlocked from a prior visit', async () => {
@@ -187,6 +214,8 @@ describe('Puzzle Module gameplay flow (Firestore + Auth emulators)', () => {
 
     const answer = await submitAnswer({ data: { questionIndex: 'q2', answer: 'answer-2' }, auth: recipientAuth });
     expect(answer).toEqual(jasmine.objectContaining({ ok: true, correct: true, earnedVia: 'clue', cluesUsed: 1, pointsAwarded: 75 }));
+
+    expect((await eventsFor(experienceId, 'hint.used')).length).toBe(1);
   });
 
   it('walks q3 through partner-help after exhausting its clues', async () => {
@@ -201,6 +230,8 @@ describe('Puzzle Module gameplay flow (Firestore + Auth emulators)', () => {
 
     const tooEarly = await requestPartnerHelpReveal({ data: { questionIndex: 'q4' }, auth: recipientAuth });
     expect(tooEarly).toEqual(jasmine.objectContaining({ ok: false, error: 'CLUES_NOT_EXHAUSTED' }));
+
+    expect((await eventsFor(experienceId, 'partner_help.resolved')).length).toBe(1);
   });
 
   it('handles a question authored with zero clues — partner-help available immediately', async () => {
@@ -232,6 +263,29 @@ describe('Puzzle Module gameplay flow (Firestore + Auth emulators)', () => {
 
     const progressDoc = await getFirestore().collection('puzzle_progress').doc(experienceId).get();
     expect(progressDoc.data()?.['status']).toBe('completed');
+
+    const completedEvents = await eventsFor(experienceId, 'puzzle.completed');
+    expect(completedEvents.length).toBe(1);
+    expect(completedEvents[0]['payload']['finalScore']).toBe(summary.finalScore);
+    expect(completedEvents[0]['payload']['starRating']).toBe(summary.starRating);
+    expect(typeof completedEvents[0]['payload']['timeToCompleteMs']).toBe('number');
+  });
+
+  it('logRecipientEvent writes a real allowlisted event against the caller\'s own experienceId', async () => {
+    const result = await logRecipientEvent({ data: { eventName: 'celebration.viewed' }, auth: recipientAuth });
+    expect(result).toEqual({ ok: true });
+
+    const events = await eventsFor(experienceId, 'celebration.viewed');
+    expect(events.length).toBe(1);
+    expect(events[0]['actorRole']).toBe('recipient');
+  });
+
+  it('logRecipientEvent rejects an event name outside the allowlist — a Recipient can never claim puzzle.completed', async () => {
+    await expectAsync(
+      logRecipientEvent({ data: { eventName: 'puzzle.completed' }, auth: recipientAuth }),
+    ).toBeRejected();
+
+    expect((await eventsFor(experienceId, 'puzzle.completed')).length).toBe(1); // still just the one from real completion, none spoofed
   });
 
   it('rejects a stale recipient session (wrong experienceId claim) on a fresh call', async () => {

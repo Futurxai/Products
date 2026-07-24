@@ -68,6 +68,9 @@ class FakePuzzleApiPort implements PuzzleApiPort {
   async getCompletionSummary(): Promise<CompletionSummaryResult> {
     throw new Error('not used');
   }
+  async logRecipientEvent(): Promise<void> {
+    throw new Error('not used');
+  }
 }
 
 describe('PublishExperienceFacade', () => {

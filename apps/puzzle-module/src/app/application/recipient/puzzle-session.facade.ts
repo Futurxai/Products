@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 
 import { PieceProgress, Progress, lockedPiece } from '@domain/models/progress.model';
 import { RecipientQuestionView } from '@domain/models/question.model';
-import { CompletionSummarySuccess, ResolveShareTokenSuccess, SubmitAnswerResult } from '@domain/ports/puzzle-api.port';
+import { CompletionSummarySuccess, RecipientLoggableEventName, ResolveShareTokenSuccess, SubmitAnswerResult } from '@domain/ports/puzzle-api.port';
 import { ScoreSummary } from '@domain/models/score.model';
 import { computeScore } from '@domain/rules/scoring.rules';
 import { canRequestPartnerHelp, isExperienceComplete } from '@domain/rules/lifecycle.rules';
@@ -272,6 +272,7 @@ export class PuzzleSessionFacade {
       this._publicMeta.set(result.publicMeta);
       this._pieceImages.set(result.unlockedPieceImages);
       this._linkStatus.set('ready');
+      this.logRecipientEventSafely('recipient.welcome_viewed');
 
       this.progressSubscription = this.progressRepository.watch(result.experienceId).subscribe({
         next: (progress) => this._progress.set(progress),
@@ -423,10 +424,21 @@ export class PuzzleSessionFacade {
         return;
       }
       this._completionSummary.set(result);
+      this.logRecipientEventSafely('celebration.viewed');
     } catch {
       this._completionError.set("Couldn't reach the server. Check your connection and try again.");
     } finally {
       this._loadingCompletion.set(false);
     }
+  }
+
+  /**
+   * Fire-and-forget analytics (M5 Phase 1) — a failure here must never
+   * surface as a UI error or block gameplay; the Cloud Function itself
+   * already treats logging as best-effort (`logEventSafely`), this just
+   * extends the same guarantee across the network hop.
+   */
+  private logRecipientEventSafely(eventName: RecipientLoggableEventName): void {
+    void this.puzzleApi.logRecipientEvent(eventName).catch(() => undefined);
   }
 }

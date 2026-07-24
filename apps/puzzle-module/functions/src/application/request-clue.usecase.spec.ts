@@ -1,5 +1,5 @@
 import { requestClue } from './request-clue.usecase';
-import { createFakeExperienceStore, createFakeLogger, createFakeProgressStore } from './testing/fakes';
+import { createFakeEventLogStore, createFakeExperienceStore, createFakeLogger, createFakeProgressStore } from './testing/fakes';
 import { seedExperience } from './testing/seed-experience';
 import { ExperienceNotFoundError, NoCluesRemainingError, QuestionNotFoundError } from '../domain/errors/domain-errors';
 
@@ -8,6 +8,7 @@ describe('requestClue use-case', () => {
     return {
       experienceStore: createFakeExperienceStore({ exp_test: seedExperience({ status: 'published', ...overrides }) }),
       progressStore: createFakeProgressStore(),
+      eventLogStore: createFakeEventLogStore(),
       logger: createFakeLogger(),
     };
   }
@@ -51,6 +52,7 @@ describe('requestClue use-case', () => {
     const deps = {
       experienceStore: createFakeExperienceStore({ exp_test: experience }),
       progressStore: createFakeProgressStore(),
+      eventLogStore: createFakeEventLogStore(),
       logger: createFakeLogger(),
     };
 
@@ -75,5 +77,14 @@ describe('requestClue use-case', () => {
     await expectAsync(requestClue(deps, { experienceId: 'exp_test', questionId: 'q99' })).toBeRejectedWith(
       jasmine.any(QuestionNotFoundError),
     );
+  });
+
+  it('logs a hint.used analytics event', async () => {
+    const deps = buildDeps();
+    await requestClue(deps, { experienceId: 'exp_test', questionId: 'q1' });
+
+    expect(deps.eventLogStore.events).toEqual([
+      { eventName: 'hint.used', experienceId: 'exp_test', moduleType: 'puzzle', actorRole: 'recipient', payload: { questionId: 'q1', clueNumber: 1 } },
+    ]);
   });
 });
