@@ -18,6 +18,7 @@
     [rows]="rows"
     [maxlength]="maxlength"
     [autoGrow]="true"
+    [attr.aria-required]="required ? 'true' : null"
     [attr.aria-invalid]="errorMessage ? 'true' : null"
     [attr.aria-describedby]="errorMessage ? textareaId + '-error' : hint ? textareaId + '-hint' : null"
     (ionInput)="handleInput($event)"

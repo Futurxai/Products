@@ -39,7 +39,10 @@
   width: 1.75rem;
   height: 1.75rem;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--ld-mist, #6b6178) 16%, transparent);
+  // 10%, not 16% — same marginal AA contrast fix as the neutral badge
+  // (M5 Phase 3): mist-on-mist-tint at 16% reads at 4.40:1, just short
+  // of the 4.5:1 minimum for this circle's step-number text.
+  background: color-mix(in srgb, var(--ld-mist, #6b6178) 10%, transparent);
   font-size: 0.8125rem;
   font-weight: 700;
 }
@@ -61,5 +64,8 @@
 
 .app-stepper__button--current .app-stepper__index {
   background: var(--ld-periwinkle, #7c7fe0);
-  color: #fff;
+  // Was a hardcoded #fff — the same solid-periwinkle-surface contrast
+  // failure as the secondary button (3.52:1 light, 2.48:1 dark). Uses
+  // the same fix (M5 Phase 3).
+  color: var(--ld-periwinkle-btn-ink, #1c1c4c);
 }

@@ -5,6 +5,15 @@
   letter-spacing: 0;
 }
 
+// A `fill="clear"` ion-button (ghost variant) renders its text in
+// `--ion-color-primary` directly, not `-contrast` — that's the bright
+// ember accent, 2.03:1 against the light-theme page background (fails
+// AA). `--ld-ember-on-page` is the token tuned for exactly this "brand
+// color as text, directly on the page" context (M5 Phase 3).
+.app-button--ghost {
+  --color: var(--ld-ember-on-page);
+}
+
 .app-button__spinner {
   width: 1.1em;
   height: 1.1em;

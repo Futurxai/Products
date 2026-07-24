@@ -10,7 +10,10 @@
 }
 
 .app-badge--neutral {
-  background: color-mix(in srgb, var(--ld-mist, #6b6178) 16%, transparent);
+  // 10%, not 16% like the other tones (M5 Phase 3: 16% put light-theme
+  // text at 4.40:1, just short of the 4.5:1 AA minimum, since this is
+  // the one tone using the same color for both the tint and the text).
+  background: color-mix(in srgb, var(--ld-mist, #6b6178) 10%, transparent);
   color: var(--ld-mist, #6b6178);
 }
 

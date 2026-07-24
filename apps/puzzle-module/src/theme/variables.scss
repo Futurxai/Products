@@ -9,32 +9,50 @@
   --ld-twilight: #221831;   // ink / dark ground
   --ld-parchment: #fbf6f5;  // light ground
   --ld-ember: #e8a23d;      // unlock / success / primary
-  --ld-ember-ink: #6b4a12;  // readable text-on-ember for light surfaces
+  /**
+   * M5 Phase 3 (WCAG AA color-contrast audit): darkened from the
+   * original #6b4a12 (3.70:1 against solid --ld-ember — fails the 4.5:1
+   * text minimum) to 4.54:1. Every consumer of this token (primary
+   * button text, the Stepper's completed-step circle, the success
+   * toast, the success badge chip) sits on a solid or tinted ember
+   * surface, so one value serves all of them; text sitting directly on
+   * the PAGE background instead (ghost buttons, the Wizard's "Photo
+   * uploaded" label) deliberately uses `--ld-ember-on-page` below, not
+   * this token — a dark-on-dark failure in dark theme otherwise.
+   */
+  --ld-ember-ink: #5a3e0f;
+  /** Ember-family text placed directly on the page background (ghost buttons, inline confirmations) — distinct from `--ld-ember-ink` because dark theme needs the OPPOSITE polarity here (bright text on a dark page, not dark text on a bright solid-ember surface). */
+  --ld-ember-on-page: #5a3e0f;
   --ld-periwinkle: #7c7fe0; // locked / secondary / informational
+  /** Text for the "info" badge chip only (its one consumer) — a light, low-alpha tint background in both themes, so one dark value works for both. */
   --ld-periwinkle-ink: #35348f;
+  /** Text for a SOLID periwinkle surface (the secondary button) — a separate token from `--ld-periwinkle-ink` because that one is tuned for a barely-tinted chip background, not a fully-saturated button fill; white fails here in both themes (3.52:1 light, 2.48:1 dark). */
+  --ld-periwinkle-btn-ink: #1c1c4c;
   --ld-bramble: #8a3a44;    // incorrect — deliberately not alarm-red
+  /** Text for a SOLID bramble surface (the danger button, the error toast) — white passes in light theme but fails against dark theme's much lighter bramble value (2.39:1), so this token flips polarity per theme below. */
+  --ld-bramble-ink: #ffffff;
   --ld-mist: #6b6178;       // secondary text, light theme
 
   // ---- Ionic color: primary (Ember) ----
   --ion-color-primary: var(--ld-ember);
   --ion-color-primary-rgb: 232, 162, 61;
   --ion-color-primary-contrast: var(--ld-ember-ink);
-  --ion-color-primary-contrast-rgb: 107, 74, 18;
+  --ion-color-primary-contrast-rgb: 90, 62, 15;
   --ion-color-primary-shade: #cc8f36;
   --ion-color-primary-tint: #eaac51;
 
   // ---- Ionic color: secondary (Periwinkle) ----
   --ion-color-secondary: var(--ld-periwinkle);
   --ion-color-secondary-rgb: 124, 127, 224;
-  --ion-color-secondary-contrast: #ffffff;
-  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-contrast: var(--ld-periwinkle-btn-ink);
+  --ion-color-secondary-contrast-rgb: 28, 28, 76;
   --ion-color-secondary-shade: #6d70c5;
   --ion-color-secondary-tint: #898ce6;
 
   // ---- Ionic color: danger (Bramble — muted, never alarm-red) ----
   --ion-color-danger: var(--ld-bramble);
   --ion-color-danger-rgb: 138, 58, 68;
-  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast: var(--ld-bramble-ink);
   --ion-color-danger-contrast-rgb: 255, 255, 255;
   --ion-color-danger-shade: #7a333c;
   --ion-color-danger-tint: #964e57;
@@ -63,12 +81,25 @@
     --ld-parchment: #f4eeec;
     --ld-ember: #f0ae55;
     --ld-ember-ink: #2a1b04;
+    /** Opposite polarity from `--ld-ember-ink` above — dark theme's page background is dark, so ghost-button/inline-confirmation text needs the BRIGHT ember value here, not a dark one (which would be dark-on-dark and unreadable). */
+    --ld-ember-on-page: #f0ae55;
     --ld-periwinkle: #9a9df2;
-    --ld-periwinkle-ink: #14123a;
+    /** Dark theme's "info" badge chip stays dark (a low-alpha tint over a dark page never gets bright) — needs the bright periwinkle value here, unlike light theme's dark ink. Was `#14123a` (1.29:1 against the actual chip background — effectively invisible); fixed to match `--ld-periwinkle`. */
+    --ld-periwinkle-ink: #9a9df2;
+    --ld-periwinkle-btn-ink: #1c1c4c;
     --ld-bramble: #e092a0;
+    /** Opposite polarity from light theme — dark theme's bramble is a light pink, so white button/toast text (fine in light theme) fails here; needs a dark value instead. */
+    --ld-bramble-ink: #4a1015;
     --ld-mist: #afa6bc;
 
     --ion-background-color: var(--ld-twilight);
     --ion-text-color: var(--ld-parchment);
+
+    // `-contrast` itself follows the dark `--ld-*-ink` redefinitions above automatically
+    // (both reference the same custom property); their `-rgb` siblings are Ionic's own
+    // hardcoded-triple convention (used for ripple/focus opacity effects) and don't cascade
+    // the same way, so each one that actually differs between themes needs a dark override too.
+    --ion-color-primary-contrast-rgb: 42, 27, 4;
+    --ion-color-danger-contrast-rgb: 74, 16, 21;
   }
 }

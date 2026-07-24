@@ -33,6 +33,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
       [disabled]="disabled() || loading()"
       [attr.aria-busy]="loading() ? 'true' : null"
       class="app-button"
+      [class.app-button--ghost]="variant() === 'ghost'"
     >
       @if (loading()) {
         <ion-spinner name="crescent" slot="start" aria-hidden="true" class="app-button__spinner"></ion-spinner>

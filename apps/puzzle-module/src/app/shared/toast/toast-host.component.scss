@@ -35,6 +35,11 @@
 
 .app-toast--error {
   background: var(--ld-bramble, #8a3a44);
+  // Inherited `.app-toast { color: #fff; }` fails AA against dark theme's
+  // much-lighter bramble value (2.39:1) — `--ld-bramble-ink` flips
+  // polarity per theme the same way `.app-toast--success` already does
+  // via `--ld-ember-ink` (M5 Phase 3).
+  color: var(--ld-bramble-ink, #ffffff);
 }
 
 .app-toast__text {

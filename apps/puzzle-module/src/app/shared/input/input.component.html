@@ -17,6 +17,7 @@
     [value]="value()"
     [disabled]="isDisabled()"
     [autocomplete]="autocomplete"
+    [attr.aria-required]="required ? 'true' : null"
     [attr.aria-invalid]="errorMessage ? 'true' : null"
     [attr.aria-describedby]="errorMessage ? inputId + '-error' : hint ? inputId + '-hint' : null"
     (ionInput)="handleInput($event)"

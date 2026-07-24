@@ -26,7 +26,10 @@
 .image-upload-step__confirmed-label {
   margin: 0;
   font-weight: 600;
-  color: var(--ld-ember-ink, #6b4a12);
+  // `--ld-ember-on-page`, not `--ld-ember-ink` — this label sits directly
+  // on the page background, not a solid ember surface; `-ink`'s dark
+  // theme value is dark-on-dark here (M5 Phase 3).
+  color: var(--ld-ember-on-page, #5a3e0f);
 }
 
 .image-upload-step__error {
