@@ -191,4 +191,92 @@ describe('Firestore security rules — puzzle_* collections', () => {
       await assertFails(unauthed.firestore().collection('puzzle_progress').doc('exp_1').get());
     });
   });
+
+  describe('puzzle_events (analytics log — M5 Phase 6, previously untested against the real emulator)', () => {
+    it('allows the owning creator to read their own experience\'s events', async () => {
+      await seedPublicExperience('cre_owner', 'exp_1');
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await context.firestore().collection('puzzle_events').doc('evt_1').set({ experienceId: 'exp_1', eventName: 'recipient.link_opened' });
+      });
+
+      const creator = testEnv.authenticatedContext('cre_owner');
+      await assertSucceeds(creator.firestore().collection('puzzle_events').doc('evt_1').get());
+    });
+
+    it('denies a non-owning authenticated user from reading another creator\'s events', async () => {
+      await seedPublicExperience('cre_owner', 'exp_1');
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await context.firestore().collection('puzzle_events').doc('evt_1').set({ experienceId: 'exp_1', eventName: 'recipient.link_opened' });
+      });
+
+      const intruder = testEnv.authenticatedContext('cre_intruder');
+      await assertFails(intruder.firestore().collection('puzzle_events').doc('evt_1').get());
+    });
+
+    it('denies an unauthenticated client entirely', async () => {
+      await seedPublicExperience('cre_owner', 'exp_1');
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await context.firestore().collection('puzzle_events').doc('evt_1').set({ experienceId: 'exp_1', eventName: 'recipient.link_opened' });
+      });
+
+      const unauthed = testEnv.unauthenticatedContext();
+      await assertFails(unauthed.firestore().collection('puzzle_events').doc('evt_1').get());
+    });
+
+    it('never allows a direct client write — puzzle_events is Cloud-Functions-only', async () => {
+      await seedPublicExperience('cre_owner', 'exp_1');
+      const creator = testEnv.authenticatedContext('cre_owner');
+      await assertFails(
+        creator.firestore().collection('puzzle_events').doc('evt_forged').set({ experienceId: 'exp_1', eventName: 'puzzle.completed' }),
+      );
+    });
+  });
+
+  describe('puzzle_creators (M5 Phase 6, previously untested against the real emulator)', () => {
+    it('allows a creator to read and write only their own profile document', async () => {
+      // `context.firestore()` re-runs `useEmulator(...)` every call, which
+      // throws on an already-started instance — capture it once per
+      // context and reuse that reference, never call `.firestore()` a
+      // second time on the same context.
+      const creatorDb = testEnv.authenticatedContext('cre_owner').firestore();
+      await assertSucceeds(creatorDb.collection('puzzle_creators').doc('cre_owner').set({ displayName: 'Ananya' }));
+      await assertSucceeds(creatorDb.collection('puzzle_creators').doc('cre_owner').get());
+    });
+
+    it('denies reading or writing someone else\'s creator profile', async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await context.firestore().collection('puzzle_creators').doc('cre_owner').set({ displayName: 'Ananya' });
+      });
+
+      const intruderDb = testEnv.authenticatedContext('cre_intruder').firestore();
+      await assertFails(intruderDb.collection('puzzle_creators').doc('cre_owner').get());
+      await assertFails(intruderDb.collection('puzzle_creators').doc('cre_owner').set({ displayName: 'Hacked' }));
+    });
+  });
+
+  describe('Business Rule #10 — editing is blocked once a recipient has started (M5 Phase 6, previously untested against the real emulator)', () => {
+    it('allows the owning creator to update a draft experience with no progress document yet', async () => {
+      await seedPublicExperience('cre_owner', 'exp_1');
+      const creator = testEnv.authenticatedContext('cre_owner');
+      await assertSucceeds(creator.firestore().collection('puzzle_experiences').doc('exp_1').update({ occasion: 'Updated' }));
+    });
+
+    it('rejects a non-status-field update once a puzzle_progress document exists for the experience, even from the owning creator', async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const db = context.firestore();
+        await db.collection('puzzle_experiences').doc('exp_1').set({
+          creatorId: 'cre_owner',
+          occasion: 'Anniversary',
+          status: 'published',
+          publishedAt: new Date(),
+          completedAt: null,
+          archivedAt: null,
+        });
+        await db.collection('puzzle_progress').doc('exp_1').set({ status: 'in_progress' });
+      });
+
+      const creator = testEnv.authenticatedContext('cre_owner');
+      await assertFails(creator.firestore().collection('puzzle_experiences').doc('exp_1').update({ occasion: 'Trying to sneak an edit in' }));
+    });
+  });
 });
