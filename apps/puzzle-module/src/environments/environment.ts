@@ -12,8 +12,8 @@
 // nothing here should be mistaken for a working credential. Pull the
 // real config from Firebase Console → lovedigitally-app → Project
 // Settings → your app, and set it via CI/build-time replacement (see
-// apps/puzzle-module/README.md) rather than hand-editing this file with
-// production values.
+// apps/puzzle-module/DEPLOYMENT.md's Environment Verification section)
+// rather than hand-editing this file with production values.
 import { Environment } from './environment.type';
 
 export const environment: Environment = {
