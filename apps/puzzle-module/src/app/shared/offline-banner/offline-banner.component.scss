@@ -1,0 +1,12 @@
+// Deliberately normal document flow, not `position: fixed` — it's mounted
+// as the first child of `ion-app`, ahead of `ion-router-outlet`, so it
+// pushes every page's own `ion-header` down by its own height instead of
+// floating on top of it and covering the page's title bar.
+.app-offline-banner {
+  padding: calc(var(--app-space-2) + env(safe-area-inset-top, 0px)) var(--app-space-4) var(--app-space-2);
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: var(--ld-bramble, #8a3a44);
+  color: var(--ld-bramble-ink, #ffffff);
+}

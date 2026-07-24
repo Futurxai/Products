@@ -50,8 +50,16 @@ export class FirebaseFunctionsPuzzleApiService implements PuzzleApiPort {
   // and can't be `spyOn`'d directly; tests replace this one property
   // instead of standing up the whole SDK (same pattern as
   // `storage-upload.service.ts`'s `fetchBlob`).
+  //
+  // `timeout: 20000` (M5 Phase 5, error recovery) — Firebase's own
+  // default is 70 seconds, which for a gameplay action the Recipient is
+  // actively watching a spinner for is far too long to leave someone
+  // wondering whether anything is happening before the generic "couldn't
+  // reach the server" message ever appears. 20s is still generous for a
+  // slow mobile connection hitting a Firestore-transaction-backed
+  // callable, just not silent-for-a-minute generous.
   private callFunction = <TRequest, TResponse>(name: string, payload: TRequest): Promise<TResponse> =>
-    httpsCallable<TRequest, TResponse>(this.functions, name)(payload).then((response) => response.data);
+    httpsCallable<TRequest, TResponse>(this.functions, name, { timeout: 20000 })(payload).then((response) => response.data);
 
   async publishExperience(experienceId: string): Promise<PublishExperienceResult> {
     return this.callFunction<{ experienceId: string }, PublishExperienceResult>('publishExperience', { experienceId });
