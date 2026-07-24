@@ -1,6 +1,6 @@
 <div class="completion-screen">
   @if (previewFacade.boardImageUrl(); as imageUrl) {
-    <img [src]="imageUrl" alt="The fully revealed photo" class="completion-screen__reveal-image" />
+    <img [src]="imageUrl" alt="The fully revealed photo" class="completion-screen__reveal-image" decoding="async" />
   } @else {
     <div class="completion-screen__reveal-placeholder" aria-hidden="true"></div>
   }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 
 import { PuzzleSessionFacade } from '@application/recipient/puzzle-session.facade';
 import { QUESTION_IDS } from '@domain/models/constants';
@@ -38,6 +38,18 @@ import { ProgressBarComponent } from '@shared/progress-bar/progress-bar.componen
 export class PuzzleBoardComponent {
   protected readonly sessionFacade = inject(PuzzleSessionFacade);
   protected readonly questionIds = QUESTION_IDS;
+
+  /**
+   * Hoisted out of the template (M5 Phase 2 perf pass) — the same one
+   * value backs up to 9 locked tiles; reading `publicMeta()` and
+   * re-concatenating the `url(...)` string separately per tile, per
+   * change-detection run, was wasted work for a value that never
+   * differs between tiles.
+   */
+  protected readonly lockedPatternStyle = computed(() => {
+    const url = this.sessionFacade.publicMeta()?.lockedPatternImageUrl;
+    return url ? `url(${url})` : null;
+  });
 
   protected isUnlocked(questionId: string): boolean {
     return this.sessionFacade.pieceFor(questionId).status === 'unlocked';

@@ -33,6 +33,13 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .completion-screen__reveal-image {
+    animation: none;
+    opacity: 1;
+  }
+}
+
 .completion-screen__stars {
   font-size: 2rem;
   color: #f5b942;

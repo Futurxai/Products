@@ -14,7 +14,7 @@ export type AvatarSize = 'sm' | 'md' | 'lg';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (imageUrl()) {
-      <img class="app-avatar" [src]="imageUrl()" [alt]="name()" [style.width.px]="pixelSize()" [style.height.px]="pixelSize()" />
+      <img class="app-avatar" [src]="imageUrl()" [alt]="name()" [style.width.px]="pixelSize()" [style.height.px]="pixelSize()" loading="lazy" decoding="async" />
     } @else {
       <span
         class="app-avatar app-avatar--initials"

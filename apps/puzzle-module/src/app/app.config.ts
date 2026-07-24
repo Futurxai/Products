@@ -1,6 +1,7 @@
 import { ApplicationConfig, isDevMode } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideIonicAngular } from '@ionic/angular/standalone';
+import { provideServiceWorker } from '@angular/service-worker';
 
 import { getApp, initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth, connectAuthEmulator } from '@angular/fire/auth';
@@ -93,5 +94,15 @@ export const appConfig: ApplicationConfig = {
     { provide: PUZZLE_API_PORT, useClass: FirebaseFunctionsPuzzleApiService },
     { provide: RECIPIENT_SESSION_PORT, useClass: FirebaseRecipientSessionService },
     { provide: PROGRESS_REPOSITORY_PORT, useClass: FirestoreProgressRepository },
+
+    // Registered only in a real production build (`enabled: !isDevMode()`) — the emulator/dev
+    // workflow above must never be served stale, service-worker-cached responses.
+    // `registerWhenStable:30000` defers registration until the app is idle (or 30s pass,
+    // whichever first) so the service worker never competes with the Recipient's first paint
+    // for network/CPU on a low-end device.
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
   ],
 };

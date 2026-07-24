@@ -82,6 +82,17 @@ export class FirestoreExperienceRepository implements ExperienceRepositoryPort {
     );
   }
 
+  /**
+   * Public-doc-only, deliberately — `CreatorDashboardFacade` (its one
+   * caller) and `ExperienceCardComponent` only ever read
+   * `occasion`/`recipientDisplayName`/`status`/`createdAt`/`publishedAt`/`completedAt`,
+   * all public fields (M5 Phase 2 perf pass: this used to also fetch
+   * every result's `puzzle_experiences_private` doc — an N+1 read the
+   * Dashboard never used, since `puzzle_experiences_private` only holds
+   * Wizard-editing fields like `questions`/`completionMessage` that no
+   * list view needs). `getById` below still joins both docs — that one
+   * backs the Wizard, which genuinely needs the private fields.
+   */
   async listByCreator(creatorId: string): Promise<readonly PuzzleExperience[]> {
     const publicQuery = query(
       collection(this.firestore, EXPERIENCES),
@@ -90,18 +101,7 @@ export class FirestoreExperienceRepository implements ExperienceRepositoryPort {
     );
     const publicSnaps = await getDocs(publicQuery);
 
-    const privateSnaps = await Promise.all(
-      publicSnaps.docs.map((snap) => getDoc(doc(this.firestore, EXPERIENCES_PRIVATE, snap.id))),
-    );
-
-    return publicSnaps.docs.map((publicSnap, index) => {
-      const privateSnap = privateSnaps[index];
-      return fromDocs(
-        publicSnap.id,
-        publicSnap.data() as PublicDoc,
-        privateSnap.exists() ? (privateSnap.data() as PrivateDoc) : null,
-      );
-    });
+    return publicSnaps.docs.map((publicSnap) => fromDocs(publicSnap.id, publicSnap.data() as PublicDoc, null));
   }
 
   async create(experience: PuzzleExperience): Promise<void> {

@@ -7,14 +7,14 @@
         [attr.aria-label]="'Piece ' + (i + 1) + ' unlocked'"
       >
         @if (sessionFacade.pieceImageFor(questionId); as imageUrl) {
-          <img [src]="imageUrl" alt="" class="puzzle-board__piece-image" />
+          <img [src]="imageUrl" alt="" class="puzzle-board__piece-image" loading="lazy" decoding="async" />
         }
       </div>
     } @else {
       <button
         type="button"
         class="puzzle-board__tile puzzle-board__tile--locked"
-        [style.background-image]="'url(' + sessionFacade.publicMeta()?.lockedPatternImageUrl + ')'"
+        [style.background-image]="lockedPatternStyle()"
         (click)="onTileClick(questionId)"
         [attr.aria-label]="'Piece ' + (i + 1) + ', locked. Open question.'"
       >

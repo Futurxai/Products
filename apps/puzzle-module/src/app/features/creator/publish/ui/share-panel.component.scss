@@ -44,6 +44,13 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .share-panel__success {
+    animation: none;
+    opacity: 1;
+  }
+}
+
 .share-panel__link {
   font-family: monospace;
   word-break: break-all;

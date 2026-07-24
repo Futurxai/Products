@@ -9,7 +9,7 @@
   } @else if (previewUrl() || wizardFacade.draft()?.revealImagePath) {
     <div class="image-upload-step__confirmed">
       @if (previewUrl()) {
-        <img class="image-upload-step__preview" [src]="previewUrl()" alt="Your cropped reveal photo" />
+        <img class="image-upload-step__preview" [src]="previewUrl()" alt="Your cropped reveal photo" decoding="async" />
       }
       <p class="image-upload-step__confirmed-label">Photo uploaded &#10003;</p>
       <app-button variant="secondary" [loading]="wizardFacade.imageUploading()" (click)="replacePhoto()">Replace photo</app-button>

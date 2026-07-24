@@ -3,7 +3,7 @@
     <app-loader label="Revealing your photo..."></app-loader>
   } @else {
     @if (sessionFacade.completionSummary(); as summary) {
-      <img [src]="summary.finalRevealImageUrl" alt="The fully revealed photo" class="completion-screen__reveal-image" />
+      <img [src]="summary.finalRevealImageUrl" alt="The fully revealed photo" class="completion-screen__reveal-image" loading="eager" decoding="async" fetchpriority="high" />
 
       <p class="completion-screen__stars" aria-hidden="true">{{ starDisplay() }}</p>
       <h1 class="completion-screen__star-label">{{ summary.starLabel }}</h1>
