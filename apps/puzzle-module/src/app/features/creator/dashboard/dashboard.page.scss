@@ -5,6 +5,21 @@
   --padding-bottom: var(--app-space-8);
 }
 
+// M5 Phase 4: every top-level section caps and centers itself, same
+// pattern as `wizard.page.scss`/`publish.page.scss` — without it, on a
+// desktop-width viewport this page's `ion-content` padding is the only
+// thing between the content and the full window width, and the welcome
+// header/error/summary card would stretch edge-to-edge. Wider than the
+// Wizard's single-column 34rem since the card grids below genuinely
+// benefit from the extra room to show more than one column.
+.dashboard-page__welcome,
+.dashboard-page__error,
+.dashboard-page__summary,
+.dashboard-page__section {
+  max-width: 64rem;
+  margin-inline: auto;
+}
+
 .dashboard-page__welcome {
   margin-bottom: var(--app-space-6);
 

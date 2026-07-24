@@ -4,7 +4,7 @@ Ionic Angular (standalone components + Signals) PWA for the Love Digitally Puzzl
 
 ## Status
 
-**M5 Phase 3 — Accessibility complete.** M0 (scaffold/CI), M1 (domain layer), M2 (all 6 Cloud Functions + image-slice trigger), M3 (all five Creator UI features), M4 (all seven Recipient Experience phases), M5 Phase 1 (analytics instrumentation), M5 Phase 2 (performance optimization), and M5 Phase 3 (WCAG 2.1 AA review across the whole app) are done and fully validated. Next: M5 Phase 4 — Responsive Design.
+**M5 Phase 4 — Responsive Design complete.** M0 (scaffold/CI), M1 (domain layer), M2 (all 6 Cloud Functions + image-slice trigger), M3 (all five Creator UI features), M4 (all seven Recipient Experience phases), M5 Phase 1 (analytics instrumentation), M5 Phase 2 (performance optimization), M5 Phase 3 (WCAG 2.1 AA review), and M5 Phase 4 (responsive layout validation across phone/tablet/desktop/landscape) are done and fully validated. Next: M5 Phase 5 — Error Recovery.
 
 Note on numbering: earlier in-repo comments referred to the Recipient milestone as "M5"/"M6" before the Recipient build was scoped in detail — this doc, and all Recipient-facing code comments, now use the milestone's actual name, **M4**.
 
@@ -96,6 +96,14 @@ WCAG 2.1 AA review across the whole app — M4's own accessibility pass (Phase 8
 - **Focus management**: `ModalComponent` (the Question modal's base) relies on `ion-modal`'s own `focusTrap`/`keyboardClose`, on by default and never disabled — verified, not re-implemented.
 - **Reduced motion**: closed in Phase 2 alongside the animation-performance pass (two components were missing the `prefers-reduced-motion` override every other animated component already had) — see above, not repeated here.
 - **Touch target sizing**: reviewed for any control meaningfully under a comfortable tap size — the smallest real targets are Ionic's own default button height (~36–40px) and the Stepper's 4rem-wide/multi-line tap area (the visible step-index circle is smaller, but it's not the tap target — the whole button around it is). Nothing found small enough to be a genuine problem; no changes made here.
+
+### Responsive Design (M5, Phase 4)
+
+- **The Recipient flow was already solid.** Every content area (Welcome, the Puzzle Board's 3×3 grid, the Question modal, both Completion screens) already self-caps at a sensible `max-width` (24–32rem) and centers itself — built that way from M4, not new. Verified, not re-fixed: on a desktop-width viewport these stay a comfortable card-like column rather than stretching to fill the window; on a 320px phone they use the full width with no fixed-pixel elements to overflow.
+- **The one real gap: the Creator Dashboard had no page-level width cap at all.** Every other Creator page (Wizard, Publish, Auth) already caps its content per-section, matching the pattern above — the Dashboard was the one page state built before that convention was established. On a desktop browser it would stretch its welcome header, analytics summary, and puzzle-card grids edge-to-edge. Fixed with the same per-section `max-width`/`margin-inline: auto` pattern already used elsewhere, sized at 64rem (wider than the single-column pages, since the Dashboard's card grids — already `grid-template-columns: repeat(auto-fit/auto-fill, minmax(...))`, genuinely responsive — benefit from the room to show multiple columns instead of one). Verified visually: rebuilt the app, extracted the real compiled (Angular-view-encapsulation-scoped) CSS for this page, and rendered it standalone at both a 1440px and a 390px viewport — confirmed the fix produces an actual multi-column, centered layout on desktop and an unchanged single-column mobile layout, not just a plausible-looking diff.
+- **Preview page** intro text and error state were unconstrained too (a minor readability nit, not a broken layout — they sit directly above the already-capped board) — tightened to match the board's own 24rem cap for consistency.
+- **Landscape orientation**: audited every stylesheet for `100vh` usage — the classic mobile-landscape failure mode, where a fixed full-viewport-height value gets clipped by browser chrome that only appears/disappears on scroll. None found anywhere in the app; layouts use `min-height`/`aspect-ratio`/content-driven sizing throughout, which isn't affected by browser chrome changes.
+- **Narrow phones**: audited the Wizard's most content-dense screen (Step 4, up to 9 questions × 3 clues each) for fixed-pixel widths or `white-space: nowrap` that could overflow on a 320px-wide device (e.g. iPhone SE) — everything is `flex: 1`/fluid; nothing found to fix.
 
 ## Firebase project
 

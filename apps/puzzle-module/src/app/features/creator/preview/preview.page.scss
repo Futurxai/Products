@@ -7,10 +7,13 @@
 .preview-page__intro {
   text-align: center;
   color: var(--ld-mist, #6b6178);
-  margin: 0 0 var(--app-space-4);
+  margin: 0 auto var(--app-space-4);
+  max-width: 24rem;
 }
 
 .preview-page__error {
   padding: var(--app-space-6);
   text-align: center;
+  max-width: 24rem;
+  margin: 0 auto;
 }
