@@ -8,6 +8,7 @@
     "start": "ng serve",
     "build": "ng build",
     "build:prod": "ng build --configuration production",
+    "build:deploy": "node scripts/apply-prod-env.mjs && ng build --configuration production && git checkout -- src/environments/environment.prod.ts",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --watch=false --browsers=ChromeHeadlessCI",
     "test:watch": "ng test",

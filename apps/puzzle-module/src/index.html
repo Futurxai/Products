@@ -4,7 +4,11 @@
     <meta charset="utf-8" />
     <title>Love Digitally — Puzzle</title>
     <base href="/" />
-    <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <!-- `user-scalable=no`/`maximum-scale=1.0` were removed (Final Pre-Launch Lighthouse audit) —
+         disabling pinch-zoom blocks low-vision users from resizing content, a direct WCAG 2.1 AA
+         violation (1.4.4 Resize Text) this app otherwise holds itself to (see README's Accessibility
+         section). The "feels more native" argument for locking zoom doesn't outweigh that. -->
+    <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
     <meta name="theme-color" content="#221831" media="(prefers-color-scheme: dark)" />
