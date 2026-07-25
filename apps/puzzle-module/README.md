@@ -2,6 +2,8 @@
 
 Ionic Angular (standalone components + Signals) PWA for the Love Digitally Puzzle Module. See `docs/puzzle-module/` at the repo root for the full PRD, Module Contract, Phase 4 UI/UX spec, and Phase 5/6 architecture and roadmap this app implements.
 
+**New to this codebase? Start with `ONBOARDING.md`** — setup, project structure, coding standards, and the local-development gotchas worth knowing up front.
+
 ## Status
 
 **M5 Phase 7 — Production Readiness complete. M5 is fully complete.** M0 (scaffold/CI), M1 (domain layer), M2 (all 6 Cloud Functions + image-slice trigger), M3 (all five Creator UI features), M4 (all seven Recipient Experience phases), and M5 (Analytics, Performance, Accessibility, Responsive Design, Error Recovery, Security Review, and Production Readiness) are done and fully validated. See `DEPLOYMENT.md` for the deployment guide and release checklist, and `RELEASE-NOTES-v1.0.0.md` for the v1.0.0 release summary.
