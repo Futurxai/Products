@@ -9,6 +9,7 @@ import {
   getDocs,
   orderBy,
   query,
+  setDoc,
   where,
   writeBatch,
 } from '@angular/fire/firestore';
@@ -104,11 +105,25 @@ export class FirestoreExperienceRepository implements ExperienceRepositoryPort {
     return publicSnaps.docs.map((publicSnap) => fromDocs(publicSnap.id, publicSnap.data() as PublicDoc, null));
   }
 
+  /**
+   * Deliberately two sequential writes, not one atomic batch — the
+   * `puzzle_experiences_private` create rule (`firestore.rules`)
+   * establishes ownership via `get()` on the *public* doc, so that doc
+   * must already exist and be committed before the private write is
+   * even evaluated. A batch evaluates both ops against the
+   * pre-batch database state, so the private write's `get()` would see
+   * no public doc yet and always deny — caught by this app's own
+   * end-to-end UAT (`e2e/creator-to-recipient.spec.ts`) driving the
+   * real UI against real Firestore Rules, a path unit tests (mocked
+   * repository) and the Cloud Functions emulator tests (Admin SDK,
+   * bypasses rules) never exercised. Losing batch atomicity here is an
+   * acceptable trade: the worst case is an orphaned public draft with
+   * no private doc yet if the second write fails, which `getById`
+   * already tolerates (`privateSnap.exists() ? ... : null`).
+   */
   async create(experience: PuzzleExperience): Promise<void> {
-    const batch = writeBatch(this.firestore);
-    batch.set(doc(this.firestore, EXPERIENCES, experience.experienceId), toPublicDoc(experience));
-    batch.set(doc(this.firestore, EXPERIENCES_PRIVATE, experience.experienceId), toPrivateDocForCreate(experience));
-    await batch.commit();
+    await setDoc(doc(this.firestore, EXPERIENCES, experience.experienceId), toPublicDoc(experience));
+    await setDoc(doc(this.firestore, EXPERIENCES_PRIVATE, experience.experienceId), toPrivateDocForCreate(experience));
   }
 
   async update(experienceId: string, changes: Partial<PuzzleExperience>): Promise<void> {

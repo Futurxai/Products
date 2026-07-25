@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { PuzzleSessionFacade } from '@application/recipient/puzzle-session.facade';
 import { MAX_CLUES_PER_QUESTION } from '@domain/models/constants';
@@ -29,7 +29,16 @@ import { ModalComponent } from '@shared/modal/modal.component';
 @Component({
   selector: 'app-question-modal',
   standalone: true,
-  imports: [ReactiveFormsModule, ModalComponent, ButtonComponent, InputComponent, BadgeComponent],
+  // `FormsModule` is required here even though the answer field itself is
+  // bound via `[formControl]` (ReactiveFormsModule) — the plain
+  // `<form (ngSubmit)="onSubmit()">` below has no `[formGroup]`, so it's
+  // `FormsModule`'s `NgForm` directive (selector `form:not([formGroup])`)
+  // that actually listens for the native `submit` event and emits
+  // `ngSubmit`. Without it, `(ngSubmit)` binds to nothing and silently
+  // never fires for a real click/Enter — caught by the end-to-end UAT
+  // (`e2e/creator-to-recipient.spec.ts`), since the Karma spec calls
+  // `onSubmit()` directly and never exercises the DOM event at all.
+  imports: [FormsModule, ReactiveFormsModule, ModalComponent, ButtonComponent, InputComponent, BadgeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './question-modal.component.html',
   styleUrl: './question-modal.component.scss',

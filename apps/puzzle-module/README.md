@@ -176,6 +176,7 @@ npm run build:watch
 | `npm run test:watch` | Unit tests, watch mode |
 | `npm run lint` | ESLint (includes the Clean Architecture import-boundary rule) |
 | `npm run firebase:emulators` | Local Auth/Firestore/Storage/Functions/Hosting emulators |
+| `npm run test:e2e` | End-to-end UAT (Playwright) — see below |
 | `npm run cap:sync` | Capacitor sync — inert until native builds are scheduled post-MVP |
 
 ## Architecture at a glance
@@ -203,6 +204,21 @@ Each layer's own `README.md` explains what belongs there and why. Full detail in
 ## CI
 
 `.github/workflows/puzzle-module-ci.yml` (repo root) lints, builds, and tests both this app and `functions/` — including `functions/`'s real emulator test suite, not just its mocked unit tests — on any push/PR touching `apps/puzzle-module/**` or the shared `lovedigitally-web/firestore.rules` / `storage.rules`. It's scoped by path so it never runs against unrelated changes elsewhere in this monorepo.
+
+Not run in CI (deliberately — it needs a real Chromium binary and takes ~45s of real browser automation, not a fit for every push): the end-to-end UAT below. Run it locally before a release instead (see `DEPLOYMENT.md`'s Release Checklist).
+
+## End-to-End UAT
+
+`e2e/creator-to-recipient.spec.ts` (Playwright) drives the real browser UI — not the API directly — through the full product loop against real Firebase emulators (Auth, Firestore, Storage, Functions): a Creator signs up, authors a 9-question puzzle (image upload + crop, recipient details, questions with clues, completion details), publishes it, and a fresh unauthenticated browser context opens the resulting share link as the Recipient and plays through all 9 questions — including a wrong-answer-then-clue path and a wrong-answer-then-partner-help path — reaching the final reveal screen with the exact expected score (785/900, 2 stars).
+
+Run it: `npm run test:e2e` (builds `functions/`, generates a throwaway local signing key so `submitAnswer`'s signed piece-image URLs work against the emulator — see `functions/scripts/generate-fake-service-account.mjs` — starts the emulator suite via `firebase emulators:exec`, and runs the spec against `ng serve` underneath it, all wired together by the npm script).
+
+**Two real, production-blocking bugs were found and fixed by this suite** — both previously invisible because the Karma unit tests for the affected components called `onSubmit()` as a direct method call, never exercising the DOM at all:
+
+1. **`question-modal.component.ts`** (both the Recipient's real one and the Creator's Preview twin) were missing `FormsModule` in their `@Component.imports`. Their `<form (ngSubmit)="onSubmit()">` has no `[formGroup]` (the answer field is a standalone `[formControl]`, not part of a `FormGroup`), so it's `FormsModule`'s `NgForm` directive — not `ReactiveFormsModule`, which was the only forms module imported — that actually listens for the native `submit` event and emits `ngSubmit`. Without it, clicking "Submit answer" (or pressing Enter) silently did nothing, for every real user, forever — the single most central interaction in the Recipient experience was completely non-functional. Fixed by adding `FormsModule` to both components' imports. Both Karma specs gained a regression-guard test that dispatches a real DOM `submit` event (not a direct `onSubmit()` call) to make sure this can't silently break again.
+2. **`FirestoreExperienceRepository.create()`** wrote a brand-new draft's public (`puzzle_experiences`) and private (`puzzle_experiences_private`) documents in one atomic `writeBatch`. The private doc's Firestore Rules `create` check reads the public doc via `get()` to establish ownership — but within one atomic batch, both writes are evaluated against the pre-batch database state, so the public doc doesn't exist yet when the private doc's rule runs, and the whole batch was denied. Every real Creator, authenticated against real Firestore Rules, would have hit a permission-denied error the instant they clicked "Create New Puzzle" — the wizard could never even start. Fixed by splitting `create()` into two sequential `setDoc` calls (public doc first, awaited, then private) instead of one batch; documented as a deliberate atomicity trade-off in the code.
+
+Neither bug was reachable by this project's other test layers: the Cloud Functions emulator tests use the Admin SDK, which bypasses Firestore Rules entirely, and the Karma specs mock the repository/facade layer, never touching a real `<form>` or real Rules. This is exactly the gap end-to-end testing exists to close.
 
 ## Deploying (not yet done from this session)
 

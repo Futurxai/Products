@@ -13,8 +13,8 @@
     "test": "ng test --watch=false --browsers=ChromeHeadlessCI",
     "test:watch": "ng test",
     "lint": "ng lint",
-    "pretest:e2e": "cd functions && npm run build",
-    "test:e2e": "firebase emulators:exec --project lovedigitally-app --only auth,firestore,storage,functions \"npx playwright test\"",
+    "pretest:e2e": "cd functions && npm run build && node scripts/generate-fake-service-account.mjs",
+    "test:e2e": "GOOGLE_APPLICATION_CREDENTIALS=\"$(pwd)/functions/.emulator-fixtures/fake-service-account.json\" firebase emulators:exec --project lovedigitally-app --only auth,firestore,storage,functions \"npx playwright test\"",
     "firebase:emulators": "firebase emulators:start --project lovedigitally-app",
     "cap:sync": "ionic cap sync"
   },

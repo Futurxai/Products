@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { PuzzlePreviewFacade } from '@application/creator/puzzle-preview.facade';
 import { BadgeComponent } from '@shared/badge/badge.component';
@@ -25,7 +25,15 @@ import { ModalComponent } from '@shared/modal/modal.component';
 @Component({
   selector: 'app-question-modal',
   standalone: true,
-  imports: [ReactiveFormsModule, ModalComponent, ButtonComponent, InputComponent, BadgeComponent],
+  // `FormsModule` is required — the plain `<form (ngSubmit)="onSubmit()">`
+  // below has no `[formGroup]`, so it's `FormsModule`'s `NgForm` directive
+  // (selector `form:not([formGroup])`) that listens for the native
+  // `submit` event and emits `ngSubmit`; without it, `(ngSubmit)` binds to
+  // nothing. Same bug as the Recipient's real `question-modal.component.ts`
+  // (this one's structural twin), found via that one's end-to-end UAT
+  // (`e2e/creator-to-recipient.spec.ts`) and fixed here too since the cause
+  // is identical.
+  imports: [FormsModule, ReactiveFormsModule, ModalComponent, ButtonComponent, InputComponent, BadgeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './question-modal.component.html',
   styleUrl: './question-modal.component.scss',

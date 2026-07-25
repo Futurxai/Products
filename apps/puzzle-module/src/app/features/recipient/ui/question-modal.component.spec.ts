@@ -110,6 +110,17 @@ describe('QuestionModalComponent', () => {
     expect(submitAnswer).toHaveBeenCalledWith('Fishermans Wharf');
   });
 
+  it('reaches onSubmit from a real DOM submit event, not just a direct method call (regression: a missing FormsModule import made (ngSubmit) silently never fire for a real click/Enter, even though this exact suite was green)', () => {
+    fixture.componentInstance['answerControl'].setValue('Fishermans Wharf');
+
+    const form = (fixture.nativeElement as HTMLElement).querySelector('form');
+    expect(form).withContext('form must be in the rendered DOM').not.toBeNull();
+    form!.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    fixture.detectChanges();
+
+    expect(submitAnswer).toHaveBeenCalledWith('Fishermans Wharf');
+  });
+
   it('does not submit an empty answer', async () => {
     fixture.componentInstance['answerControl'].setValue('   ');
     await fixture.componentInstance['onSubmit']();

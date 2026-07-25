@@ -72,7 +72,9 @@ test('creator authors and publishes a puzzle; recipient plays it end to end', as
   await expect(page).toHaveURL(/\/creator$/, { timeout: 20_000 });
 
   // ---- Creator: start a new puzzle ----
-  await page.getByRole('button', { name: 'Create New Puzzle' }).click();
+  // Two matches on a brand-new (empty) dashboard: the always-visible
+  // welcome-section button and the empty-state's own button.
+  await page.getByRole('button', { name: 'Create New Puzzle' }).first().click();
   await expect(page).toHaveURL(/\/creator\/wizard\/new/);
 
   // Step 1: Occasion & Emotion
@@ -83,7 +85,7 @@ test('creator authors and publishes a puzzle; recipient plays it end to end', as
   // Step 2: Image upload + crop
   await page.locator('input[type="file"]').setInputFiles(SAMPLE_IMAGE);
   await page.getByRole('button', { name: 'Use this crop' }).click();
-  await expect(page.getByText('Photo uploaded')).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator('.image-upload-step__confirmed-label')).toBeVisible({ timeout: 30_000 });
   await page.getByRole('button', { name: 'Next' }).click();
 
   // Step 3: Recipient details
@@ -158,12 +160,27 @@ async function openQuestion(page: Page, pieceNumber: number): Promise<void> {
   await page.getByRole('button', { name: `Piece ${pieceNumber}, locked. Open question.` }).click();
 }
 
+async function submitAnswerForm(page: Page): Promise<void> {
+  await page.getByRole('button', { name: 'Submit answer' }).click();
+}
+
+/**
+ * On the 9th (final) piece, the app auto-transitions straight to the
+ * completion screen the instant the last piece unlocks — there's no
+ * "Piece unlocked" modal state left to click "Continue" on by the time
+ * this assertion runs. Race both outcomes rather than assuming one.
+ */
 async function answerDirect(page: Page, pieceNumber: number, answer: string): Promise<void> {
   await openQuestion(page, pieceNumber);
-  await page.locator('app-input').filter({ hasText: 'Your answer' }).locator('input').fill(answer);
-  await page.getByRole('button', { name: 'Submit answer' }).click();
-  await expect(page.getByText('Piece unlocked')).toBeVisible({ timeout: 10_000 });
-  await page.getByRole('button', { name: 'Continue' }).click();
+  const input = page.locator('app-input').filter({ hasText: 'Your answer' }).locator('input');
+  await input.fill(answer);
+  await submitAnswerForm(page);
+  const unlockedBadge = page.getByText('Piece unlocked', { exact: true });
+  const revealImage = page.locator('.completion-screen__reveal-image');
+  await expect(unlockedBadge.or(revealImage)).toBeVisible({ timeout: 10_000 });
+  if (await unlockedBadge.isVisible()) {
+    await page.getByRole('button', { name: 'Continue' }).click();
+  }
 }
 
 async function answerViaClue(page: Page, pieceNumber: number, answer: string): Promise<void> {
@@ -172,7 +189,7 @@ async function answerViaClue(page: Page, pieceNumber: number, answer: string): P
 
   // Wrong answer first.
   await answerInput.fill('definitely not the right answer');
-  await page.getByRole('button', { name: 'Submit answer' }).click();
+  await submitAnswerForm(page);
   await expect(page.getByRole('alert')).toBeVisible();
 
   // Request the clue.
@@ -181,8 +198,8 @@ async function answerViaClue(page: Page, pieceNumber: number, answer: string): P
 
   // Now answer correctly.
   await answerInput.fill(answer);
-  await page.getByRole('button', { name: 'Submit answer' }).click();
-  await expect(page.getByText('Piece unlocked')).toBeVisible({ timeout: 10_000 });
+  await submitAnswerForm(page);
+  await expect(page.getByText('Piece unlocked', { exact: true })).toBeVisible({ timeout: 10_000 });
   await expect(page.getByText('+75 points')).toBeVisible();
   await page.getByRole('button', { name: 'Continue' }).click();
 }
@@ -193,7 +210,7 @@ async function answerViaPartnerHelp(page: Page, pieceNumber: number): Promise<vo
 
   // Wrong answer first.
   await answerInput.fill('also not right');
-  await page.getByRole('button', { name: 'Submit answer' }).click();
+  await submitAnswerForm(page);
   await expect(page.getByRole('alert')).toBeVisible();
 
   // Request the clue — this question authored exactly one, so requesting it
@@ -203,7 +220,7 @@ async function answerViaPartnerHelp(page: Page, pieceNumber: number): Promise<vo
 
   await expect(page.getByRole('heading', { name: 'Ask Your Partner' })).toBeVisible();
   await page.getByRole('button', { name: 'Reveal Piece' }).click();
-  await expect(page.getByText('Piece unlocked')).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByText('Piece unlocked', { exact: true })).toBeVisible({ timeout: 10_000 });
   await expect(page.getByText('+10 points')).toBeVisible();
   await page.getByRole('button', { name: 'Continue' }).click();
 }
