@@ -33,3 +33,8 @@ src/environments/environment.secrets.ts
 
 # Test coverage
 coverage/
+
+# Playwright E2E output (traces, screenshots, HTML report)
+test-results/
+playwright-report/
+blob-report/
