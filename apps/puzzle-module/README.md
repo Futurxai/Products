@@ -8,6 +8,8 @@ Ionic Angular (standalone components + Signals) PWA for the Love Digitally Puzzl
 
 **Platform planning**: `docs/puzzle-module/PLATFORM-ARCHITECTURE.md` (repo root) describes how this app becomes the first module of a multi-module Love Digitally platform — shared auth/dashboard/analytics/notifications/media storage/design system, a module registry, and sketches for ten future modules. Planning only; no new module implementation has started.
 
+**Architecture Decision Records**: `docs/puzzle-module/adr/` (repo root) — ten records explaining the key design choices behind this app (shared Firebase project + namespace isolation, Clean Architecture layering, the public/private document split, server-authoritative gameplay, anonymous Recipient identity, the domain-sync mechanism, the shared Rules symlink, write-only analytics, no runtime caching for signed URLs, the manual-trigger deploy workflow), each with its context, consequences, and the alternatives considered.
+
 Note on numbering: earlier in-repo comments referred to the Recipient milestone as "M5"/"M6" before the Recipient build was scoped in detail — this doc, and all Recipient-facing code comments, now use the milestone's actual name, **M4**.
 
 See `functions/src/` for the Cloud Functions codebase: `schemas/` (Zod), `callable/` (thin onCall wrappers), `application/` (use-cases), `infrastructure/` (Firestore/Storage/Auth adapters), `triggers/` (reveal-image slicing), `emulator-tests/` (real Firestore+Auth+Storage emulator coverage, run via `npm run test:emulator` inside `functions/`).
