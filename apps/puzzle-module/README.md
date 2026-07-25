@@ -2,7 +2,7 @@
 
 Ionic Angular (standalone components + Signals) PWA for the Love Digitally Puzzle Module. See `docs/puzzle-module/` at the repo root for the full PRD, Module Contract, Phase 4 UI/UX spec, and Phase 5/6 architecture and roadmap this app implements.
 
-**New to this codebase? Start with `ONBOARDING.md`** — setup, project structure, coding standards, and the local-development gotchas worth knowing up front. **Looking for how to actually use the product, not build it? See `USER-GUIDE.md`.**
+**New to this codebase? Start with `ONBOARDING.md`** — setup, project structure, coding standards, and the local-development gotchas worth knowing up front. **Looking for how to actually use the product, not build it? See `USER-GUIDE.md`.** **On call or investigating a production issue? See `RUNBOOK.md`.**
 
 ## Status
 
