@@ -6,7 +6,7 @@ Ionic Angular (standalone components + Signals) PWA for the Love Digitally Puzzl
 
 ## Status
 
-**M5 Phase 7 — Production Readiness complete. M5 is fully complete.** M0 (scaffold/CI), M1 (domain layer), M2 (all 6 Cloud Functions + image-slice trigger), M3 (all five Creator UI features), M4 (all seven Recipient Experience phases), and M5 (Analytics, Performance, Accessibility, Responsive Design, Error Recovery, Security Review, and Production Readiness) are done and fully validated. See `DEPLOYMENT.md` for the deployment guide and release checklist, and `RELEASE-NOTES-v1.0.0.md` for the v1.0.0 release summary.
+**M5 Phase 7 — Production Readiness complete. M5 is fully complete.** M0 (scaffold/CI), M1 (domain layer), M2 (all 6 Cloud Functions + image-slice trigger), M3 (all five Creator UI features), M4 (all seven Recipient Experience phases), and M5 (Analytics, Performance, Accessibility, Responsive Design, Error Recovery, Security Review, and Production Readiness) are done and fully validated. See `DEPLOYMENT.md` for the deployment guide, release checklist, and merge checklist; `RELEASE-NOTES-v1.0.0.md` and `CHANGELOG.md` for the v1.0.0 release summary; and `PRODUCTION-VERIFICATION-CHECKLIST.md` for the post-deploy verification checklist.
 
 **Platform planning**: `docs/puzzle-module/PLATFORM-ARCHITECTURE.md` (repo root) describes how this app becomes the first module of a multi-module Love Digitally platform — overall architecture, a module registration system, shared authentication/design system/navigation/analytics/notifications/media storage, module lifecycle, platform-wide API contracts, a ten-module future roadmap, and deployment/scaling strategy with a risks-and-recommendations close. Planning only; no new module implementation has started.
 

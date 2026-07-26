@@ -2,6 +2,18 @@
 
 M5 Phase 7 (Production Readiness) deliverable, extended for the Final Pre-Launch Tasks. CI (`.github/workflows/puzzle-module-ci.yml`) validates every push and PR — lint, unit tests, production build for the app; lint, build, unit tests, and real-emulator integration tests for `functions/` — but does **not** deploy anything. A separate workflow, `.github/workflows/puzzle-module-deploy.yml`, *can* deploy — but only when someone explicitly triggers it (`workflow_dispatch`, from the Actions tab); it never runs on push or PR. Until that's triggered, deployment is a manual CLI process following this guide.
 
+## Merge Checklist (repository admin / approver)
+
+Run through this before merging the release PR to `main`. This is distinct from the Release Checklist below — merging and deploying are two separate, independently-gated actions (see "Important" note under Deployment); merging does **not** trigger a deploy.
+
+- [ ] No merge conflicts — `mergeable_state` is clean against the current `main`.
+- [ ] CI is green on the head commit — check the **check runs** for both required jobs ("Lint, build & test (Ionic Angular app)" and "Lint, build, test & emulator-test (Cloud Functions)"), not just the legacy commit-status API, which can misreport `pending`/empty even when Actions results are in.
+- [ ] Documentation is current: `README.md`, `DEPLOYMENT.md`, `RUNBOOK.md`, `RELEASE-NOTES-v1.0.0.md`, `CHANGELOG.md`, `M5-DELIVERABLES.md`, and `docs/puzzle-module/` (PRD, Module Contract, `PLATFORM-ARCHITECTURE.md`, ADRs) all reflect what's actually in the diff.
+- [ ] PR title/description accurately describes the scope being merged — if the PR grew significantly since it was opened (e.g. started as one feature and accumulated the full release), update the description before merging so the merge commit's record matches its actual contents.
+- [ ] `package.json` version bump and the `puzzle-module-v1.0.0` git tag are **intentionally not** part of this PR — both happen after merge, directly on the `main` merge commit (see Version Tagging below). Confirm nothing in the diff jumps the gun on this.
+- [ ] Whoever merges has confirmed with the repository administrator who will perform the actual deploy that they're ready to pick it up — merging does not imply an immediate deploy, but the release notes/CHANGELOG assume one follows reasonably soon.
+- [ ] Squash/merge strategy matches repository convention; commit message references the release if the convention calls for it.
+
 ## Prerequisites
 
 - Firebase CLI (`firebase-tools`) installed and authenticated (`firebase login`) against an account with **Editor** or **Owner** on the `lovedigitally-app` Firebase project — needed only for the manual-CLI path below; the GitHub Actions path authenticates with a service account instead.
@@ -18,10 +30,42 @@ M5 Phase 7 (Production Readiness) deliverable, extended for the Final Pre-Launch
 2. **Deploying by hand**: export the same three `FIREBASE_*` env vars in your shell, run `npm run build:deploy`, then follow the manual `firebase deploy` commands below. Verify `git diff src/environments/environment.prod.ts` is empty afterward — `build:deploy` restores it automatically, but this is a real secret-leak risk worth double-checking, not a formality.
 3. Either way, confirm `environment.prod.ts`'s `useEmulators: false` and `emulatorHosts: null` are unchanged — a production build must never attempt to connect to local emulators.
 
+## One-Time Firebase Project Setup
+
+The steps below only need to happen once per Firebase project, before the very first deploy. If they've already been done (e.g. by whoever set up `lovedigitally-web`), skip straight to the Release Checklist. All of these are Console/CLI actions against the live `lovedigitally-app` project — none of them are code changes, and none can be verified from this repository alone; a repository administrator with Owner/Editor access must perform and confirm them.
+
+### 1. Creating the Firebase Hosting site (if missing)
+
+`.firebaserc`'s `targets.lovedigitally-app.hosting.puzzle-module: ["puzzle-module"]` only declares an **alias** used by this repo's `firebase deploy --only hosting:puzzle-module` commands — it does not create the underlying Hosting site in the live project. If the `puzzle-module` site doesn't exist yet in `lovedigitally-app`, every Hosting deploy will fail until it's created:
+
+1. Firebase Console → `lovedigitally-app` → Hosting → **Add another site** → enter site ID `puzzle-module` (must match `.firebaserc` exactly). Or via CLI: `firebase hosting:sites:create puzzle-module --project lovedigitally-app`.
+2. Confirm the target mapping is applied locally: `firebase target:apply hosting puzzle-module puzzle-module --project lovedigitally-app` (this writes/confirms the same mapping already checked into `.firebaserc` — safe to re-run).
+3. Verify: `firebase hosting:sites:list --project lovedigitally-app` should show `puzzle-module` in the list before attempting a deploy.
+4. This site is independent of `lovedigitally-web`'s own Hosting site — creating it does not affect that app's Hosting in any way.
+
+### 2. Enabling Google Authentication
+
+The Creator flow's Google sign-in option requires the Google provider to be enabled for the `lovedigitally-app` project (email/password may already be enabled if `lovedigitally-web` uses it — Google needs its own explicit toggle):
+
+1. Firebase Console → `lovedigitally-app` → Build → Authentication → Sign-in method.
+2. If not already present, enable **Google** as a sign-in provider — select a support email (required by Google's consent screen) and save.
+3. Under Authentication → Settings → **Authorized domains**, confirm the `puzzle-module` Hosting site's domain (its default `*.web.app`/`*.firebaseapp.com` domain, and any custom domain later attached) is present — Google sign-in fails silently from an unauthorized domain. Firebase adds the project's default domains automatically, but a custom domain must be added manually.
+4. Anonymous Authentication (used to scope the Recipient's silent session, see `CLAUDE.md`) should already be enabled if `lovedigitally-web` uses it; if this is genuinely the first app on the project to need it, enable **Anonymous** in the same Sign-in method list.
+
+### 3. Configuring App Check (recommended)
+
+**Not currently implemented in the app** — `app.config.ts` has no `initializeAppCheck`/reCAPTCHA integration, and every Cloud Functions request today logs `"verifications":{"app":"MISSING"}` (documented in `RUNBOOK.md` §4.5 as a known, accepted gap, not a regression). Enabling App Check is a genuine **code change**, not just a Console toggle, so it is out of scope for this release under the "do not modify application code unless absolutely necessary" constraint — recorded here as the recommended next step for whoever administers the project, not something this deploy depends on:
+
+1. Firebase Console → `lovedigitally-app` → Build → App Check → register the `puzzle-module` Hosting site's Web App with **reCAPTCHA Enterprise** (or v3) as the provider, obtain a site key.
+2. Code work required before enforcement can be turned on (tracked as a Future Enhancement, not done in this release): add `firebase/app-check` initialization to `app.config.ts` alongside the existing `provideFunctions()`/`provideFirestore()` providers, and pass the App Check token through on every callable/Firestore/Storage request (the SDKs do this automatically once initialized).
+3. Start in **Console → App Check → Enforce → Monitor mode** (metrics only, nothing blocked) for each product (Cloud Functions, Firestore, Storage) once the client-side change ships, to observe real traffic before flipping to **Enforced** — enforcing immediately, before any real client is sending tokens, would lock out every legitimate request including this app's own.
+4. Do not enable enforcement against `lovedigitally-app` without coordinating with `lovedigitally-web`'s owner first — App Check enforcement is project-wide per product (Firestore/Storage/Functions), not scoped to one app's Hosting site.
+
 ## Release Checklist
 
 Run through this in order. Every command below is run from `apps/puzzle-module/` unless stated otherwise.
 
+- [ ] For a **first-ever** deploy of this app to `lovedigitally-app`: One-Time Firebase Project Setup (above) completed — Hosting site exists, Google Authentication enabled. Not needed again on subsequent deploys.
 - [ ] `git status` is clean; you're deploying an exact, reviewed commit (ideally one CI has already run against, not a local-only change).
 - [ ] `npm ci && npm run lint && npm run build:prod` — clean, no errors, budgets not exceeded.
 - [ ] `cd functions && npm ci && npm run lint && npm run build && npm test && npm run test:emulator` — clean, all specs passing (548 client / 171 functions unit / 46 emulator specs as of M5 Phase 6 — expect these counts to only grow).
@@ -71,6 +115,17 @@ firebase deploy --only firestore:rules,storage:rules,functions:puzzle-module,hos
 ```
 
 `firebase.json`'s `emulators.singleProjectMode` and the `puzzle-module` Hosting/Functions targets (`.firebaserc`) are already configured correctly for this — no `--project` flag needed as long as your Firebase CLI's active project defaults to `lovedigitally-app` (confirm with `firebase use`).
+
+### Verifying deployment success
+
+After triggering either path above, confirm all of the following before considering the deploy done — a workflow run finishing "green" only proves the deploy commands exited 0, not that the app actually works:
+
+1. **Workflow run** (GitHub Actions path): Actions tab → the triggered run → confirm all steps succeeded, not just that the run finished. Check the Functions deploy step's output for each function name deployed.
+2. **Hosting**: open the live Hosting URL (Firebase Console → Hosting → `puzzle-module` → the listed domain) — confirm the app loads and isn't showing a stale cached build (hard-refresh / incognito if unsure).
+3. **Cloud Functions**: Firebase Console → Functions → confirm all 7 callables plus the Storage trigger show a recent deploy timestamp and `asia-south1` as the region (see `CLAUDE.md` — deploying to the wrong region silently breaks every callable from the client's perspective).
+4. **Rules**: Firebase Console → Firestore/Storage → Rules tab → confirm the "last deployed" timestamp matches this deploy, not a stale prior one.
+5. **Smoke test**: run through the Release Checklist's smoke-test step (sign in as a test Creator, confirm the Dashboard loads, resolve a real `/e/:shareToken` link) against the live URL, not the emulator.
+6. Only after all of the above: proceed to the full Production Verification Checklist (`PRODUCTION-VERIFICATION-CHECKLIST.md`) for a complete pass.
 
 ## Rollback Plan
 
