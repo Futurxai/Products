@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted (M5 Phase 1). Generalized as the platform's analytics convention in `PLATFORM-ARCHITECTURE.md` §5, and as the pattern the proposed `platform_experiences` collection reuses (`PLATFORM-ARCHITECTURE.md` §4).
+Accepted (M5 Phase 1). Generalized as the platform's analytics convention in `PLATFORM-ARCHITECTURE.md` §6, and as the pattern the proposed `platform_experiences` collection reuses (`PLATFORM-ARCHITECTURE.md` §5).
 
 ## Context
 
@@ -19,7 +19,7 @@ The PRD required logging a fixed set of recipient-facing moments (link opened, q
 - **A Recipient's client can influence *when* an allowlisted, low-stakes event fires, never *what* a consequential event says.** The event log is trustworthy for a Creator's Insights (never built yet, but the data is already safe to build it from) precisely because the client was never in a position to lie about anything that matters.
 - **Zero duplicated business logic for the nine side-effect events.** Analytics correctness is inherited from the correctness of the function already being tested for its primary purpose, not verified separately.
 - **`logRecipientEvent`'s allowlist must be extended deliberately, one enum value at a time, whenever a new purely-client-observable moment needs logging** — a small, known friction, accepted as the price of the guarantee above; extending a `z.string()` schema would be zero friction and also zero protection.
-- **This exact shape was reused, not reinvented, for the platform-wide "what has this Creator made" index** proposed in `PLATFORM-ARCHITECTURE.md` §4 (`platform_experiences`) — the write-only-from-Cloud-Functions pattern generalizes cleanly to "a collection multiple readers trust without trusting the writer," which is a recurring shape, not a one-off.
+- **This exact shape was reused, not reinvented, for the platform-wide "what has this Creator made" index** proposed in `PLATFORM-ARCHITECTURE.md` §5 (`platform_experiences`) — the write-only-from-Cloud-Functions pattern generalizes cleanly to "a collection multiple readers trust without trusting the writer," which is a recurring shape, not a one-off.
 
 ## Alternatives considered
 
