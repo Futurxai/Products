@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#b5495b"/>
+      <stop offset="100%" stop-color="#7c2b3f"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="300" rx="20" fill="url(#g)"/>
+  <path transform="translate(150,130) scale(3.2)" d="M0 6 C-6 -2 -16 -2 -16 8 C-16 16 -6 20 0 26 C6 20 16 16 16 8 C16 -2 6 -2 0 6 Z" fill="#ffffff" opacity="0.9"/>
+  <text x="150" y="235" font-family="Georgia, serif" font-size="20" fill="#ffffff" text-anchor="middle" font-weight="bold">Vikram &amp; Ananya</text>
+  <text x="150" y="258" font-family="Verdana, sans-serif" font-size="12" fill="#ffffffcc" text-anchor="middle">3 years, one puzzle at a time</text>
+</svg>

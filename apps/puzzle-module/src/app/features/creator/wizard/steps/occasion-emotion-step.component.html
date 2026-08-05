@@ -1,0 +1,38 @@
+<div class="occasion-emotion-step">
+  <h2>What's the occasion?</h2>
+  <p class="occasion-emotion-step__subtitle">This shapes the tone of your puzzle experience.</p>
+
+  <ion-select
+    label="Occasion"
+    labelPlacement="stacked"
+    placeholder="Select an occasion"
+    fill="outline"
+    interface="popover"
+    [value]="wizardFacade.draft()?.occasion || null"
+    (ionChange)="onOccasionChange($event)"
+  >
+    @for (occasion of occasions; track occasion) {
+      <ion-select-option [value]="occasion">{{ occasion }}</ion-select-option>
+    }
+  </ion-select>
+  @if (occasionError) {
+    <p class="occasion-emotion-step__error" role="alert">{{ occasionError }}</p>
+  }
+
+  <ion-select
+    label="Emotion"
+    labelPlacement="stacked"
+    placeholder="Select an emotion"
+    fill="outline"
+    interface="popover"
+    [value]="wizardFacade.draft()?.emotion || null"
+    (ionChange)="onEmotionChange($event)"
+  >
+    @for (emotion of emotions; track emotion) {
+      <ion-select-option [value]="emotion">{{ emotion }}</ion-select-option>
+    }
+  </ion-select>
+  @if (emotionError) {
+    <p class="occasion-emotion-step__error" role="alert">{{ emotionError }}</p>
+  }
+</div>

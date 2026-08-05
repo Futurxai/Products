@@ -1,0 +1,54 @@
+.question-modal__prompt {
+  margin: 0 0 var(--app-space-4);
+}
+
+.question-modal__solved {
+  text-align: center;
+
+  h2 {
+    margin: var(--app-space-3) 0 var(--app-space-1);
+  }
+}
+
+.question-modal__points {
+  color: var(--ld-mist, #6b6178);
+  margin: 0 0 var(--app-space-4);
+}
+
+.question-modal__clues {
+  margin-top: var(--app-space-4);
+
+  h3 {
+    margin: 0 0 var(--app-space-2);
+    font-size: 0.9375rem;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: var(--app-space-4);
+  }
+}
+
+.question-modal__partner-help {
+  margin-top: var(--app-space-4);
+  padding-top: var(--app-space-4);
+  border-top: 1px solid var(--ld-cloud, #f3f1f7);
+
+  h3 {
+    margin: 0 0 var(--app-space-2);
+    font-size: 0.9375rem;
+  }
+}
+
+.question-modal__partner-help-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--app-space-3);
+  margin-top: var(--app-space-2);
+}
+
+.question-modal__whatsapp-link {
+  color: var(--ld-primary, #6d5bd0);
+  font-weight: 600;
+}

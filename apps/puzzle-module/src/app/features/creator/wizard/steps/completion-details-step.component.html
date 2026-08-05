@@ -1,0 +1,26 @@
+<div class="completion-details-step">
+  <h2>Wrap it up</h2>
+  <p class="completion-details-step__subtitle">A fallback for stuck moments, and the message shown once every piece is unlocked.</p>
+
+  <form [formGroup]="form">
+    <app-textarea
+      formControlName="partnerHelpChallenge"
+      label="Partner-help message"
+      placeholder="e.g. Stuck? Ask Vikram — but only after a cup of filter coffee ☕"
+      [required]="true"
+      [rows]="3"
+      hint="Shown after all clues for a question are used up."
+      [errorMessage]="partnerHelpChallengeError"
+    ></app-textarea>
+
+    <app-textarea
+      formControlName="completionMessage"
+      label="Completion message"
+      placeholder="e.g. You remembered every single one — of course you did."
+      [required]="true"
+      [rows]="4"
+      hint="Shown once all 9 pieces are unlocked."
+      [errorMessage]="completionMessageError"
+    ></app-textarea>
+  </form>
+</div>

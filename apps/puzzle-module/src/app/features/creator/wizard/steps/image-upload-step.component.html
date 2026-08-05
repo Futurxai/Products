@@ -1,0 +1,23 @@
+<div class="image-upload-step">
+  <h2>Add your reveal photo</h2>
+  <p class="image-upload-step__subtitle">This photo is sliced into the 9 puzzle pieces your recipient unlocks.</p>
+
+  <input #fileInput type="file" [attr.accept]="acceptedTypes" hidden (change)="onFileSelected($event)" />
+
+  @if (selectedFile()) {
+    <app-image-cropper [file]="selectedFile()!" (cropped)="onCropped($event)" (cancelled)="onCropCancelled()"></app-image-cropper>
+  } @else if (previewUrl() || wizardFacade.draft()?.revealImagePath) {
+    <div class="image-upload-step__confirmed">
+      @if (previewUrl()) {
+        <img class="image-upload-step__preview" [src]="previewUrl()" alt="Your cropped reveal photo" decoding="async" />
+      }
+      <p class="image-upload-step__confirmed-label">Photo uploaded &#10003;</p>
+      <app-button variant="secondary" [loading]="wizardFacade.imageUploading()" (click)="replacePhoto()">Replace photo</app-button>
+    </div>
+  } @else {
+    <app-button [loading]="wizardFacade.imageUploading()" (click)="triggerFilePicker()">Choose a photo</app-button>
+    @if (validationError()) {
+      <p class="image-upload-step__error" role="alert">{{ validationError() }}</p>
+    }
+  }
+</div>

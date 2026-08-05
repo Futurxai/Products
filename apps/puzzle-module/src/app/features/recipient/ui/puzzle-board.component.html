@@ -1,0 +1,34 @@
+<div class="puzzle-board__grid" role="group" aria-label="Puzzle board">
+  @for (questionId of questionIds; track questionId; let i = $index) {
+    @if (isUnlocked(questionId)) {
+      <div
+        class="puzzle-board__tile puzzle-board__tile--unlocked"
+        role="img"
+        [attr.aria-label]="'Piece ' + (i + 1) + ' unlocked'"
+      >
+        @if (sessionFacade.pieceImageFor(questionId); as imageUrl) {
+          <img [src]="imageUrl" alt="" class="puzzle-board__piece-image" loading="lazy" decoding="async" />
+        }
+      </div>
+    } @else {
+      <button
+        type="button"
+        class="puzzle-board__tile puzzle-board__tile--locked"
+        [style.background-image]="lockedPatternStyle()"
+        (click)="onTileClick(questionId)"
+        [attr.aria-label]="'Piece ' + (i + 1) + ', locked. Open question.'"
+      >
+        <span class="puzzle-board__lock" aria-hidden="true">🔒</span>
+      </button>
+    }
+  }
+</div>
+
+<div class="puzzle-board__summary">
+  <app-progress-bar
+    [value]="sessionFacade.score().piecesUnlocked"
+    [max]="9"
+    [label]="sessionFacade.score().piecesUnlocked + ' of 9 pieces unlocked'"
+  ></app-progress-bar>
+  <p class="puzzle-board__score">{{ sessionFacade.score().totalScore }} points so far</p>
+</div>

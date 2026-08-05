@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/creator" text="Back"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Publish</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="publish-page">
+  @if (publishFacade.loading() || publishFacade.publishing()) {
+    <app-loader [label]="publishFacade.publishing() ? 'Publishing your puzzle…' : 'Loading your puzzle…'"></app-loader>
+  } @else {
+    @if (publishFacade.publishResult(); as result) {
+      <app-share-panel [shareUrl]="result.shareUrl" [experienceId]="publishFacade.experience()?.experienceId ?? ''"></app-share-panel>
+    } @else {
+      @if (publishFacade.validation(); as validation) {
+        @if (!validation.ok) {
+          <div class="publish-page__validation" role="alert">
+            <h2>Almost there</h2>
+            <p>Fix these before you can publish:</p>
+            <ul>
+              @for (message of missingFieldMessages(); track message) {
+                <li>{{ message }}</li>
+              }
+            </ul>
+            <app-button (click)="backToWizard()">Back to Wizard</app-button>
+          </div>
+        } @else {
+          @if (publishFacade.error(); as error) {
+            <div class="publish-page__error" role="alert">
+              <p>{{ error }}</p>
+              <div class="publish-page__error-actions">
+                @if (publishFacade.errorKind() === 'infra') {
+                  <app-button (click)="retry()">Retry</app-button>
+                }
+                <app-button variant="secondary" (click)="goToDashboard()">Go to Dashboard</app-button>
+              </div>
+            </div>
+          }
+        }
+      } @else {
+        @if (publishFacade.error(); as error) {
+          <div class="publish-page__error" role="alert">
+            <p>{{ error }}</p>
+            <app-button variant="secondary" (click)="goToDashboard()">Go to Dashboard</app-button>
+          </div>
+        }
+      }
+    }
+  }
+</ion-content>

@@ -1,0 +1,84 @@
+{
+  "_description": "The scoring rules from the PRD's Reward System section, plus worked examples using the progress documents in 04-progress-examples.json. Use this as the reference implementation spec for the score-computation Cloud Function.",
+
+  "scoringTable": {
+    "direct": { "points": 100, "label": "Correct, 0 clues used", "feedbackTier": "youre_awesome" },
+    "clue_1": { "points": 75, "label": "Correct, 1 clue used", "feedbackTier": "nudge_to_remember" },
+    "clue_2": { "points": 50, "label": "Correct, 2 clues used", "feedbackTier": "nudge_to_remember" },
+    "clue_3": { "points": 30, "label": "Correct, 3 clues used", "feedbackTier": "nudge_to_remember" },
+    "partner_help": { "points": 10, "label": "Revealed via Ask Your Partner", "feedbackTier": "teasing_inside_jokes" }
+  },
+
+  "feedbackMessages": {
+    "youre_awesome": [
+      "You're awesome! 🎉",
+      "Nailed it — no help needed.",
+      "Look at you go!"
+    ],
+    "nudge_to_remember": [
+      "Needed a little nudge, but you got there!",
+      "A clue never hurt anybody. Piece unlocked!",
+      "Memory jogged — piece is yours."
+    ],
+    "teasing_inside_jokes": [
+      "Had to phone a friend, huh? 😏",
+      "Someone owes their partner an ice cream now.",
+      "The bargain has been struck — piece unlocked."
+    ]
+  },
+
+  "maxScorePerExperience": 900,
+
+  "starRatingThresholds": [
+    { "minScore": 800, "maxScore": 900, "stars": 3, "label": "You know them by heart" },
+    { "minScore": 500, "maxScore": 799, "stars": 2, "label": "You know them well" },
+    { "minScore": 0,   "maxScore": 499, "stars": 1, "label": "You made it — that's what counts" }
+  ],
+
+  "workedExamples": [
+    {
+      "experienceId": "exp_008",
+      "calculation": "9 questions x 100 pts (all direct, zero clues) = 900 / 900",
+      "totalScore": 900,
+      "starRating": 3,
+      "starLabel": "You know them by heart"
+    },
+    {
+      "experienceId": "exp_001",
+      "calculation": "100+100+75+100+50+100+100+75+100 = 800 / 900",
+      "totalScore": 800,
+      "starRating": 3,
+      "starLabel": "You know them by heart",
+      "note": "Exactly on the 3-star boundary — useful edge-case fixture for threshold testing."
+    },
+    {
+      "experienceId": "exp_005",
+      "calculation": "100+75+50+100+10+75+100+30+75 = 615 / 900",
+      "totalScore": 615,
+      "starRating": 2,
+      "starLabel": "You know them well"
+    },
+    {
+      "experienceId": "exp_009",
+      "calculation": "100+100+75+100+75+100+100+10+100 = 860 / 900",
+      "totalScore": 860,
+      "starRating": 3,
+      "starLabel": "You know them by heart"
+    },
+    {
+      "experienceId": "exp_002",
+      "note": "In-progress — only a partial/provisional score exists, no star rating until all 9 pieces resolve.",
+      "calculation": "100+75+100+50+10 (5 of 9 pieces) = 335 so far",
+      "provisionalScoreSoFar": 335,
+      "starRating": null
+    }
+  ],
+
+  "boundaryTestCases": [
+    { "description": "Lowest possible 3-star score", "score": 800, "expectedStars": 3 },
+    { "description": "Highest possible 2-star score", "score": 799, "expectedStars": 2 },
+    { "description": "Lowest possible 2-star score", "score": 500, "expectedStars": 2 },
+    { "description": "Highest possible 1-star score", "score": 499, "expectedStars": 1 },
+    { "description": "Worst possible completion — all 9 pieces via partner-help", "score": 90, "expectedStars": 1, "note": "Confirms Business Rule: completion always awards at least 1 star, never 0." }
+  ]
+}

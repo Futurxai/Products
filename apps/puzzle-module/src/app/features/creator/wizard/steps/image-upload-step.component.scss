@@ -1,0 +1,39 @@
+.image-upload-step h2 {
+  margin: 0 0 var(--app-space-1);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.image-upload-step__subtitle {
+  margin: 0 0 var(--app-space-6);
+  color: var(--ld-mist, #6b6178);
+}
+
+.image-upload-step__confirmed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--app-space-3);
+}
+
+.image-upload-step__preview {
+  width: min(100%, 16rem);
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--app-radius-l);
+}
+
+.image-upload-step__confirmed-label {
+  margin: 0;
+  font-weight: 600;
+  // `--ld-ember-on-page`, not `--ld-ember-ink` — this label sits directly
+  // on the page background, not a solid ember surface; `-ink`'s dark
+  // theme value is dark-on-dark here (M5 Phase 3).
+  color: var(--ld-ember-on-page, #5a3e0f);
+}
+
+.image-upload-step__error {
+  margin: var(--app-space-3) 0 0;
+  color: var(--ion-color-danger);
+  font-size: 0.8125rem;
+}

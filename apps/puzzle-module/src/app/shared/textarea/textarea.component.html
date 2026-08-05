@@ -1,0 +1,33 @@
+<div class="app-textarea" [class.app-textarea--invalid]="!!errorMessage">
+  @if (label) {
+    <label [for]="textareaId" class="app-textarea__label">
+      {{ label }}
+      @if (required) {
+        <span class="app-textarea__required" aria-hidden="true">*</span>
+      }
+    </label>
+  }
+
+  <ion-textarea
+    [id]="textareaId"
+    class="app-textarea__control"
+    fill="outline"
+    [placeholder]="placeholder"
+    [value]="value()"
+    [disabled]="isDisabled()"
+    [rows]="rows"
+    [maxlength]="maxlength"
+    [autoGrow]="true"
+    [attr.aria-required]="required ? 'true' : null"
+    [attr.aria-invalid]="errorMessage ? 'true' : null"
+    [attr.aria-describedby]="errorMessage ? textareaId + '-error' : hint ? textareaId + '-hint' : null"
+    (ionInput)="handleInput($event)"
+    (ionBlur)="handleBlur()"
+  ></ion-textarea>
+
+  @if (errorMessage) {
+    <p class="app-textarea__message app-textarea__message--error" [id]="textareaId + '-error'" role="alert">{{ errorMessage }}</p>
+  } @else if (hint) {
+    <p class="app-textarea__message app-textarea__message--hint" [id]="textareaId + '-hint'">{{ hint }}</p>
+  }
+</div>

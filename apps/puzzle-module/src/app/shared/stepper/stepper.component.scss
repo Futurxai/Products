@@ -1,0 +1,71 @@
+.app-stepper {
+  display: flex;
+  gap: var(--app-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.app-stepper__item {
+  flex: 0 0 auto;
+}
+
+.app-stepper__button {
+  appearance: none;
+  border: none;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--app-space-1);
+  padding: var(--app-space-2) var(--app-space-1);
+  cursor: pointer;
+  color: var(--ld-mist, #6b6178);
+  min-width: 4rem;
+}
+
+.app-stepper__button:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+  border-radius: var(--app-radius-s);
+}
+
+.app-stepper__index {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  // 10%, not 16% — same marginal AA contrast fix as the neutral badge
+  // (M5 Phase 3): mist-on-mist-tint at 16% reads at 4.40:1, just short
+  // of the 4.5:1 minimum for this circle's step-number text.
+  background: color-mix(in srgb, var(--ld-mist, #6b6178) 10%, transparent);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.app-stepper__label {
+  font-size: 0.6875rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.app-stepper__button--complete .app-stepper__index {
+  background: var(--ld-ember, #e8a23d);
+  color: var(--ld-ember-ink, #6b4a12);
+}
+
+.app-stepper__button--current {
+  color: var(--ion-text-color);
+}
+
+.app-stepper__button--current .app-stepper__index {
+  background: var(--ld-periwinkle, #7c7fe0);
+  // Was a hardcoded #fff — the same solid-periwinkle-surface contrast
+  // failure as the secondary button (3.52:1 light, 2.48:1 dark). Uses
+  // the same fix (M5 Phase 3).
+  color: var(--ld-periwinkle-btn-ink, #1c1c4c);
+}

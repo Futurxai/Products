@@ -1,0 +1,12 @@
+ion-progress-bar {
+  --border-radius: 999px;
+  --background: color-mix(in srgb, var(--ld-mist, #6b6178) 20%, transparent);
+  height: 6px;
+  border-radius: 999px;
+}
+
+.app-progress-bar__label {
+  margin: var(--app-space-2) 0 0;
+  font-size: 0.8125rem;
+  color: var(--ld-mist, #6b6178);
+}

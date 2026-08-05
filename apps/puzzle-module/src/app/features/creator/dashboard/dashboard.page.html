@@ -1,0 +1,93 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Puzzle Module</ion-title>
+    <ion-button id="profile-menu-trigger" slot="end" fill="clear" aria-label="Profile menu">
+      <app-avatar [name]="authFacade.currentCreator()?.displayName ?? ''" [imageUrl]="authFacade.currentCreator()?.avatarUrl ?? null" size="sm"></app-avatar>
+    </ion-button>
+    <ion-popover trigger="profile-menu-trigger" [dismissOnSelect]="true">
+      <ng-template>
+        <ion-content>
+          <ion-list>
+            <ion-item button [detail]="false" (click)="logOut()">Sign out</ion-item>
+          </ion-list>
+        </ion-content>
+      </ng-template>
+    </ion-popover>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="dashboard-page">
+  <section class="dashboard-page__welcome">
+    <h1>Welcome back, {{ authFacade.currentCreator()?.displayName }}</h1>
+    <p>Here's what's happening with your puzzle experiences.</p>
+    <app-button (click)="createNewPuzzle()">Create New Puzzle</app-button>
+  </section>
+
+  @if (dashboardFacade.loading()) {
+    <app-loader label="Loading your puzzles…"></app-loader>
+  } @else if (dashboardFacade.error()) {
+    <div class="dashboard-page__error" role="alert">
+      <p>{{ dashboardFacade.error() }}</p>
+      <app-button variant="secondary" (click)="retry()">Try again</app-button>
+    </div>
+  } @else if (dashboardFacade.isEmpty()) {
+    <app-empty-state title="No puzzles yet" subtitle="Create your first personalized puzzle experience to get started.">
+      <app-button (click)="createNewPuzzle()">Create New Puzzle</app-button>
+    </app-empty-state>
+  } @else {
+    <app-card class="dashboard-page__summary">
+      <h2 class="dashboard-page__summary-title">Analytics Summary</h2>
+      <div class="dashboard-page__stats">
+        <div class="dashboard-page__stat">
+          <span class="dashboard-page__stat-value">{{ dashboardFacade.summary().totalCount }}</span>
+          <span class="dashboard-page__stat-label">Total</span>
+        </div>
+        <div class="dashboard-page__stat">
+          <span class="dashboard-page__stat-value">{{ dashboardFacade.summary().draftCount }}</span>
+          <span class="dashboard-page__stat-label">Drafts</span>
+        </div>
+        <div class="dashboard-page__stat">
+          <span class="dashboard-page__stat-value">{{ dashboardFacade.summary().publishedCount }}</span>
+          <span class="dashboard-page__stat-label">Published</span>
+        </div>
+        <div class="dashboard-page__stat">
+          <span class="dashboard-page__stat-value">{{ dashboardFacade.summary().completedCount }}</span>
+          <span class="dashboard-page__stat-label">Completed</span>
+        </div>
+      </div>
+    </app-card>
+
+    @if (dashboardFacade.groups().drafts.length > 0) {
+      <section class="dashboard-page__section">
+        <h2>Draft Puzzles</h2>
+        <div class="dashboard-page__list">
+          @for (experience of dashboardFacade.groups().drafts; track experience.experienceId) {
+            <app-experience-card [experience]="experience"></app-experience-card>
+          }
+        </div>
+      </section>
+    }
+
+    @if (dashboardFacade.groups().published.length > 0) {
+      <section class="dashboard-page__section">
+        <h2>Published Puzzles</h2>
+        <div class="dashboard-page__list">
+          @for (experience of dashboardFacade.groups().published; track experience.experienceId) {
+            <app-experience-card [experience]="experience"></app-experience-card>
+          }
+        </div>
+      </section>
+    }
+
+    @if (dashboardFacade.groups().completed.length > 0) {
+      <section class="dashboard-page__section">
+        <h2>Completed Puzzles</h2>
+        <div class="dashboard-page__list">
+          @for (experience of dashboardFacade.groups().completed; track experience.experienceId) {
+            <app-experience-card [experience]="experience"></app-experience-card>
+          }
+        </div>
+      </section>
+    }
+  }
+</ion-content>

@@ -1,0 +1,36 @@
+.question-editor {
+  padding: var(--app-space-4);
+  border-radius: var(--app-radius-l);
+  border: 1px solid color-mix(in srgb, var(--ld-mist, #6b6178) 20%, transparent);
+  margin-bottom: var(--app-space-4);
+}
+
+.question-editor__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--app-space-4);
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+}
+
+.question-editor__clues-label {
+  margin: var(--app-space-2) 0 var(--app-space-3);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ld-mist, #6b6178);
+}
+
+.question-editor__clue-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--app-space-2);
+
+  app-input {
+    flex: 1;
+  }
+}

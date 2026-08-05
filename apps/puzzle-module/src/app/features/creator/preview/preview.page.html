@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="backHref()" text="Back"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Preview</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="preview-page">
+  @if (previewFacade.loading()) {
+    <app-loader label="Loading your puzzle…"></app-loader>
+  } @else if (previewFacade.error()) {
+    <div class="preview-page__error" role="alert">
+      <p>{{ previewFacade.error() }}</p>
+    </div>
+  } @else {
+    @if (previewFacade.experience(); as experience) {
+      @if (previewFacade.isComplete()) {
+        <app-completion-screen></app-completion-screen>
+      } @else {
+        <p class="preview-page__intro">Play through your puzzle exactly as {{ experience.recipientDisplayName || 'your recipient' }} will.</p>
+        <app-puzzle-board></app-puzzle-board>
+        <app-question-modal></app-question-modal>
+      }
+    }
+  }
+</ion-content>

@@ -1,0 +1,48 @@
+<div class="image-cropper">
+  <div
+    #viewport
+    class="image-cropper__viewport"
+    tabindex="0"
+    role="application"
+    aria-label="Reposition your photo within the square. Drag to pan, use the zoom controls or +/- keys to zoom, and arrow keys to pan."
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp()"
+    (pointercancel)="onPointerUp()"
+    (keydown)="onKeydown($event)"
+  >
+    @if (imageUrl()) {
+      <img
+        class="image-cropper__image"
+        [src]="imageUrl()"
+        alt=""
+        [style.left.px]="transform().offsetX"
+        [style.top.px]="transform().offsetY"
+        [style.width.px]="naturalWidth()"
+        [style.height.px]="naturalHeight()"
+        [style.transform]="'scale(' + transform().scale + ')'"
+      />
+    }
+    <div class="image-cropper__frame" aria-hidden="true"></div>
+  </div>
+
+  <div class="image-cropper__zoom">
+    <button type="button" class="image-cropper__zoom-btn" (click)="zoomOut()" aria-label="Zoom out">&minus;</button>
+    <input
+      type="range"
+      class="image-cropper__zoom-slider"
+      [min]="minScale()"
+      [max]="maxScale()"
+      [step]="(maxScale() - minScale()) / 100"
+      [value]="transform().scale"
+      (input)="onZoomInput($any($event.target).value)"
+      aria-label="Zoom"
+    />
+    <button type="button" class="image-cropper__zoom-btn" (click)="zoomIn()" aria-label="Zoom in">&plus;</button>
+  </div>
+
+  <div class="image-cropper__actions">
+    <app-button variant="ghost" (click)="cancelled.emit()">Choose a different photo</app-button>
+    <app-button [loading]="exporting()" (click)="confirmCrop()">Use this crop</app-button>
+  </div>
+</div>

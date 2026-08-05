@@ -1,0 +1,22 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "puzzle_experiences",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "creatorId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "puzzle_events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "experienceId", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

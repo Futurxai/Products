@@ -1,0 +1,33 @@
+.app-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--app-space-1) var(--app-space-3);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.app-badge--neutral {
+  // 10%, not 16% like the other tones (M5 Phase 3: 16% put light-theme
+  // text at 4.40:1, just short of the 4.5:1 AA minimum, since this is
+  // the one tone using the same color for both the tint and the text).
+  background: color-mix(in srgb, var(--ld-mist, #6b6178) 10%, transparent);
+  color: var(--ld-mist, #6b6178);
+}
+
+.app-badge--info {
+  background: color-mix(in srgb, var(--ld-periwinkle, #7c7fe0) 18%, transparent);
+  color: var(--ld-periwinkle-ink, #35348f);
+}
+
+.app-badge--success {
+  background: color-mix(in srgb, var(--ld-ember, #e8a23d) 20%, transparent);
+  color: var(--ld-ember-ink, #6b4a12);
+}
+
+.app-badge--warning {
+  background: color-mix(in srgb, var(--ld-bramble, #8a3a44) 16%, transparent);
+  color: var(--ld-bramble, #8a3a44);
+}

@@ -1,0 +1,12 @@
+<div class="welcome-screen">
+  <app-avatar class="welcome-screen__avatar" [name]="recipientDisplayName()" size="lg"></app-avatar>
+
+  <p class="welcome-screen__eyebrow">A {{ occasion() }} surprise, just for you</p>
+  <h1 class="welcome-screen__heading">Hi {{ recipientDisplayName() }}!</h1>
+
+  @if (welcomeNote()) {
+    <p class="welcome-screen__note">{{ welcomeNote() }}</p>
+  }
+
+  <app-button variant="primary" size="lg" expand="block" (click)="onStart()">Start the Puzzle</app-button>
+</div>

@@ -1,0 +1,36 @@
+<div class="app-input" [class.app-input--invalid]="!!errorMessage">
+  @if (label) {
+    <label [for]="inputId" class="app-input__label">
+      {{ label }}
+      @if (required) {
+        <span class="app-input__required" aria-hidden="true">*</span>
+      }
+    </label>
+  }
+
+  <ion-input
+    [id]="inputId"
+    class="app-input__control"
+    fill="outline"
+    [type]="type"
+    [placeholder]="placeholder"
+    [value]="value()"
+    [disabled]="isDisabled()"
+    [autocomplete]="autocomplete"
+    [attr.aria-required]="required ? 'true' : null"
+    [attr.aria-invalid]="errorMessage ? 'true' : null"
+    [attr.aria-describedby]="errorMessage ? inputId + '-error' : hint ? inputId + '-hint' : null"
+    (ionInput)="handleInput($event)"
+    (ionBlur)="handleBlur()"
+  >
+    @if (type === 'password') {
+      <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+    }
+  </ion-input>
+
+  @if (errorMessage) {
+    <p class="app-input__message app-input__message--error" [id]="inputId + '-error'" role="alert">{{ errorMessage }}</p>
+  } @else if (hint) {
+    <p class="app-input__message app-input__message--hint" [id]="inputId + '-hint'">{{ hint }}</p>
+  }
+</div>

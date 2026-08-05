@@ -1,0 +1,17 @@
+<div class="completion-screen">
+  @if (previewFacade.boardImageUrl(); as imageUrl) {
+    <img [src]="imageUrl" alt="The fully revealed photo" class="completion-screen__reveal-image" decoding="async" />
+  } @else {
+    <div class="completion-screen__reveal-placeholder" aria-hidden="true"></div>
+  }
+
+  <p class="completion-screen__stars" aria-hidden="true">{{ starDisplay() }}</p>
+  <h2 class="completion-screen__star-label">{{ starLabel() }}</h2>
+  <p class="completion-screen__score">{{ previewFacade.score().totalScore }} / {{ previewFacade.score().maxScore }} points</p>
+
+  <app-card class="completion-screen__message">
+    <p>{{ previewFacade.experience()?.completionMessage }}</p>
+  </app-card>
+
+  <app-button variant="secondary" (click)="restart()">Restart Preview</app-button>
+</div>

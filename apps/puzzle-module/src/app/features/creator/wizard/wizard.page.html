@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/creator" text="Dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Create Puzzle</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="wizard-page">
+  @if (wizardFacade.loading()) {
+    <app-loader label="Loading your puzzle…"></app-loader>
+  } @else if (wizardFacade.error() && !wizardFacade.draft()) {
+    <div class="wizard-page__error" role="alert">
+      <p>{{ wizardFacade.error() }}</p>
+    </div>
+  } @else if (wizardFacade.draft()) {
+    <app-stepper
+      class="wizard-page__stepper"
+      [steps]="stepperSteps"
+      [currentStepId]="wizardFacade.currentStep()"
+      [completedStepIds]="completedStepIds()"
+      (stepSelected)="onStepSelected($event)"
+    ></app-stepper>
+
+    <p class="wizard-page__autosave" [attr.aria-live]="'polite'">{{ autosaveStatus() }}</p>
+
+    <div class="wizard-page__step">
+      @switch (wizardFacade.currentStep()) {
+        @case ('occasion') {
+          <app-occasion-emotion-step></app-occasion-emotion-step>
+        }
+        @case ('image') {
+          <app-image-upload-step></app-image-upload-step>
+        }
+        @case ('recipient') {
+          <app-recipient-details-step></app-recipient-details-step>
+        }
+        @case ('questions') {
+          <app-questions-step></app-questions-step>
+        }
+        @case ('completion') {
+          <app-completion-details-step></app-completion-details-step>
+        }
+        @case ('review') {
+          <app-review-step></app-review-step>
+        }
+      }
+    </div>
+
+    @if (!isReviewStep()) {
+      <div class="wizard-page__nav">
+        <app-button variant="ghost" [disabled]="isFirstStep()" (click)="goBack()">Back</app-button>
+        <app-button (click)="goNext()">Next</app-button>
+      </div>
+    }
+  }
+</ion-content>

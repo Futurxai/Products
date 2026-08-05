@@ -1,0 +1,52 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ============================================================
+    // Puzzle Module (apps/puzzle-module) — shares this Firebase
+    // project's default Storage bucket, isolated under the
+    // puzzle_storage/ prefix. This is the project's only deployed
+    // Storage ruleset; apps/puzzle-module/firebase.json points at
+    // THIS file (via a local symlink — Storage Rules paths, like
+    // Firestore's, cannot reference a file outside the deploying
+    // directory). No other app in this Firebase project currently
+    // uses Storage, so no other match blocks exist yet — add them
+    // here, in this shared file, if that changes.
+    // ============================================================
+
+    // Generic locked-piece pattern art — not sensitive, never
+    // recipient- or creator-specific.
+    match /puzzle_storage/_shared/patterns/{file} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Everything under an experience's own folder. Storage Rules
+    // cannot mix a literal prefix with a wildcard within one path
+    // segment (`reveal-image-original.{ext}` is invalid syntax — this
+    // was caught by actually running the emulator, not assumed), so
+    // this matches the whole filename and branches on it with
+    // `.matches()` instead. Only the creator's original upload is
+    // ever granted here; the server-generated full-resolution image
+    // and the 9 sliced pieces (produced by the onImageUpload trigger,
+    // Milestone M2) are named differently and therefore fall through,
+    // unmatched, to the default-deny catch-all below — the client only
+    // ever receives them via a short-lived signed URL from a Cloud
+    // Function, once a piece is actually earned (Module Contract §8).
+    match /puzzle_storage/{creatorId}/{experienceId}/{fileName} {
+      allow read: if request.auth != null
+        && request.auth.uid == creatorId
+        && fileName.matches('^reveal-image-original[.](jpg|jpeg|png|webp)$');
+
+      allow write: if request.auth != null
+        && request.auth.uid == creatorId
+        && fileName.matches('^reveal-image-original[.](jpg|jpeg|png|webp)$')
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp)');
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

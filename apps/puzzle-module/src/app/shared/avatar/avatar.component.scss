@@ -1,0 +1,18 @@
+.app-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.app-avatar--initials {
+  background: var(--ld-periwinkle, #7c7fe0);
+  // Was a hardcoded #fff — the same solid-periwinkle-surface contrast
+  // failure as the secondary button and the Stepper's current-step
+  // circle (3.52:1 light, 2.48:1 dark). Same fix (M5 Phase 3).
+  color: var(--ld-periwinkle-btn-ink, #1c1c4c);
+  font-weight: 700;
+  text-transform: uppercase;
+}

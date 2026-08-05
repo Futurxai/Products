@@ -1,0 +1,34 @@
+<div class="question-editor">
+  <div class="question-editor__header">
+    <h3>Question {{ index }}</h3>
+    <app-badge [tone]="validation().ok ? 'success' : 'neutral'">{{ validation().ok ? 'Ready' : 'Incomplete' }}</app-badge>
+  </div>
+
+  <form [formGroup]="form">
+    <app-input
+      formControlName="prompt"
+      label="Question"
+      placeholder="e.g. Where did we go on our first date?"
+      [required]="true"
+    ></app-input>
+    <app-input formControlName="correctAnswer" label="Correct answer" placeholder="e.g. Cubbon Park" [required]="true"></app-input>
+  </form>
+
+  <div class="question-editor__clues">
+    <p class="question-editor__clues-label">Clues (optional, up to {{ maxClues }})</p>
+    @for (clue of clues(); track $index; let i = $index) {
+      <div class="question-editor__clue-row">
+        <app-input
+          [ngModel]="clue"
+          (ngModelChange)="updateClue(i, $event)"
+          [label]="'Clue ' + (i + 1)"
+          placeholder="A hint that gets more specific each time"
+        ></app-input>
+        <app-button variant="ghost" (click)="removeClue(i)">Remove</app-button>
+      </div>
+    }
+    @if (clues().length < maxClues) {
+      <app-button variant="ghost" (click)="addClue()">+ Add a clue</app-button>
+    }
+  </div>
+</div>

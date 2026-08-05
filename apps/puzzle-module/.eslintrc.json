@@ -1,0 +1,45 @@
+{
+  "root": true,
+  "ignorePatterns": ["projects/**/*", "www/**/*", "dist/**/*"],
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "parserOptions": {
+        "project": ["tsconfig.json", "tsconfig.app.json", "tsconfig.spec.json"],
+        "createDefaultProgram": true
+      },
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@angular-eslint/recommended"
+      ],
+      "rules": {
+        "@angular-eslint/component-selector": ["error", { "type": "element", "prefix": "app", "style": "kebab-case" }],
+        "@angular-eslint/component-class-suffix": ["error", { "suffixes": ["Component", "Page", "Modal"] }],
+        "@angular-eslint/directive-selector": ["error", { "type": "attribute", "prefix": "app", "style": "camelCase" }],
+        "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+        "@typescript-eslint/explicit-function-return-type": "off"
+      }
+    },
+    {
+      "files": ["src/app/domain/**/*.ts", "src/app/application/**/*.ts", "src/app/features/**/*.ts", "src/app/shared/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["firebase/*", "@angular/fire/*"],
+                "message": "Only infrastructure/firebase may import Firebase directly — depend on a domain/ports interface instead. See docs/puzzle-module/architecture.md (Phase 5, Clean Architecture layering)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["*.html"],
+      "extends": ["plugin:@angular-eslint/template/recommended", "plugin:@angular-eslint/template/accessibility"]
+    }
+  ]
+}

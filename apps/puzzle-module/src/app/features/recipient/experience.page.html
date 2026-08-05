@@ -1,0 +1,33 @@
+<ion-content class="experience-page">
+  @if (sessionFacade.linkStatus() === 'invalid') {
+    <div class="experience-page__invalid" role="alert">
+      <h1>This link isn't working</h1>
+      <p>{{ sessionFacade.errorMessage() }}</p>
+      @if (sessionFacade.errorKind() === 'infra') {
+        <app-button variant="secondary" (click)="retryResolve()">Try again</app-button>
+      }
+    </div>
+  } @else {
+    @if (sessionFacade.linkStatus() === 'ready') {
+      @if (!hasStarted()) {
+        @if (sessionFacade.publicMeta(); as meta) {
+          <app-welcome-screen
+            [recipientDisplayName]="meta.recipientDisplayName"
+            [occasion]="meta.occasion"
+            [welcomeNote]="meta.welcomeNote"
+            (startPuzzle)="onStartPuzzle()"
+          ></app-welcome-screen>
+        }
+      } @else {
+        @if (sessionFacade.isComplete()) {
+          <app-completion-screen></app-completion-screen>
+        } @else {
+          <app-puzzle-board></app-puzzle-board>
+          <app-question-modal></app-question-modal>
+        }
+      }
+    } @else {
+      <app-loader label="Finding your puzzle..." class="experience-page__loader"></app-loader>
+    }
+  }
+</ion-content>

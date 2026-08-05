@@ -1,0 +1,63 @@
+<app-modal [isOpen]="isOpen()" [dismissible]="false" [label]="sessionFacade.activeQuestion()?.prompt ?? 'Question'" (closed)="onClosed()">
+  @if (sessionFacade.activeQuestion(); as question) {
+    <div class="question-modal">
+      @if (isSolved()) {
+        <div class="question-modal__solved" aria-live="polite">
+          <app-badge tone="success">Piece unlocked</app-badge>
+          <h2>{{ solvedFeedback()?.message ?? 'Piece unlocked!' }}</h2>
+          @if (solvedFeedback(); as feedback) {
+            <p class="question-modal__points">+{{ feedback.points }} points</p>
+          }
+          <app-button (click)="onContinue()">Continue</app-button>
+        </div>
+      } @else {
+        <h2 class="question-modal__prompt">{{ question.prompt }}</h2>
+
+        <form (ngSubmit)="onSubmit()">
+          <app-input
+            [formControl]="answerControl"
+            label="Your answer"
+            [errorMessage]="wrongAnswerMessage()"
+          ></app-input>
+          <app-button type="submit" expand="block" [loading]="sessionFacade.submitting()">Submit answer</app-button>
+        </form>
+
+        @if ((sessionFacade.activePiece()?.cluesUsed ?? 0) > 0) {
+          <div class="question-modal__clues">
+            <h3>Clues <span class="question-modal__clue-counter">{{ sessionFacade.activePiece()?.cluesUsed ?? 0 }}/{{ maxClues }}</span></h3>
+            @if (sessionFacade.activeQuestionClues().length > 0) {
+              <ul>
+                @for (clue of sessionFacade.activeQuestionClues(); track $index) {
+                  <li>{{ clue }}</li>
+                }
+              </ul>
+            } @else {
+              <p class="question-modal__clue-unavailable">Clue text isn't available after reloading the page — but your progress is safe.</p>
+            }
+          </div>
+        }
+
+        @if (sessionFacade.canRequestClueForActive()) {
+          <app-button variant="secondary" expand="block" [loading]="sessionFacade.requestingClue()" (click)="onRequestClue()">Get a clue</app-button>
+          @if (sessionFacade.clueError(); as clueError) {
+            <p class="question-modal__clue-error" role="alert">{{ clueError }}</p>
+          }
+        }
+
+        @if (sessionFacade.canRequestPartnerHelpForActive()) {
+          <div class="question-modal__partner-help">
+            <h3>Ask Your Partner</h3>
+            <p>{{ sessionFacade.publicMeta()?.partnerHelpChallenge }}</p>
+            <div class="question-modal__partner-help-actions">
+              <a [href]="whatsappShareUrl()" target="_blank" rel="noopener" class="question-modal__whatsapp-link">Share via WhatsApp</a>
+              <app-button variant="secondary" [loading]="sessionFacade.requestingPartnerHelp()" (click)="onRequestPartnerHelp()">Reveal Piece</app-button>
+            </div>
+            @if (sessionFacade.partnerHelpError(); as partnerHelpError) {
+              <p class="question-modal__clue-error" role="alert">{{ partnerHelpError }}</p>
+            }
+          </div>
+        }
+      }
+    </div>
+  }
+</app-modal>

@@ -1,0 +1,11 @@
+:host.app-card {
+  display: block;
+  background: var(--ion-background-color, #fff);
+  border-radius: var(--app-radius-l);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(34, 24, 49, 0.08);
+  padding: var(--app-space-6);
+}
+
+:host.app-card--flush {
+  padding: 0;
+}

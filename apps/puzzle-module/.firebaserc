@@ -1,0 +1,12 @@
+{
+  "projects": {
+    "default": "lovedigitally-app"
+  },
+  "targets": {
+    "lovedigitally-app": {
+      "hosting": {
+        "puzzle-module": ["puzzle-module"]
+      }
+    }
+  }
+}

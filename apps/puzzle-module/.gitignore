@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Build output
+www/
+dist/
+out-tsc/
+.angular/
+
+# Capacitor native projects (added post-MVP, generated — not hand-edited)
+android/
+ios/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+functions/lib/
+functions/node_modules/
+
+# Environment secrets — real Firebase config for lovedigitally-app must
+# never be committed; injected at build/CI time instead (see M0 README).
+.env
+.env.local
+src/environments/environment.secrets.ts
+
+# Editors / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+
+# Test coverage
+coverage/
+
+# Playwright E2E output (traces, screenshots, HTML report)
+test-results/
+playwright-report/
+blob-report/

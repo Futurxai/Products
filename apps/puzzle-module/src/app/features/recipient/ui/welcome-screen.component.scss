@@ -1,0 +1,73 @@
+.welcome-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--app-space-8) var(--app-space-5) var(--app-space-6);
+  max-width: 28rem;
+  margin: 0 auto;
+}
+
+.welcome-screen__avatar,
+.welcome-screen__eyebrow,
+.welcome-screen__heading,
+.welcome-screen__note,
+app-button {
+  opacity: 0;
+  animation: welcome-fade-up 560ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.welcome-screen__avatar {
+  margin-bottom: var(--app-space-4);
+  animation-delay: 40ms;
+}
+
+.welcome-screen__eyebrow {
+  margin: 0 0 var(--app-space-1);
+  color: var(--ld-mist, #6b6178);
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  animation-delay: 140ms;
+}
+
+.welcome-screen__heading {
+  margin: 0 0 var(--app-space-4);
+  font-size: 1.75rem;
+  animation-delay: 220ms;
+}
+
+.welcome-screen__note {
+  margin: 0 0 var(--app-space-6);
+  line-height: 1.6;
+  color: var(--ld-ink, #201a2b);
+  white-space: pre-line;
+  animation-delay: 300ms;
+}
+
+.welcome-screen app-button {
+  width: 100%;
+  animation-delay: 380ms;
+}
+
+@keyframes welcome-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-screen__avatar,
+  .welcome-screen__eyebrow,
+  .welcome-screen__heading,
+  .welcome-screen__note,
+  app-button {
+    animation: none;
+    opacity: 1;
+  }
+}

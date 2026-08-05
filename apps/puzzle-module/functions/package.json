@@ -1,0 +1,41 @@
+{
+  "name": "@futurx/puzzle-module-functions",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cloud Functions for the Puzzle Module — deployed as the 'puzzle-module' codebase into the shared lovedigitally-app Firebase project (see ../firebase.json).",
+  "main": "lib/index.js",
+  "engines": {
+    "node": "20"
+  },
+  "scripts": {
+    "sync-domain": "node scripts/sync-domain.mjs",
+    "prebuild": "npm run sync-domain",
+    "build": "tsc",
+    "build:watch": "npm run sync-domain && tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions --project lovedigitally-app",
+    "pretest": "npm run build",
+    "test": "jasmine --config=jasmine.json",
+    "pretest:emulator": "node scripts/generate-fake-service-account.mjs",
+    "test:emulator": "cd .. && firebase emulators:exec --project lovedigitally-app --only firestore,auth,storage \"cd functions && npm run build && GOOGLE_APPLICATION_CREDENTIALS=.emulator-fixtures/fake-service-account.json jasmine --config=jasmine.emulator.json\"",
+    "lint": "npm run sync-domain && eslint --ext .ts src"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^7.21.0",
+    "firebase-admin": "^12.5.0",
+    "firebase-functions": "^5.1.1",
+    "sharp": "^0.33.5",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^3.0.4",
+    "@types/jasmine": "^5.1.4",
+    "@types/node": "^20.14.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.0",
+    "firebase-functions-test": "^3.3.0",
+    "jasmine": "^5.2.0",
+    "rxjs": "~7.8.1",
+    "typescript": "~5.5.4"
+  }
+}

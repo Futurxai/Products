@@ -1,0 +1,6 @@
+# Recipient links (/e/:shareToken) are personal, unlisted capability
+# URLs — shared directly with one recipient, never meant to be publicly
+# discoverable or indexed. A puzzle link showing up in search results
+# would defeat the point of it being a private gift.
+User-agent: *
+Disallow: /e/
