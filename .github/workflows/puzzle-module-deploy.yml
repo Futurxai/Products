@@ -76,16 +76,16 @@ jobs:
 
       - name: Deploy — all
         if: github.event.inputs.deploy_target == 'all'
-        run: firebase deploy --project lovedigitally-app --only firestore:rules,storage:rules,functions:puzzle-module,hosting:puzzle-module --non-interactive
+        run: npx firebase deploy --project lovedigitally-app --only firestore:rules,storage:rules,functions:puzzle-module,hosting:puzzle-module --non-interactive
 
       - name: Deploy — Hosting only
         if: github.event.inputs.deploy_target == 'hosting-only'
-        run: firebase deploy --project lovedigitally-app --only hosting:puzzle-module --non-interactive
+        run: npx firebase deploy --project lovedigitally-app --only hosting:puzzle-module --non-interactive
 
       - name: Deploy — Functions only
         if: github.event.inputs.deploy_target == 'functions-only'
-        run: firebase deploy --project lovedigitally-app --only functions:puzzle-module --non-interactive
+        run: npx firebase deploy --project lovedigitally-app --only functions:puzzle-module --non-interactive
 
       - name: Deploy — Rules only
         if: github.event.inputs.deploy_target == 'rules-only'
-        run: firebase deploy --project lovedigitally-app --only firestore:rules,storage:rules --non-interactive
+        run: npx firebase deploy --project lovedigitally-app --only firestore:rules,storage:rules --non-interactive
