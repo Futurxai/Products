@@ -74,6 +74,43 @@ jobs:
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}' > "$RUNNER_TEMP/firebase-service-account.json"
           echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-service-account.json" >> "$GITHUB_ENV"
 
+      # TEMPORARY — debugging a "Failed to authenticate, have you run
+      # firebase login?" error from firebase-tools despite
+      # GOOGLE_APPLICATION_CREDENTIALS being set. Prints ONLY safe
+      # metadata (existence, byte length, JSON validity, presence of
+      # required field names) — never the credential file's actual
+      # content. Remove this step once the root cause is found.
+      - name: Diagnose Firebase credential (temporary, safe metadata only)
+        if: github.event.inputs.deploy_target != ''
+        run: |
+          EXPECTED_PATH="$RUNNER_TEMP/firebase-service-account.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS matches the created credential file path: $([ "$GOOGLE_APPLICATION_CREDENTIALS" = "$EXPECTED_PATH" ] && echo YES || echo NO)"
+          cat > "$RUNNER_TEMP/diagnose-credential.cjs" <<'DIAGNOSE_EOF'
+          const fs = require('fs');
+          const path = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+          const exists = !!path && fs.existsSync(path);
+          console.log('credential file exists:', exists ? 'YES' : 'NO');
+          if (!exists) process.exit(0);
+          const raw = fs.readFileSync(path, 'utf8');
+          console.log('credential file byte length:', Buffer.byteLength(raw, 'utf8'));
+          let parsed;
+          try {
+            parsed = JSON.parse(raw);
+            console.log('JSON.parse succeeds: YES');
+          } catch (e) {
+            console.log('JSON.parse succeeds: NO');
+            process.exit(0);
+          }
+          const hasField = (name) => typeof parsed[name] === 'string' && parsed[name].length > 0;
+          const required = ['project_id', 'client_email', 'private_key'];
+          console.log('required service-account fields present:', required.every(hasField) ? 'YES' : 'NO');
+          console.log('project_id present:', hasField('project_id') ? 'YES' : 'NO');
+          console.log('client_email present:', hasField('client_email') ? 'YES' : 'NO');
+          console.log('private_key present:', hasField('private_key') ? 'YES' : 'NO');
+          console.log('type field (safe, expected literal "service_account"):', parsed.type === 'service_account' ? 'service_account' : 'UNEXPECTED');
+          DIAGNOSE_EOF
+          node "$RUNNER_TEMP/diagnose-credential.cjs"
+
       - name: Deploy — all
         if: github.event.inputs.deploy_target == 'all'
         run: npx firebase deploy --project lovedigitally-app --only firestore:rules,storage:rules,functions:puzzle-module,hosting:puzzle-module --non-interactive
