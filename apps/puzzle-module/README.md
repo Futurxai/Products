@@ -142,17 +142,17 @@ WCAG 2.1 AA review across the whole app — M4's own accessibility pass (Phase 8
 
 ## Firebase project
 
-This app shares the **`lovedigitally-app`** Firebase project with `/lovedigitally-web` — it does not have its own project. Isolation comes from:
+This app deploys to its own **dedicated** Firebase project, **`lovedigitally-puzzle`** — migrated off the `lovedigitally-app` project it originally shared with `/lovedigitally-web` (see ADR-0011, which supersedes ADR-0001's shared-project decision). It no longer shares any Firebase infrastructure — project, Rules, or Storage bucket — with `lovedigitally-web`.
 
-- A `puzzle_*` Firestore/Storage namespace (`puzzle_creators`, `puzzle_experiences`, `puzzle_experiences_private`, `puzzle_progress`, `puzzle_events`, `puzzle_storage/...`) that never collides with `lovedigitally_pages` / `lovedigitally_orders` / `lovedigitally_subscriptions` / `lovedigitally_webhook_events`.
-- A dedicated Hosting site target, `puzzle-module` (see `.firebaserc`), so this app deploys to its own URL without touching the existing static site's Hosting config.
-- A dedicated Functions **codebase**, `puzzle-module` (see `firebase.json`), so `firebase deploy --only functions:puzzle-module` never touches `publishPage` / `createOrder` / `verifyOrder` / `createSubscription` / `verifySubscription` / `razorpayWebhook`.
+- Its own Firestore database and Storage bucket (`lovedigitally-puzzle.firebasestorage.app`). The `puzzle_*` collection/path prefix is unchanged from the shared-project era (renaming a live collection is a data migration, not a config change, and was out of scope for this migration) but no longer serves a collision-avoidance purpose — it's simply the existing naming.
+- A dedicated Hosting site target, `puzzle-module` (see `.firebaserc`), unchanged.
+- A dedicated Functions **codebase**, `puzzle-module` (see `firebase.json`), unchanged — still deployed independently of anything in `lovedigitally-web/functions`.
 
-### ⚠️ Rules files are shared, not duplicated
+### Rules files are standalone, not shared
 
-`firestore.rules` and `storage.rules` in this directory are **symlinks** to `../../lovedigitally-web/firestore.rules` and `../../lovedigitally-web/storage.rules` — not copies. The Firebase CLI refuses to reference a rules file outside the current project directory (verified directly against the emulator while building M2 — not an assumption), so a symlink is what lets both apps' `firebase.json` point at one physical, single-source-of-truth file without the CLI's path restriction getting in the way, and without a real risk of the two copies drifting apart (they're the same inode).
+`firestore.rules` and `storage.rules` in this directory are **real, standalone files** — previously symlinks to `../../lovedigitally-web/firestore.rules`/`storage.rules` from the shared-project era, replaced as part of the ADR-0011 migration (which also supersedes ADR-0007's symlink decision). They contain only the `puzzle_*`/`puzzle_storage/` match blocks (the `lovedigitally_*` blocks that existed alongside them in the old shared file were dropped — they were never this app's rules to own) plus the same default-deny catch-all. Covered by the same real-emulator test suite as before (`functions/src/emulator-tests/security-rules.emulator-test.ts`, `storage-rules.emulator-test.ts`), now reading these standalone files directly instead of the old shared one.
 
-**As of M2**: the `puzzle_*` match blocks are merged into `lovedigitally-web/firestore.rules` and `lovedigitally-web/storage.rules`, and both are covered by real emulator tests (`functions/src/emulator-tests/security-rules.emulator-test.ts`) — not just written, verified. Real `firebase deploy` still needs to run from `lovedigitally-web/` (or with an explicit `--config`), since that's where the physical files live and where the Firebase CLI's project-directory check is satisfied natively.
+**Maintenance tradeoff, accepted deliberately**: these rules can now drift from `lovedigitally-web`'s own ruleset — there is no structural guarantee against it anymore (no shared inode). This module's own emulator test coverage is now the only thing keeping its rules correct; a `lovedigitally-web`-side rules change has no way to reach this app.
 
 ## Local development
 
@@ -172,7 +172,7 @@ npm run build:watch
 
 ### Real Firebase config
 
-`src/environments/environment.ts` and `environment.prod.ts` contain **placeholder** values for the `lovedigitally-app` web config — real values (`apiKey`, `appId`, `messagingSenderId`) were not available when this scaffold was generated and must never be hand-typed into these files from memory or guesswork. Pull them from Firebase Console → `lovedigitally-app` → Project Settings → your web app, and inject them at build/CI time (e.g. a CI secret that does a token-replace on `environment.prod.ts` before `ng build --configuration production`). Local dev against the emulators does not need real values at all — the emulator suite ignores `apiKey`.
+`src/environments/environment.ts` and `environment.prod.ts` contain the real `lovedigitally-puzzle` Web App config (`authDomain`, `projectId`, `storageBucket`, `messagingSenderId`, `appId`, `measurementId`) as of the ADR-0011 migration — Firebase web config is not a secret in the traditional sense, it's safe to ship client-side by Firebase's own design. The one exception is `apiKey`, which stays a **placeholder** (`REPLACE_WITH_LOVEDIGITALLY_PUZZLE_WEB_API_KEY` / `__LOVEDIGITALLY_PUZZLE_WEB_API_KEY__`) since it wasn't available in the session that ran this migration — pull it from Firebase Console → `lovedigitally-puzzle` → Project Settings → your web app, and inject it at build/CI time (`scripts/apply-prod-env.mjs`, `FIREBASE_API_KEY`). Local dev against the emulators does not need a real `apiKey` at all — the emulator suite ignores it.
 
 ## Scripts
 
@@ -230,12 +230,9 @@ Neither bug was reachable by this project's other test layers: the Cloud Functio
 
 ## Deploying (not yet done from this session)
 
-Every gate `firebase deploy` should require — lint, unit tests, emulator tests, production build — passes, for both the app and `functions/`, from a clean install. **Actual deployment has not been run**: it requires real Firebase project credentials (`firebase login` + write access to `lovedigitally-app`) that don't exist in this development session. When ready:
+Every gate `firebase deploy` should require — lint, unit tests, emulator tests, production build — passes, for both the app and `functions/`, from a clean install. **Actual deployment has not been run**: it requires real Firebase project credentials (`firebase login` + write access to `lovedigitally-puzzle`) that don't exist in this development session. When ready, everything deploys from `apps/puzzle-module/` now — rules are no longer a symlink into `lovedigitally-web/`:
 
 ```bash
-# From lovedigitally-web/ (rules physically live there):
-firebase deploy --only firestore:rules,storage --project lovedigitally-app
-
 # From apps/puzzle-module/:
-firebase deploy --only hosting:puzzle-module,functions:puzzle-module --project lovedigitally-app
+firebase deploy --only firestore:rules,storage:rules,hosting:puzzle-module,functions:puzzle-module --project lovedigitally-puzzle
 ```

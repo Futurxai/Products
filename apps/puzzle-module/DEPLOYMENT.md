@@ -16,63 +16,62 @@ Run through this before merging the release PR to `main`. This is distinct from 
 
 ## Prerequisites
 
-- Firebase CLI (`firebase-tools`) installed and authenticated (`firebase login`) against an account with **Editor** or **Owner** on the `lovedigitally-app` Firebase project — needed only for the manual-CLI path below; the GitHub Actions path authenticates with a service account instead.
+- Firebase CLI (`firebase-tools`) installed and authenticated (`firebase login`) against an account with **Editor** or **Owner** on the `lovedigitally-puzzle` Firebase project — needed only for the manual-CLI path below; the GitHub Actions path authenticates with a service account instead.
 - Node 20 (matches CI's `actions/setup-node@v4` pin).
-- The real Firebase Web SDK config for the `puzzle-module` Hosting site's registered Web App (Firebase Console → `lovedigitally-app` → Project Settings → General → your apps → the Puzzle Module web app). This is **not a secret** by Firebase's own design (it's safe to ship client-side), but it must never be a placeholder in a build you actually deploy.
+- The real Firebase Web SDK `apiKey` for the `puzzle-module` Hosting site's registered Web App (Firebase Console → `lovedigitally-puzzle` → Project Settings → General → your apps → the Puzzle Module web app). This is **not a secret** by Firebase's own design (it's safe to ship client-side) — the rest of the web config (`authDomain`, `projectId`, `storageBucket`, `messagingSenderId`, `appId`, `measurementId`) is already committed in `environment.prod.ts` as of the ADR-0011 migration; only `apiKey` still needs to come from a real source at deploy time.
 
 ## Environment Verification (do this first, every time)
 
-`src/environments/environment.prod.ts` ships with placeholder tokens (`__LOVEDIGITALLY_APP_WEB_API_KEY__`, `__LOVEDIGITALLY_APP_SENDER_ID__`, `__PUZZLE_MODULE_WEB_APP_ID__`) deliberately — the real values were never available in the sessions that built this app, and must never be hand-committed to this file.
+`src/environments/environment.prod.ts` ships with one placeholder token (`__LOVEDIGITALLY_PUZZLE_WEB_API_KEY__`) deliberately — that real value was never available in the session that ran the ADR-0011 migration, and must never be hand-committed to this file.
 
-**`npm run build:deploy`** (`scripts/apply-prod-env.mjs` + `ng build --configuration production`, then the placeholder file is restored via `git checkout`) is the one command that produces an actually-deployable build. It requires three environment variables — `FIREBASE_API_KEY`, `FIREBASE_SENDER_ID`, `FIREBASE_APP_ID` — and fails loudly, before building anything, if any are missing. **`npm run build:prod`** (what CI's validation job runs) deliberately does *not* do this substitution — it only needs to prove the app compiles, not that it's deployable, so it's fine for it to build against placeholders.
+**`npm run build:deploy`** (`scripts/apply-prod-env.mjs` + `ng build --configuration production`, then the placeholder file is restored via `git checkout`) is the one command that produces an actually-deployable build. It requires one environment variable — `FIREBASE_API_KEY` — and fails loudly, before building anything, if it's missing. **`npm run build:prod`** (what CI's validation job runs) deliberately does *not* do this substitution — it only needs to prove the app compiles, not that it's deployable, so it's fine for it to build against the placeholder.
 
-1. **Deploying via GitHub Actions (recommended)**: add four repository secrets (Settings → Secrets and variables → Actions → New repository secret) — `FIREBASE_API_KEY`, `FIREBASE_SENDER_ID`, `FIREBASE_APP_ID` (the Web SDK config from Prerequisites above), and `FIREBASE_SERVICE_ACCOUNT_KEY` (a GCP service account's JSON key, raw content, with Firebase Admin/Deploy permissions on `lovedigitally-app` — create one at GCP Console → IAM & Admin → Service Accounts, grant it the `Firebase Admin` role, generate a JSON key). Once set, trigger `puzzle-module-deploy.yml` from the Actions tab — no local secret handling required, and nobody (including whoever triggers it) ever sees the raw values, since GitHub Actions redacts secret values from logs automatically.
-2. **Deploying by hand**: export the same three `FIREBASE_*` env vars in your shell, run `npm run build:deploy`, then follow the manual `firebase deploy` commands below. Verify `git diff src/environments/environment.prod.ts` is empty afterward — `build:deploy` restores it automatically, but this is a real secret-leak risk worth double-checking, not a formality.
+1. **Deploying via GitHub Actions (recommended)**: add two repository secrets (Settings → Secrets and variables → Actions → New repository secret) — `FIREBASE_API_KEY` (the Web SDK apiKey from Prerequisites above), and `FIREBASE_SERVICE_ACCOUNT_KEY` (a GCP service account's JSON key, raw content, with Firebase Admin/Deploy permissions on `lovedigitally-puzzle` — create one at GCP Console → IAM & Admin → Service Accounts, grant it the `Firebase Admin` role, generate a JSON key). Once set, trigger `puzzle-module-deploy.yml` from the Actions tab — no local secret handling required, and nobody (including whoever triggers it) ever sees the raw values, since GitHub Actions redacts secret values from logs automatically.
+2. **Deploying by hand**: export `FIREBASE_API_KEY` in your shell, run `npm run build:deploy`, then follow the manual `firebase deploy` commands below. Verify `git diff src/environments/environment.prod.ts` is empty afterward — `build:deploy` restores it automatically, but this is a real secret-leak risk worth double-checking, not a formality.
 3. Either way, confirm `environment.prod.ts`'s `useEmulators: false` and `emulatorHosts: null` are unchanged — a production build must never attempt to connect to local emulators.
 
 ## One-Time Firebase Project Setup
 
-The steps below only need to happen once per Firebase project, before the very first deploy. If they've already been done (e.g. by whoever set up `lovedigitally-web`), skip straight to the Release Checklist. All of these are Console/CLI actions against the live `lovedigitally-app` project — none of them are code changes, and none can be verified from this repository alone; a repository administrator with Owner/Editor access must perform and confirm them.
+The steps below only need to happen once per Firebase project, before the very first deploy. All of these are Console/CLI actions against the live `lovedigitally-puzzle` project — none of them are code changes, and none can be verified from this repository alone; a repository administrator with Owner/Editor access must perform and confirm them. `lovedigitally-puzzle` is a fresh dedicated project (ADR-0011) with its own Web App already registered — treat everything below as still needing verification, not assumed inherited from `lovedigitally-app`.
 
 ### 1. Creating the Firebase Hosting site (if missing)
 
-`.firebaserc`'s `targets.lovedigitally-app.hosting.puzzle-module: ["puzzle-module"]` only declares an **alias** used by this repo's `firebase deploy --only hosting:puzzle-module` commands — it does not create the underlying Hosting site in the live project. If the `puzzle-module` site doesn't exist yet in `lovedigitally-app`, every Hosting deploy will fail until it's created:
+`.firebaserc`'s `targets.lovedigitally-puzzle.hosting.puzzle-module: ["puzzle-module"]` only declares an **alias** used by this repo's `firebase deploy --only hosting:puzzle-module` commands — it does not create the underlying Hosting site in the live project. If the `puzzle-module` site doesn't exist yet in `lovedigitally-puzzle`, every Hosting deploy will fail until it's created:
 
-1. Firebase Console → `lovedigitally-app` → Hosting → **Add another site** → enter site ID `puzzle-module` (must match `.firebaserc` exactly). Or via CLI: `firebase hosting:sites:create puzzle-module --project lovedigitally-app`.
-2. Confirm the target mapping is applied locally: `firebase target:apply hosting puzzle-module puzzle-module --project lovedigitally-app` (this writes/confirms the same mapping already checked into `.firebaserc` — safe to re-run).
-3. Verify: `firebase hosting:sites:list --project lovedigitally-app` should show `puzzle-module` in the list before attempting a deploy.
-4. This site is independent of `lovedigitally-web`'s own Hosting site — creating it does not affect that app's Hosting in any way.
+1. Firebase Console → `lovedigitally-puzzle` → Hosting → **Add another site** → enter site ID `puzzle-module` (must match `.firebaserc` exactly). Or via CLI: `firebase hosting:sites:create puzzle-module --project lovedigitally-puzzle`.
+2. Confirm the target mapping is applied locally: `firebase target:apply hosting puzzle-module puzzle-module --project lovedigitally-puzzle` (this writes/confirms the same mapping already checked into `.firebaserc` — safe to re-run).
+3. Verify: `firebase hosting:sites:list --project lovedigitally-puzzle` should show `puzzle-module` in the list before attempting a deploy.
 
 ### 2. Enabling Google Authentication
 
-The Creator flow's Google sign-in option requires the Google provider to be enabled for the `lovedigitally-app` project (email/password may already be enabled if `lovedigitally-web` uses it — Google needs its own explicit toggle):
+The Creator flow's Google sign-in option requires the Google provider to be enabled for the `lovedigitally-puzzle` project — this is a fresh project, so nothing here should be assumed already configured:
 
-1. Firebase Console → `lovedigitally-app` → Build → Authentication → Sign-in method.
-2. If not already present, enable **Google** as a sign-in provider — select a support email (required by Google's consent screen) and save.
+1. Firebase Console → `lovedigitally-puzzle` → Build → Authentication → Sign-in method.
+2. Enable **Email/Password** and **Google** as sign-in providers — Google needs a support email (required by its consent screen).
 3. Under Authentication → Settings → **Authorized domains**, confirm the `puzzle-module` Hosting site's domain (its default `*.web.app`/`*.firebaseapp.com` domain, and any custom domain later attached) is present — Google sign-in fails silently from an unauthorized domain. Firebase adds the project's default domains automatically, but a custom domain must be added manually.
-4. Anonymous Authentication (used to scope the Recipient's silent session, see `CLAUDE.md`) should already be enabled if `lovedigitally-web` uses it; if this is genuinely the first app on the project to need it, enable **Anonymous** in the same Sign-in method list.
+4. Enable **Anonymous** Authentication (used to scope the Recipient's silent session, see `CLAUDE.md`) — required from day one on this project, unlike the old shared project where it may have already been on for `lovedigitally-web`.
 
 ### 3. Configuring App Check (recommended)
 
 **Not currently implemented in the app** — `app.config.ts` has no `initializeAppCheck`/reCAPTCHA integration, and every Cloud Functions request today logs `"verifications":{"app":"MISSING"}` (documented in `RUNBOOK.md` §4.5 as a known, accepted gap, not a regression). Enabling App Check is a genuine **code change**, not just a Console toggle, so it is out of scope for this release under the "do not modify application code unless absolutely necessary" constraint — recorded here as the recommended next step for whoever administers the project, not something this deploy depends on:
 
-1. Firebase Console → `lovedigitally-app` → Build → App Check → register the `puzzle-module` Hosting site's Web App with **reCAPTCHA Enterprise** (or v3) as the provider, obtain a site key.
+1. Firebase Console → `lovedigitally-puzzle` → Build → App Check → register the `puzzle-module` Hosting site's Web App with **reCAPTCHA Enterprise** (or v3) as the provider, obtain a site key.
 2. Code work required before enforcement can be turned on (tracked as a Future Enhancement, not done in this release): add `firebase/app-check` initialization to `app.config.ts` alongside the existing `provideFunctions()`/`provideFirestore()` providers, and pass the App Check token through on every callable/Firestore/Storage request (the SDKs do this automatically once initialized).
-3. Start in **Console → App Check → Enforce → Monitor mode** (metrics only, nothing blocked) for each product (Cloud Functions, Firestore, Storage) once the client-side change ships, to observe real traffic before flipping to **Enforced** — enforcing immediately, before any real client is sending tokens, would lock out every legitimate request including this app's own.
-4. Do not enable enforcement against `lovedigitally-app` without coordinating with `lovedigitally-web`'s owner first — App Check enforcement is project-wide per product (Firestore/Storage/Functions), not scoped to one app's Hosting site.
+3. Start in **Console → App Check → Enforce → Monitor mode** (metrics only, nothing blocked) for each product (Cloud Functions, Firestore, Storage) once the client-side change ships, to observe real traffic before flipping to **Enforced**.
+4. Since `lovedigitally-puzzle` is now a dedicated project (ADR-0011), App Check enforcement here no longer affects `lovedigitally-web` — the cross-app coordination requirement from the shared-project era no longer applies.
 
 ## Release Checklist
 
 Run through this in order. Every command below is run from `apps/puzzle-module/` unless stated otherwise.
 
-- [ ] For a **first-ever** deploy of this app to `lovedigitally-app`: One-Time Firebase Project Setup (above) completed — Hosting site exists, Google Authentication enabled. Not needed again on subsequent deploys.
+- [ ] For a **first-ever** deploy of this app to `lovedigitally-puzzle`: One-Time Firebase Project Setup (above) completed — Hosting site exists, Authentication (Email/Password, Google, Anonymous) enabled. Not needed again on subsequent deploys.
 - [ ] `git status` is clean; you're deploying an exact, reviewed commit (ideally one CI has already run against, not a local-only change).
 - [ ] `npm ci && npm run lint && npm run build:prod` — clean, no errors, budgets not exceeded.
 - [ ] `cd functions && npm ci && npm run lint && npm run build && npm test && npm run test:emulator` — clean, all specs passing (548 client / 171 functions unit / 46 emulator specs as of M5 Phase 6 — expect these counts to only grow).
-- [ ] Environment Verification (above) completed for this specific build — real config, not placeholders.
+- [ ] Environment Verification (above) completed for this specific build — real `apiKey`, not the placeholder.
 - [ ] `firestore.indexes.json` reviewed for any new composite index a recent change might need (Firestore returns a direct console link in its error if a query needs one at runtime — better to catch it here).
 - [ ] No secrets, API keys, or `.env*` files staged for commit (`firebase.json`'s functions `ignore` already excludes `.env*` from the Functions deploy bundle; this checklist item is a last line of defense, not a substitute for that).
-- [ ] If this deploy touches `firestore.rules`/`storage.rules` (via the `lovedigitally-web/` symlink target), confirm `lovedigitally-web`'s own deploys aren't affected unexpectedly — this is the **one shared, single deployed ruleset** for both apps (see `README.md`'s "Rules files are shared, not duplicated" section).
+- [ ] `firestore.rules`/`storage.rules` are this app's own standalone files (ADR-0011) — no cross-app coordination step needed anymore, unlike the shared-project era.
 - [ ] Know your rollback path before you deploy, not after — re-read the Rollback Plan below; note the current Hosting release ID (`firebase hosting:releases:list --site puzzle-module`) so "the last good one" isn't a guess later.
 - [ ] Deploy (see below).
 - [ ] Smoke-test immediately after: open the live Hosting URL, sign in as a test Creator, confirm the Dashboard loads; open a real (or freshly-published test) `/e/:shareToken` link, confirm it resolves. For a first release, run the full UAT flow (`e2e/creator-to-recipient.spec.ts` — see `README.md`'s End-to-End UAT section) against the real deployed environment, not just the emulator.
@@ -82,39 +81,38 @@ Run through this in order. Every command below is run from `apps/puzzle-module/`
 
 ### Via GitHub Actions (recommended)
 
-Actions tab → **Puzzle Module Deploy** → Run workflow → choose `all` / `hosting-only` / `functions-only` / `rules-only`. Requires the four repository secrets from Environment Verification above to already be set. The workflow builds with real config, builds Functions, authenticates via the service account, and deploys — in the safe order (Rules and Functions before Hosting) when `all` is chosen.
+Actions tab → **Puzzle Module Deploy** → Run workflow → choose `all` / `hosting-only` / `functions-only` / `rules-only`. Requires the two repository secrets from Environment Verification above (`FIREBASE_API_KEY`, `FIREBASE_SERVICE_ACCOUNT_KEY`) to already be set. The workflow builds with real config, builds Functions, authenticates via the service account, and deploys — in the safe order (Rules and Functions before Hosting) when `all` is chosen.
 
 Optionally, add required reviewers to a GitHub **Environment** named `production` (Settings → Environments) — the workflow already targets `environment: production`, so if that environment has protection rules configured, a deploy pauses for approval before running, even though someone already had to manually trigger it. Not configured by default; this is an extra gate you can layer on, not something this PR turns on for you.
 
 ### Manually, via the Firebase CLI
 
-Three independently deployable pieces — deploy only what changed, or all three together for a full release:
+Three independently deployable pieces, all from `apps/puzzle-module/` now — no more symlink target, no more deploying rules from `lovedigitally-web/`:
 
 ```bash
 # From apps/puzzle-module/
 
-# 1. Cloud Functions (the puzzle-module codebase specifically — never
-#    touches publishPage/createOrder/etc. from lovedigitally-web)
+# 1. Cloud Functions (the puzzle-module codebase)
 cd functions && npm run build && cd ..
-firebase deploy --only functions:puzzle-module
+firebase deploy --only functions:puzzle-module --project lovedigitally-puzzle
 
-# 2. Firestore + Storage Rules (shared with lovedigitally-web — see the
-#    checklist item above before running this)
-firebase deploy --only firestore:rules,storage:rules
+# 2. Firestore + Storage Rules (standalone as of ADR-0011 — no longer
+#    touches lovedigitally-web in any way)
+firebase deploy --only firestore:rules,storage:rules --project lovedigitally-puzzle
 
 # 3. Hosting (the built Angular app — build:deploy, not build:prod, see
 #    Environment Verification above)
-FIREBASE_API_KEY=... FIREBASE_SENDER_ID=... FIREBASE_APP_ID=... npm run build:deploy
-firebase deploy --only hosting:puzzle-module
+FIREBASE_API_KEY=... npm run build:deploy
+firebase deploy --only hosting:puzzle-module --project lovedigitally-puzzle
 ```
 
 All three, in the safe order (Rules and Functions before Hosting, so the newly-deployed client never talks to stale server-side contracts):
 
 ```bash
-firebase deploy --only firestore:rules,storage:rules,functions:puzzle-module,hosting:puzzle-module
+firebase deploy --only firestore:rules,storage:rules,functions:puzzle-module,hosting:puzzle-module --project lovedigitally-puzzle
 ```
 
-`firebase.json`'s `emulators.singleProjectMode` and the `puzzle-module` Hosting/Functions targets (`.firebaserc`) are already configured correctly for this — no `--project` flag needed as long as your Firebase CLI's active project defaults to `lovedigitally-app` (confirm with `firebase use`).
+`firebase.json`'s `emulators.singleProjectMode` and the `puzzle-module` Hosting/Functions targets (`.firebaserc`) are already configured correctly for this — no `--project` flag needed as long as your Firebase CLI's active project defaults to `lovedigitally-puzzle` (confirm with `firebase use`); the explicit flag above is shown for clarity.
 
 ### Verifying deployment success
 
@@ -131,9 +129,9 @@ After triggering either path above, confirm all of the following before consider
 
 Each of the three deployed pieces rolls back independently — you don't need to revert all three just because one had a problem.
 
-- **Hosting**: Firebase Hosting keeps a release history automatically. Fastest rollback, no rebuild needed: Firebase Console → Hosting → `puzzle-module` site → Release history → find the last-known-good release → **Rollback**. Equivalent via CLI: `firebase hosting:clone lovedigitally-app:puzzle-module:<good-release-id> lovedigitally-app:puzzle-module` (get `<good-release-id>` from `firebase hosting:releases:list --site puzzle-module`). Takes effect immediately — no build, no deploy pipeline involved.
-- **Cloud Functions**: no built-in "rollback" command — a bad Functions deploy is fixed by re-deploying the previous good commit. `git checkout <last-good-commit> -- apps/puzzle-module/functions && cd apps/puzzle-module/functions && npm run build && firebase deploy --only functions:puzzle-module`, then revert the checkout. Cloud Functions v2 (Cloud Run under the hood) briefly runs both revisions during a deploy's traffic migration, so a bad deploy is never an instant hard cutover — but it's not instant to undo either; budget a few minutes.
-- **Firestore/Storage Rules**: redeploy the previous rules text the same way as Functions — `git checkout <last-good-commit> -- lovedigitally-web/firestore.rules lovedigitally-web/storage.rules && firebase deploy --only firestore:rules,storage:rules`. **This is the highest-blast-radius rollback of the three** — these rules are shared with `lovedigitally-web`, so reverting them affects that app too; confirm with whoever owns `lovedigitally-web`'s deploys before rolling back Rules alone, not just Puzzle Module's own Hosting/Functions.
+- **Hosting**: Firebase Hosting keeps a release history automatically. Fastest rollback, no rebuild needed: Firebase Console → Hosting → `puzzle-module` site → Release history → find the last-known-good release → **Rollback**. Equivalent via CLI: `firebase hosting:clone lovedigitally-puzzle:puzzle-module:<good-release-id> lovedigitally-puzzle:puzzle-module` (get `<good-release-id>` from `firebase hosting:releases:list --site puzzle-module`). Takes effect immediately — no build, no deploy pipeline involved.
+- **Cloud Functions**: no built-in "rollback" command — a bad Functions deploy is fixed by re-deploying the previous good commit. `git checkout <last-good-commit> -- apps/puzzle-module/functions && cd apps/puzzle-module/functions && npm run build && firebase deploy --only functions:puzzle-module --project lovedigitally-puzzle`, then revert the checkout. Cloud Functions v2 (Cloud Run under the hood) briefly runs both revisions during a deploy's traffic migration, so a bad deploy is never an instant hard cutover — but it's not instant to undo either; budget a few minutes.
+- **Firestore/Storage Rules**: redeploy the previous rules text the same way as Functions — `git checkout <last-good-commit> -- apps/puzzle-module/firestore.rules apps/puzzle-module/storage.rules && firebase deploy --only firestore:rules,storage:rules --project lovedigitally-puzzle`. As of ADR-0011 this **only** affects `lovedigitally-puzzle` — no cross-app coordination with `lovedigitally-web` needed anymore, unlike the shared-project era.
 - **If the problem is data, not code** (a bad write got through before a fix deployed): there is no automatic point-in-time restore configured for Firestore in this setup (would require enabling Firestore's PITR feature or scheduled exports, neither set up here — see Known Limitations). Manual data correction via the Admin SDK or Firebase Console is the only current option; add PITR before a real launch if bad-write recovery matters for this product (see Future Enhancement Recommendations).
 - **After any rollback**: re-run the Release Checklist's smoke test, and check Cloud Logging for the error that triggered the rollback in the first place — a rollback buys time, it doesn't fix the underlying cause.
 

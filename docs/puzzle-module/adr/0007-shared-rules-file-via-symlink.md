@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted (M2, "Fix Firestore/Storage rules security gap + merge into lovedigitally-web").
+Accepted (M2, "Fix Firestore/Storage rules security gap + merge into lovedigitally-web"). **Superseded by [ADR-0011](0011-dedicated-firebase-project-for-puzzle-module.md)** — since the Puzzle Module now deploys to its own dedicated Firebase project, `firestore.rules`/`storage.rules` are standalone real files, not symlinks; the "never accidentally replace the symlink" consequence below no longer applies. This record is kept for history.
 
 ## Context
 

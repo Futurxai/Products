@@ -1,8 +1,9 @@
 /**
  * Verifies the actual deployed Firestore ruleset
- * (`lovedigitally-web/firestore.rules`, symlinked into
- * `apps/puzzle-module/firestore.rules` — see that app's README for
- * why) against real client-permission scenarios, using
+ * (`apps/puzzle-module/firestore.rules` — a standalone file since
+ * ADR-0011's migration to the dedicated `lovedigitally-puzzle`
+ * project, previously a symlink into `lovedigitally-web/`) against
+ * real client-permission scenarios, using
  * `@firebase/rules-unit-testing`. This is the one place the security
  * boundary from Module Contract §8 is checked directly, rather than
  * inferred from the application code that happens to respect it.
@@ -22,14 +23,14 @@ import {
   RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
 
-const RULES_PATH = resolve(__dirname, '../../../../../lovedigitally-web/firestore.rules');
+const RULES_PATH = resolve(__dirname, '../../../firestore.rules');
 
 describe('Firestore security rules — puzzle_* collections', () => {
   let testEnv: RulesTestEnvironment;
 
   beforeAll(async () => {
     testEnv = await initializeTestEnvironment({
-      projectId: 'lovedigitally-app',
+      projectId: 'lovedigitally-puzzle',
       firestore: { rules: readFileSync(RULES_PATH, 'utf8') },
     });
   });
