@@ -3,8 +3,9 @@ import { onCall } from 'firebase-functions/v2/https';
 
 /**
  * Cloud Functions entry point — 'puzzle-module' codebase, deployed into
- * the DEDICATED lovedigitally-puzzle project (see ../firebase.json and
- * ADR-0011, which supersedes the earlier shared-project architecture).
+ * the SHARED lovedigitally-app project (see ../firebase.json and the
+ * Phase 5/6 architecture update). Independent of lovedigitally-web's
+ * functions via the `codebase: "puzzle-module"` declaration.
  */
 initializeApp();
 

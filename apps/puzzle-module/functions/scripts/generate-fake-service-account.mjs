@@ -29,10 +29,10 @@ const { privateKey } = generateKeyPairSync('rsa', {
 
 const fakeServiceAccount = {
   type: 'service_account',
-  project_id: 'lovedigitally-puzzle',
+  project_id: 'lovedigitally-app',
   private_key_id: 'local-emulator-testing-only',
   private_key: privateKey,
-  client_email: 'emulator-testing@lovedigitally-puzzle.iam.gserviceaccount.com',
+  client_email: 'emulator-testing@lovedigitally-app.iam.gserviceaccount.com',
   client_id: '000000000000000000000',
   token_uri: 'https://oauth2.googleapis.com/token',
 };

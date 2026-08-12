@@ -2,7 +2,7 @@
   "name": "@futurx/puzzle-module-functions",
   "version": "0.1.0",
   "private": true,
-  "description": "Cloud Functions for the Puzzle Module — deployed as the 'puzzle-module' codebase into the dedicated lovedigitally-puzzle Firebase project (see ../firebase.json).",
+  "description": "Cloud Functions for the Puzzle Module — deployed as the 'puzzle-module' codebase into the shared lovedigitally-app Firebase project (see ../firebase.json).",
   "main": "lib/index.js",
   "engines": {
     "node": "20"
@@ -12,11 +12,11 @@
     "prebuild": "npm run sync-domain",
     "build": "tsc",
     "build:watch": "npm run sync-domain && tsc --watch",
-    "serve": "npm run build && firebase emulators:start --only functions --project lovedigitally-puzzle",
+    "serve": "npm run build && firebase emulators:start --only functions --project lovedigitally-app",
     "pretest": "npm run build",
     "test": "jasmine --config=jasmine.json",
     "pretest:emulator": "node scripts/generate-fake-service-account.mjs",
-    "test:emulator": "cd .. && firebase emulators:exec --project lovedigitally-puzzle --only firestore,auth,storage \"cd functions && npm run build && GOOGLE_APPLICATION_CREDENTIALS=.emulator-fixtures/fake-service-account.json jasmine --config=jasmine.emulator.json\"",
+    "test:emulator": "cd .. && firebase emulators:exec --project lovedigitally-app --only firestore,auth,storage \"cd functions && npm run build && GOOGLE_APPLICATION_CREDENTIALS=.emulator-fixtures/fake-service-account.json jasmine --config=jasmine.emulator.json\"",
     "lint": "npm run sync-domain && eslint --ext .ts src"
   },
   "dependencies": {

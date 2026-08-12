@@ -2,7 +2,7 @@ name: Puzzle Module Deploy
 
 # Manual-only, deliberately — this workflow can deploy real Cloud
 # Functions, Firestore/Storage Rules, and Hosting to the production
-# lovedigitally-puzzle project. It never runs on push or PR; someone must
+# lovedigitally-app project. It never runs on push or PR; someone must
 # explicitly trigger it (Actions tab → this workflow → Run workflow),
 # choosing exactly which pieces to deploy. See DEPLOYMENT.md.
 on:
@@ -45,19 +45,18 @@ jobs:
         working-directory: apps/puzzle-module/functions
         run: npm ci
 
-      # Real Firebase Web SDK apiKey, sourced from a GitHub Actions
-      # repository secret — see scripts/apply-prod-env.mjs's doc
-      # comment. The rest of the Firebase web config (authDomain,
-      # projectId, storageBucket, messagingSenderId, appId,
-      # measurementId) is committed directly in environment.prod.ts
-      # since ADR-0011 — only apiKey still needs build-time
-      # substitution. Never printed, never committed (the script
-      # restores the placeholder file after the build completes, but
-      # this ephemeral runner is discarded either way).
+      # Real Firebase Web SDK config, sourced from GitHub Actions
+      # repository secrets — see scripts/apply-prod-env.mjs's doc
+      # comment for the exact three secret names required. Never
+      # printed, never committed (the script restores the placeholder
+      # file after the build completes, but this ephemeral runner is
+      # discarded either way).
       - name: Build app (production, real Firebase config)
         if: github.event.inputs.deploy_target == 'all' || github.event.inputs.deploy_target == 'hosting-only'
         env:
           FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          FIREBASE_SENDER_ID: ${{ secrets.FIREBASE_SENDER_ID }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
         run: npm run build:deploy
 
       - name: Build functions
@@ -66,7 +65,7 @@ jobs:
         run: npm run build
 
       # A GCP service account JSON key with Firebase Admin / Deploy
-      # permissions on lovedigitally-puzzle, stored as a single repository
+      # permissions on lovedigitally-app, stored as a single repository
       # secret (the raw JSON content). Written to a temp file for this
       # step only — never logged, never committed.
       - name: Authenticate to Firebase
@@ -114,16 +113,16 @@ jobs:
 
       - name: Deploy — all
         if: github.event.inputs.deploy_target == 'all'
-        run: npx firebase deploy --project lovedigitally-puzzle --only firestore:rules,storage:rules,functions:puzzle-module,hosting:puzzle-module --non-interactive
+        run: npx firebase deploy --project lovedigitally-app --only firestore:rules,storage:rules,functions:puzzle-module,hosting:puzzle-module --non-interactive
 
       - name: Deploy — Hosting only
         if: github.event.inputs.deploy_target == 'hosting-only'
-        run: npx firebase deploy --project lovedigitally-puzzle --only hosting:puzzle-module --non-interactive
+        run: npx firebase deploy --project lovedigitally-app --only hosting:puzzle-module --non-interactive
 
       - name: Deploy — Functions only
         if: github.event.inputs.deploy_target == 'functions-only'
-        run: npx firebase deploy --project lovedigitally-puzzle --only functions:puzzle-module --non-interactive
+        run: npx firebase deploy --project lovedigitally-app --only functions:puzzle-module --non-interactive
 
       - name: Deploy — Rules only
         if: github.event.inputs.deploy_target == 'rules-only'
-        run: npx firebase deploy --project lovedigitally-puzzle --only firestore:rules,storage:rules --non-interactive
+        run: npx firebase deploy --project lovedigitally-app --only firestore:rules,storage:rules --non-interactive
