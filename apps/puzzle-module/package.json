@@ -2,7 +2,7 @@
   "name": "@futurx/puzzle-module",
   "version": "0.1.0",
   "private": true,
-  "description": "Love Digitally — Puzzle Module. Standalone Ionic Angular PWA, deployed into the shared lovedigitally-app Firebase project under the puzzle_* namespace.",
+  "description": "Love Digitally — Puzzle Module. Standalone Ionic Angular PWA, deployed into its own dedicated lovedigitally-puzzle Firebase project.",
   "scripts": {
     "dev": "ionic serve",
     "start": "ng serve",
@@ -14,8 +14,8 @@
     "test:watch": "ng test",
     "lint": "ng lint",
     "pretest:e2e": "cd functions && npm run build && node scripts/generate-fake-service-account.mjs",
-    "test:e2e": "GOOGLE_APPLICATION_CREDENTIALS=\"$(pwd)/functions/.emulator-fixtures/fake-service-account.json\" firebase emulators:exec --project lovedigitally-app --only auth,firestore,storage,functions \"npx playwright test\"",
-    "firebase:emulators": "firebase emulators:start --project lovedigitally-app",
+    "test:e2e": "GOOGLE_APPLICATION_CREDENTIALS=\"$(pwd)/functions/.emulator-fixtures/fake-service-account.json\" firebase emulators:exec --project lovedigitally-puzzle --only auth,firestore,storage,functions \"npx playwright test\"",
+    "firebase:emulators": "firebase emulators:start --project lovedigitally-puzzle",
     "pretest:local": "npm run --prefix functions build && node functions/scripts/generate-fake-service-account.mjs",
     "local": "npm run pretest:local && concurrently -n EMULATORS,ANGULAR -c yellow,cyan \"GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/functions/.emulator-fixtures/fake-service-account.json npm run firebase:emulators\" \"npm start\"",
     "cap:sync": "ionic cap sync"

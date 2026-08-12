@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted (M0). Generalized as a platform-wide pattern in `PLATFORM-ARCHITECTURE.md` §1.
+Accepted (M0). Generalized as a platform-wide pattern in `PLATFORM-ARCHITECTURE.md` §1. **Superseded by [ADR-0011](0011-dedicated-firebase-project-for-puzzle-module.md)** — the Puzzle Module was migrated to its own dedicated Firebase project (`lovedigitally-puzzle`); it no longer shares a project with `lovedigitally-web`. This record is kept for history — the decision and reasoning below applied at the time it was made, but no longer describes the current architecture.
 
 ## Context
 

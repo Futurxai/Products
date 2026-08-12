@@ -19,8 +19,8 @@ ui-debug.log
 functions/lib/
 functions/node_modules/
 
-# Environment secrets — real Firebase config for lovedigitally-app must
-# never be committed; injected at build/CI time instead (see M0 README).
+# Environment secrets — the real Firebase apiKey for lovedigitally-puzzle
+# must never be committed; injected at build/CI time instead (see M0 README).
 .env
 .env.local
 src/environments/environment.secrets.ts

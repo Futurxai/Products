@@ -1,17 +1,19 @@
 /**
  * Verifies the actual deployed Storage ruleset
- * (`lovedigitally-web/storage.rules`, symlinked into
- * `apps/puzzle-module/storage.rules`) against real client-permission
- * scenarios, using `@firebase/rules-unit-testing` — the Storage
- * counterpart of `security-rules.emulator-test.ts` (M5 Phase 6; this
- * file previously didn't exist, so Storage Rules had zero automated
- * coverage despite Firestore Rules having a dedicated suite since M2).
+ * (`apps/puzzle-module/storage.rules` — a standalone file since
+ * ADR-0011's migration to the dedicated `lovedigitally-puzzle`
+ * project, previously a symlink into `lovedigitally-web/`) against
+ * real client-permission scenarios, using `@firebase/rules-unit-testing`
+ * — the Storage counterpart of `security-rules.emulator-test.ts` (M5
+ * Phase 6; this file previously didn't exist, so Storage Rules had
+ * zero automated coverage despite Firestore Rules having a dedicated
+ * suite since M2).
  */
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { assertFails, assertSucceeds, initializeTestEnvironment, RulesTestEnvironment } from '@firebase/rules-unit-testing';
 
-const RULES_PATH = resolve(__dirname, '../../../../../lovedigitally-web/storage.rules');
+const RULES_PATH = resolve(__dirname, '../../../storage.rules');
 const TINY_JPEG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46]);
 
 describe('Storage security rules — puzzle_storage/*', () => {
@@ -19,7 +21,7 @@ describe('Storage security rules — puzzle_storage/*', () => {
 
   beforeAll(async () => {
     testEnv = await initializeTestEnvironment({
-      projectId: 'lovedigitally-app',
+      projectId: 'lovedigitally-puzzle',
       storage: { rules: readFileSync(RULES_PATH, 'utf8') },
     });
   });
