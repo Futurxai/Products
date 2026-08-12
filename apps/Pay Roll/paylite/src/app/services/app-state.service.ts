@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import {
   AttendanceRecord,
+  AttendanceStatus,
+  BudgetCategory,
   BudgetEntry,
   Employee,
   LeaveRequest,
@@ -8,7 +10,7 @@ import {
   UserRole,
 } from '../models/models';
 
-const STORAGE_KEY = 'futurx_paylite_state_v1';
+const STORAGE_KEY = 'futurx_paylite_state_v2';
 
 interface PersistedState {
   employees: Record<string, Employee>;
@@ -57,7 +59,7 @@ export class AppStateService {
   readonly todayIso = iso(this.today);
 
   constructor() {
-    this.budgetEntry = { month: `${this.year}-${String(this.month).padStart(2, '0')}-01`, allocated_amount: 0 };
+    this.budgetEntry = { month: `${this.year}-${String(this.month).padStart(2, '0')}-01`, categories: [] };
     this.loadState();
   }
 
@@ -94,7 +96,7 @@ export class AppStateService {
     this.employees = {};
     this.attendance = [];
     this.leaveRequests = [];
-    this.budgetEntry = { month: `${this.year}-${String(this.month).padStart(2, '0')}-01`, allocated_amount: 0 };
+    this.budgetEntry = { month: `${this.year}-${String(this.month).padStart(2, '0')}-01`, categories: [] };
     this.currentUserId = null;
   }
 
@@ -199,11 +201,27 @@ export class AppStateService {
       .sort((a, b) => a.date.localeCompare(b.date));
   }
 
-  markPresentToday(): void {
+  markAttendanceToday(status: AttendanceStatus): void {
     const u = this.currentUser;
     if (!u) return;
     if (this.getForDate(u.id, this.todayIso)) return;
-    this.attendance.push({ employee_id: u.id, date: this.todayIso, status: 'present' });
+    const now = new Date().toISOString();
+    this.attendance.push({
+      employee_id: u.id,
+      date: this.todayIso,
+      status,
+      check_in_time: status === 'present' ? now : null,
+      check_out_time: null,
+    });
+    this.saveState();
+  }
+
+  checkOutToday(): void {
+    const u = this.currentUser;
+    if (!u) return;
+    const rec = this.getForDate(u.id, this.todayIso);
+    if (!rec || rec.status !== 'present' || rec.check_out_time) return;
+    rec.check_out_time = new Date().toISOString();
     this.saveState();
   }
 
@@ -260,8 +278,13 @@ export class AppStateService {
     const dates = expandDateRange(r.start_date, r.end_date);
     dates.forEach(d => {
       const existing = this.attendance.find(a => a.employee_id === r.employee_id && a.date === d);
-      if (existing) existing.status = 'absent';
-      else this.attendance.push({ employee_id: r.employee_id, date: d, status: 'absent' });
+      if (existing) {
+        existing.status = 'absent';
+        existing.check_in_time = null;
+        existing.check_out_time = null;
+      } else {
+        this.attendance.push({ employee_id: r.employee_id, date: d, status: 'absent', check_in_time: null, check_out_time: null });
+      }
     });
     this.saveState();
   }
@@ -288,9 +311,30 @@ export class AppStateService {
     return this.budgetEntry;
   }
 
-  saveBudget(allocatedAmount: number): void {
-    this.budgetEntry.allocated_amount = allocatedAmount;
+  addBudgetCategory(name: string, amount: number): { ok: true } | { ok: false; error: string } {
+    if (!name.trim()) return { ok: false, error: 'Enter a category name.' };
+    if (isNaN(amount) || amount < 0) return { ok: false, error: 'Enter a valid amount.' };
+    this.budgetEntry.categories.push({
+      id: 'bc' + Math.random().toString(36).slice(2, 7),
+      name: name.trim(),
+      amount,
+    });
     this.saveState();
+    return { ok: true };
+  }
+
+  removeBudgetCategory(id: string): void {
+    this.budgetEntry.categories = this.budgetEntry.categories.filter(c => c.id !== id);
+    this.saveState();
+  }
+
+  allocatedTotal(): number {
+    return Math.round(this.budgetEntry.categories.reduce((s, c) => s + c.amount, 0) * 100) / 100;
+  }
+
+  topCategory(): BudgetCategory | undefined {
+    if (!this.budgetEntry.categories.length) return undefined;
+    return [...this.budgetEntry.categories].sort((a, b) => b.amount - a.amount)[0];
   }
 
   totalPayout(): number {
@@ -298,6 +342,6 @@ export class AppStateService {
   }
 
   variance(): number {
-    return Math.round((this.budgetEntry.allocated_amount - this.totalPayout()) * 100) / 100;
+    return Math.round((this.allocatedTotal() - this.totalPayout()) * 100) / 100;
   }
 }

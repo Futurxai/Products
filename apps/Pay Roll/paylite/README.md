@@ -68,22 +68,22 @@ them properly with the command above once you're on a machine where
 
 ## Web hosting (Firebase)
 
-`firebase.json` and `.firebaserc` are set up the same way as the other apps
-in this repo (`paycore`, `eatwell-mobile`, `lovedigitally-web`): serve the
-`www/` production build as a single-page app.
+**Live at https://paylite.web.app**
 
-`.firebaserc` currently points at a placeholder project id, `paylite-app`,
-which **does not exist yet** — nobody has created it, and no deploy has been
-run from this sandbox (no Firebase credentials are available here). To go
-live:
+Creating a brand-new Firebase/GCP project hit an account-level project quota,
+so PayLite is deployed as an additional Hosting *site* (`paylite`) inside the
+existing `paycore-app` project instead of its own project — that's what
+`"site": "paylite"` in `firebase.json` and `"default": "paycore-app"` in
+`.firebaserc` mean. It's fully independent of `paycore`'s own Hosting site;
+they just share a Firebase project as a container.
+
+To redeploy after changes:
 
 ```bash
-npm run build                       # produces www/
-npx firebase-tools login            # one-time, opens a browser for auth
-npx firebase-tools projects:create paylite-app   # or swap in an existing project id
-                                     # in .firebaserc if you already have one
-npm run deploy                      # ng build + firebase deploy --only hosting
+npm run build     # produces www/
+npm run deploy    # ng build + firebase deploy --only hosting (uses .firebaserc's project + firebase.json's site)
 ```
 
-After the first deploy, the app will be live at `https://paylite-app.web.app`
-(or whatever project id you actually used — update `.firebaserc` to match).
+`npm run deploy` needs you to be logged in (`npx firebase-tools login`) with
+access to the `paycore-app` Firebase project, or pass `--token <CI token>` /
+set `GOOGLE_APPLICATION_CREDENTIALS` to a service account key.

@@ -1,8 +1,25 @@
 .fx-field {
   --background: var(--fx-surface-alt);
   --border-radius: 10px;
-  margin-bottom: 16px;
   border-radius: 10px;
+}
+
+.fx-add-row {
+  display: flex;
+  gap: 10px;
+  margin: 12px 0 8px;
+
+  .fx-field-name {
+    flex: 3;
+  }
+
+  .fx-field-amount {
+    flex: 2;
+  }
+}
+
+.fx-cat-amount {
+  margin-right: 4px;
 }
 
 .fx-row {
@@ -10,7 +27,7 @@
   align-items: center;
   justify-content: space-between;
 
-  &:first-child {
+  &:not(:last-child) {
     margin-bottom: 12px;
   }
 }

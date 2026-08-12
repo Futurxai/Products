@@ -10,11 +10,31 @@
       <div class="fx-today-row">
         <span class="fx-today-label">Today — {{ state.todayIso }}</span>
       </div>
-      <ion-badge *ngIf="todayRecord; else markBtn" [color]="todayRecord.status === 'present' ? 'success' : 'medium'">
-        {{ todayRecord.status }}
-      </ion-badge>
-      <ng-template #markBtn>
-        <ion-button expand="block" color="primary" (click)="markPresent()">Mark present</ion-button>
+
+      <ng-container *ngIf="todayRecord; else markButtons">
+        <ion-badge [color]="todayRecord.status === 'present' ? 'success' : 'medium'">
+          {{ todayRecord.status }}
+        </ion-badge>
+
+        <div class="fx-times" *ngIf="todayRecord.status === 'present'">
+          <div class="fx-time-row">
+            <span class="fx-num-sm">Check-in</span>
+            <span class="mono">{{ formatTime(todayRecord.check_in_time) }}</span>
+          </div>
+          <div class="fx-time-row">
+            <span class="fx-num-sm">Check-out</span>
+            <span class="mono">{{ formatTime(todayRecord.check_out_time) }}</span>
+          </div>
+          <ion-button expand="block" color="primary" class="fx-checkout-btn"
+            *ngIf="!todayRecord.check_out_time" (click)="checkOut()">Check out</ion-button>
+        </div>
+      </ng-container>
+
+      <ng-template #markButtons>
+        <div class="fx-mark-row">
+          <ion-button color="primary" (click)="markPresent()">Present</ion-button>
+          <ion-button fill="outline" color="danger" (click)="markAbsent()">Absent</ion-button>
+        </div>
       </ng-template>
     </ion-card-content>
   </ion-card>
@@ -23,7 +43,10 @@
   <ion-card>
     <ion-list lines="full" *ngIf="monthRecords.length; else emptyMonth">
       <ion-item *ngFor="let r of monthRecords">
-        <ion-label>{{ r.date }}</ion-label>
+        <ion-label>
+          <h3>{{ r.date }}</h3>
+          <p *ngIf="r.status === 'present'">{{ formatTime(r.check_in_time) }} → {{ formatTime(r.check_out_time) }}</p>
+        </ion-label>
         <ion-badge slot="end" [color]="r.status === 'present' ? 'success' : 'medium'">{{ r.status }}</ion-badge>
       </ion-item>
     </ion-list>
