@@ -24,15 +24,15 @@ import { initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 
-process.env['GCLOUD_PROJECT'] = process.env['GCLOUD_PROJECT'] ?? 'lovedigitally-puzzle';
+process.env['GCLOUD_PROJECT'] = process.env['GCLOUD_PROJECT'] ?? 'lovedigitally-app';
 
-const test = testEnvFactory({ projectId: 'lovedigitally-puzzle' });
+const test = testEnvFactory({ projectId: 'lovedigitally-app' });
 // storageBucket set explicitly — `buildDependencies()` constructs a
 // Storage client for every callable regardless of whether that
 // specific use-case touches it, so it must resolve even here, backed
 // by the Storage emulator started alongside firestore/auth for this
 // test run (see package.json's test:emulator script).
-initializeApp({ projectId: 'lovedigitally-puzzle', storageBucket: 'lovedigitally-puzzle.firebasestorage.app' });
+initializeApp({ projectId: 'lovedigitally-app', storageBucket: 'lovedigitally-app.appspot.com' });
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { publishExperienceCallable } = require('../callable/publish-experience.callable');

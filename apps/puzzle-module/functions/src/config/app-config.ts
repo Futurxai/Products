@@ -35,18 +35,5 @@ export const SHARE_BASE_URL = process.env['SHARE_BASE_URL'] ?? 'https://puzzle-m
  * Pinning it explicitly makes the trigger's behavior identical in all
  * three contexts: unit test, emulator, and real deploy.
  */
-export const FIREBASE_PROJECT_ID = process.env['GCLOUD_PROJECT'] ?? 'lovedigitally-puzzle';
-
-/**
- * `lovedigitally-puzzle` is a project created after Firebase switched its
- * default bucket domain from `.appspot.com` to `.firebasestorage.app` — so
- * unlike the old shared `lovedigitally-app` project, the bucket name is not
- * simply `${FIREBASE_PROJECT_ID}.appspot.com`. The literal is used for the
- * real project id specifically; `GCLOUD_PROJECT` overridden to anything
- * else (a future project, a differently-named local emulator run) falls
- * back to the older convention rather than guessing wrong.
- */
-export const DEFAULT_STORAGE_BUCKET =
-  FIREBASE_PROJECT_ID === 'lovedigitally-puzzle'
-    ? 'lovedigitally-puzzle.firebasestorage.app'
-    : `${FIREBASE_PROJECT_ID}.appspot.com`;
+export const FIREBASE_PROJECT_ID = process.env['GCLOUD_PROJECT'] ?? 'lovedigitally-app';
+export const DEFAULT_STORAGE_BUCKET = `${FIREBASE_PROJECT_ID}.appspot.com`;
