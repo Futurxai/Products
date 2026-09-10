@@ -1,0 +1,101 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- helpers ----------
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isString(v) { return v is string; }
+    function isNumber(v) { return v is int || v is float; }
+
+    // ---------- admins ----------
+    // Client may only read its OWN admin record (used to decide whether to
+    // show the admin panel). Admin records are provisioned out-of-band via
+    // the Firebase Console or the Admin SDK — never writable from the client.
+    match /admins/{uid} {
+      allow read: if isSignedIn() && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // ---------- categories ----------
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow create, update: if isAdmin() &&
+        isString(request.resource.data.name) &&
+        request.resource.data.name.size() > 0 &&
+        request.resource.data.name.size() <= 120 &&
+        isString(request.resource.data.slug);
+      allow delete: if isAdmin();
+    }
+
+    // ---------- products ----------
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update: if isAdmin() &&
+        isString(request.resource.data.name) &&
+        request.resource.data.name.size() > 0 &&
+        request.resource.data.name.size() <= 200 &&
+        isString(request.resource.data.categoryId) &&
+        isNumber(request.resource.data.price) &&
+        request.resource.data.price >= 0 &&
+        request.resource.data.available is bool &&
+        request.resource.data.images is list &&
+        request.resource.data.images.size() <= 10;
+      allow delete: if isAdmin();
+    }
+
+    // ---------- services (installation / electrical services offered) ----------
+    match /services/{serviceId} {
+      allow read: if true;
+      allow create, update: if isAdmin() &&
+        isString(request.resource.data.title) &&
+        request.resource.data.title.size() > 0 &&
+        request.resource.data.title.size() <= 200;
+      allow delete: if isAdmin();
+    }
+
+    // ---------- business settings (single "business" doc) ----------
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ---------- orders ----------
+    // Public may CREATE an order (checkout), but can never read, list,
+    // update or delete any order — that keeps customer data private and
+    // prevents tampering with order status after submission. Only admins
+    // can read/manage orders from the admin panel.
+    match /orders/{orderId} {
+      allow read, update, delete: if isAdmin();
+
+      allow create: if
+        request.resource.data.keys().hasAll(['items', 'customer', 'total', 'status', 'createdAt']) &&
+        request.resource.data.status == 'pending' &&
+        request.resource.data.items is list &&
+        request.resource.data.items.size() > 0 &&
+        request.resource.data.items.size() <= 50 &&
+        isNumber(request.resource.data.total) &&
+        request.resource.data.total >= 0 &&
+        request.resource.data.customer is map &&
+        isString(request.resource.data.customer.name) &&
+        request.resource.data.customer.name.size() > 0 &&
+        request.resource.data.customer.name.size() <= 120 &&
+        isString(request.resource.data.customer.phone) &&
+        request.resource.data.customer.phone.size() >= 7 &&
+        request.resource.data.customer.phone.size() <= 20;
+    }
+
+    // Deny everything else by default.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
