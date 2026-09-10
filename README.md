@@ -18,6 +18,7 @@ All Futurx product builds, APKs, and test automation — organized by product.
 | Paydll | [apps/paydll](apps/paydll/) | Payment & billing for small businesses |
 | LoveDigitally | [apps/lovedigitally](apps/lovedigitally/) | Digital relationship & social connections |
 | PGSeat | [apps/priseat](apps/priseat/) | Event seat booking & reservations |
+| CCTV & Electrical | [apps/cctv-electrical](apps/cctv-electrical/) | CCTV camera & electrical installation e-commerce site + admin panel (React/TS/Tailwind/Firebase) |
 
 ## Tech Stack
 - **Mobile:** Ionic + Angular + Capacitor
