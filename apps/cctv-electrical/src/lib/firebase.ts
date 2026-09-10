@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
+import { connectStorageEmulator, getStorage } from 'firebase/storage';
 
 const requiredEnv = [
   'VITE_FIREBASE_API_KEY',
@@ -35,3 +35,14 @@ export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+// Local development / demo mode: point the SDKs at the Firebase Emulator
+// Suite instead of a real project. Enable with VITE_USE_FIREBASE_EMULATOR=true
+// (see README "Local demo with the Firebase Emulator Suite"). Never enabled
+// in a production build unless that env var is explicitly set at build time.
+if (import.meta.env.VITE_USE_FIREBASE_EMULATOR === 'true') {
+  connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+  connectFirestoreEmulator(db, '127.0.0.1', 8080);
+  connectStorageEmulator(storage, '127.0.0.1', 9199);
+  console.info('[firebase] Connected to local emulators (Auth/Firestore/Storage).');
+}

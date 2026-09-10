@@ -99,6 +99,35 @@ npm run dev        # http://localhost:5173
 Add at least one **category** (Admin → Categories) before adding products —
 products require a category.
 
+### Local demo with the Firebase Emulator Suite (no real project needed)
+
+To try the full app — storefront + admin panel — without creating a real
+Firebase project, run it against the local Firebase Emulator Suite instead:
+
+```bash
+npm install -g firebase-tools   # if not already installed
+
+# terminal 1 — start local Auth/Firestore/Storage emulators
+npm run emulators
+
+# terminal 2 — seed demo categories, products, services, settings + an admin user
+npm run seed:emulator
+
+# terminal 3 — point the app at the emulators and run it
+cp .env.example .env
+# edit .env: set VITE_USE_FIREBASE_EMULATOR=true (any placeholder values are
+# fine for the other VITE_FIREBASE_* keys since the emulator ignores them)
+npm run dev
+```
+
+Demo admin login (emulator-only, resets every time the emulator restarts):
+`demo@securevision.test` / `Demo@12345`.
+
+The Emulator UI (Firestore/Auth data browser) is at http://127.0.0.1:4000
+while `npm run emulators` is running. This is purely a local dev/demo tool —
+`VITE_USE_FIREBASE_EMULATOR` should never be set to `true` in a production
+build.
+
 ## 3. Firestore & Storage Rules
 
 Deploy the security rules and indexes before going live:

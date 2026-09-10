@@ -9,6 +9,11 @@ dist-ssr
 .firebase
 firebase-debug.log
 firebase-debug.*.log
+firestore-debug.log
+ui-debug.log
+database-debug.log
+emulator-data/
+firebase-export-metadata.json
 .DS_Store
 *.log
 npm-debug.log*
